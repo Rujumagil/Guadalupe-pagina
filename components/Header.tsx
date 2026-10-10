@@ -1,0 +1,56 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { branding } from "@/config/branding";
+import { headerCta, navigation } from "@/config/navigation";
+import { TrackedLink } from "./TrackedLink";
+
+export function Header() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <header className="site-header">
+      <div className="shell nav">
+        <Link aria-label="Guadalupe · ETERNI" className="brand" href="/" onClick={() => setOpen(false)}>
+          <Image alt="Guadalupe Gómez Pezuela" height={900} priority src={branding.logo} width={2400} />
+        </Link>
+
+        <button
+          aria-expanded={open}
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          className="menu-toggle"
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? "×" : "☰"}
+        </button>
+
+        <nav aria-label="Navegación principal" className={`nav-links${open ? " open" : ""}`}>
+          {navigation.map((item) => (
+            <a
+              href={item.href}
+              key={item.label}
+              rel={"external" in item && item.external ? "noopener" : undefined}
+              target={"external" in item && item.external ? "_blank" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+          <TrackedLink
+            className="btn btn-primary btn-small"
+            eventName="Lead"
+            href={headerCta.href}
+            rel="noopener"
+            target="_blank"
+            onClick={() => setOpen(false)}
+          >
+            {headerCta.label}
+          </TrackedLink>
+        </nav>
+      </div>
+    </header>
+  );
+}

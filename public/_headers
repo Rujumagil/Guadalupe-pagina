@@ -1,0 +1,41 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Frame-Options: SAMEORIGIN
+
+/guadalupe-site.css
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-site.js
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-hero.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-hero-mobile.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-trayectoria.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-trayectoria-mobile.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-coaching.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-coaching-mobile.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-formacion.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-formacion-mobile.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-podcast.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/guadalupe-podcast-mobile.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
