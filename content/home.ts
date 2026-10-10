@@ -2,50 +2,50 @@ import { buildWhatsAppUrl } from "@/config/site";
 
 export const homeContent = {
   hero: {
-    eyebrow: "Transformadora de vidas",
-    title: "Guadalupe Gómez Pezuela",
-    name: "Desarrollo humano, coaching y capacitación para personas y empresas.",
+    eyebrow: "Soy Guadalupe Gómez Pezuela",
+    title: "Te ayudo a transformar lo que hoy te detiene.",
+    name: "Coaching y desarrollo humano para personas y empresas.",
     value:
-      "Acompaño a personas a fortalecer su confianza, sus relaciones y sus decisiones, y a empresas a desarrollar líderes, mejorar la comunicación y coordinar sus equipos.",
+      "Acompaño a personas a recuperar confianza, mejorar sus relaciones y tomar decisiones; y ayudo a empresas a desarrollar líderes que comuniquen con claridad y equipos que cumplan acuerdos.",
     lead:
-      "Más de tres décadas de experiencia integrando acompañamiento personal, formación, conferencias y consultoría para convertir las necesidades reales en avances aplicables.",
+      "Quiero escuchar qué estás viviendo, comprender qué necesitas transformar y construir contigo un camino concreto para avanzar.",
     primaryCta: {
-      label: "Quiero acompañamiento personal",
-      href: "#personas",
+      label: "Agendar mi orientación personal",
+      href: "/coaching-personal#reservar",
     },
     secondaryCta: {
-      label: "Busco capacitación para mi empresa",
-      href: "/empresas",
+      label: "Solicitar capacitación empresarial",
+      href: "/empresas#solicitud",
     },
   },
   audiences: {
-    title: "Dos caminos, un mismo compromiso con el desarrollo humano.",
+    title: "¿Cómo puedo ayudarte?",
     description:
-      "Elige la ruta que corresponde a lo que hoy necesitas. Cada proceso comienza escuchando tu situación y definiendo un objetivo concreto.",
+      "Mi trabajo tiene dos caminos. Elige el que corresponde con lo que necesitas y comencemos con una conversación clara.",
     items: [
       {
         kicker: "Personas",
         title: "Recupera confianza y avanza con claridad",
         description:
           "Acompañamiento para poner límites, fortalecer relaciones, afrontar cambios y tomar decisiones con mayor seguridad.",
-        label: "Conocer el acompañamiento personal",
-        href: "#personas",
+        label: "Reservar mi orientación personal",
+        href: "/coaching-personal#reservar",
       },
       {
         kicker: "Empresas",
         title: "Fortalece líderes y equipos",
         description:
           "Capacitación, coaching ejecutivo y conferencias para mejorar comunicación, coordinación y cumplimiento de acuerdos.",
-        label: "Explorar soluciones para empresas",
-        href: "/empresas",
+        label: "Solicitar una propuesta empresarial",
+        href: "/empresas#solicitud",
       },
     ],
   },
   business: {
-    eyebrow: "Soluciones para organizaciones",
-    title: "Desarrolla líderes y equipos que comuniquen mejor y cumplan acuerdos.",
+    eyebrow: "Trabajo con organizaciones",
+    title: "Ayudo a tu empresa a desarrollar líderes y equipos que cumplan acuerdos.",
     description:
-      "Capacitación, coaching ejecutivo y conferencias con Guadalupe Gómez Pezuela, adaptados a las necesidades de tu organización.",
+      "Primero escucho lo que está ocurriendo. Después diseño una propuesta de capacitación, coaching ejecutivo o conferencia alineada con el resultado que tu organización necesita.",
     programs: [
       {
         title: "Liderazgo y comunicación para mandos medios",
@@ -82,7 +82,7 @@ export const homeContent = {
     },
   ],
   needs: {
-    title: "Tu siguiente paso empieza por una necesidad concreta.",
+    title: "Cuéntame qué necesitas transformar.",
     description:
       "No tienes que adaptarte a un programa antes de saber qué quieres transformar. Primero identificamos el punto en el que estás y después elegimos el camino.",
     items: [
@@ -91,7 +91,7 @@ export const homeContent = {
         title: "Quiero sentirme mejor conmigo",
         description:
           "Claridad personal, autoestima, decisiones pendientes, autoexigencia, creencias que te frenan y cambios que has postergado.",
-        label: "Hablar con Guadalupe →",
+        label: "Agendar mi orientación →",
         href: buildWhatsAppUrl(
           "Hola Guadalupe, quiero trabajar en mi claridad personal y bienestar."
         ),
@@ -101,7 +101,7 @@ export const homeContent = {
         title: "Quiero mejorar mis relaciones",
         description:
           "Comunicación, límites, vínculos personales o laborales y patrones que se repiten y hoy ya no te permiten vivir con tranquilidad.",
-        label: "Explorar mi situación →",
+        label: "Trabajar en mis relaciones →",
         href: buildWhatsAppUrl(
           "Hola Guadalupe, quiero trabajar en mis relaciones y mi comunicación."
         ),
@@ -111,7 +111,7 @@ export const homeContent = {
         title: "Quiero crecer profesionalmente",
         description:
           "Liderazgo, comunicación, crecimiento laboral, toma de decisiones, desarrollo de equipos y creencias que limitan tu siguiente nivel.",
-        label: "Definir mi siguiente paso →",
+        label: "Fortalecer mi liderazgo →",
         href: buildWhatsAppUrl(
           "Hola Guadalupe, quiero trabajar en mi crecimiento profesional y liderazgo."
         ),
@@ -187,10 +187,10 @@ export const homeContent = {
     note: "Primero escuchamos lo que necesitas. Después definimos juntos el camino.",
   },
   finalCta: {
-    title: "Agenda una orientación inicial gratuita con Guadalupe.",
+    title: "No tienes que tener todas las respuestas para comenzar.",
     description:
-      "Una conversación breve para conocer tu situación, aclarar qué deseas trabajar y orientarte sobre el siguiente paso. No sustituye una sesión completa ni te obliga a contratar un proceso.",
-    label: "Agendar orientación gratuita",
+      "Cuéntame qué estás viviendo. En una orientación inicial podremos aclarar tu necesidad y decidir si soy la persona adecuada para acompañarte.",
+    label: "Reservar mi orientación personal",
     href: buildWhatsAppUrl(
       "Hola Guadalupe, quiero agendar mi sesión de orientación inicial. Me gustaría contarte brevemente lo que quiero trabajar."
     ),
