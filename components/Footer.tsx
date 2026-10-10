@@ -21,7 +21,7 @@ export function Footer() {
             <Link href="/cursos-talleres-conferencias">Cursos, talleres y conferencias</Link>
             <Link href="/webinar">Próximo evento</Link>
             <Link href="/podcast">Podcast</Link>
-            <a href={siteConfig.academyUrl} rel="noopener" target="_blank">Academia</a>
+            <Link href="/academia-eterni">Academia ETERNI</Link>
             <Link href="/recursos">Recursos</Link>
           </div>
           <div>

@@ -11,6 +11,7 @@ const routes = [
   "/coaching",
   "/mentoring",
   "/certificacion",
+  "/academia-eterni",
   "/coaching-personal",
   "/empresas",
   "/liderazgo-desarrollo-profesional",

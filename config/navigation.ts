@@ -1,4 +1,4 @@
-import { buildWhatsAppUrl, siteConfig } from "./site";
+import { buildWhatsAppUrl } from "./site";
 
 export const navigation = [
   { label: "Guadalupe", href: "/#guadalupe" },
@@ -7,7 +7,7 @@ export const navigation = [
   { label: "Servicios", href: "/servicios" },
   { label: "Recursos", href: "/recursos" },
   { label: "Podcast", href: "/podcast" },
-  { label: "Academia", href: siteConfig.academyUrl, external: true },
+  { label: "Academia", href: "/academia-eterni" },
 ] as const;
 
 export const headerCta = {
