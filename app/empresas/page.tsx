@@ -30,14 +30,14 @@ export default function EmpresasPage() {
       <section className="business-hero">
         <div className="shell business-hero-grid">
           <div>
-            <span className="eyebrow">Personas que lideran · equipos que avanzan</span>
-            <h1>Capacitación, coaching ejecutivo y conferencias para empresas.</h1>
-            <p className="lead">Ayudo a tu empresa a desarrollar líderes que comuniquen con claridad y equipos que coordinen su trabajo y cumplan acuerdos.</p>
-            <a className="btn btn-primary" href="#solicitud">Solicitar propuesta</a>
+            <span className="eyebrow">Quiero trabajar con tu organización</span>
+            <h1>Ayudo a tu empresa a desarrollar líderes y equipos que cumplan acuerdos.</h1>
+            <p className="lead">Escucho la necesidad de tu organización y diseño capacitación, coaching ejecutivo o conferencias para mejorar comunicación, liderazgo y coordinación.</p>
+            <a className="btn btn-primary" href="#solicitud">Solicitar mi diagnóstico empresarial</a>
           </div>
           <aside className="business-hero-note">
-            <strong>Una propuesta construida desde la necesidad real</strong>
-            <p>Iniciamos con un diagnóstico breve para comprender el contexto, los participantes y el resultado esperado. Después definimos alcance, formato y seguimiento.</p>
+            <strong>No comenzaré recomendándote un programa sin conocer el reto.</strong>
+            <p>Primero comprenderé el contexto, los participantes y el resultado esperado. Después presentaré una propuesta con alcance, formato y seguimiento.</p>
           </aside>
         </div>
       </section>
@@ -53,6 +53,7 @@ export default function EmpresasPage() {
               <article className="company-program-card" key={program.title}>
                 <h3>{program.title}</h3><p>{program.description}</p>
                 <ul>{program.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+                <a className="text-action" href="#solicitud">Cotizar este programa →</a>
               </article>
             ))}
           </div>
