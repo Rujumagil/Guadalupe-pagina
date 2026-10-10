@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export function ExperienceEffects() {
   useEffect(() => {
+    document.documentElement.classList.add("effects-ready");
     const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -18,7 +19,10 @@ export function ExperienceEffects() {
     );
 
     elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove("effects-ready");
+    };
   }, []);
 
   return null;
