@@ -1,0 +1,71 @@
+name: Publicar vista previa en GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar código
+        run: |
+          npm run typecheck
+          npm run lint
+
+      - name: Compilar sitio
+        run: npm run build
+
+      - name: Adaptar rutas para GitHub Pages
+        run: |
+          touch out/.nojekyll
+          find out -type f -name '*.html' -print0 | xargs -0 sed -i \
+            -e 's|href="/|href="/Guadalupe-pagina/|g' \
+            -e 's|src="/|src="/Guadalupe-pagina/|g' \
+            -e 's|srcSet="/|srcSet="/Guadalupe-pagina/|g' \
+            -e 's|srcset="/|srcset="/Guadalupe-pagina/|g'
+          find out -type f -name '*.html' -print0 | xargs -0 sed -i \
+            -e 's|/Guadalupe-pagina/https://|https://|g' \
+            -e 's|/Guadalupe-pagina/mailto:|mailto:|g' \
+            -e 's|/Guadalupe-pagina/tel:|tel:|g'
+
+      - name: Preparar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio compilado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
