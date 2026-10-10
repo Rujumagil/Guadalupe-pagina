@@ -1,4 +1,5 @@
 import { buildWhatsAppUrl } from "@/config/site";
+import { ExperienceEffects } from "@/components/ExperienceEffects";
 
 const personalUrl = buildWhatsAppUrl(
   "Hola Guadalupe, quiero reservar una orientación personal. Me gustaría contarte qué estoy viviendo."
@@ -7,6 +8,7 @@ const personalUrl = buildWhatsAppUrl(
 export function HomeExperience() {
   return (
     <main className="experience-home">
+      <ExperienceEffects />
       <section className="experience-hero">
         <div className="experience-hero-media" aria-hidden="true">
           <picture>
@@ -15,12 +17,12 @@ export function HomeExperience() {
           </picture>
         </div>
         <div className="shell experience-hero-content">
-          <div className="experience-intro">
+          <div className="experience-intro" data-reveal>
             <span className="experience-signature">Soy Guadalupe Gómez Pezuela</span>
             <h1>Transformar comienza cuando te atreves a mirar lo que necesitas cambiar.</h1>
             <p>Te acompaño a recuperar claridad y confianza; y trabajo con empresas que quieren desarrollar líderes humanos y equipos capaces de cumplir acuerdos.</p>
           </div>
-          <nav className="experience-selector" aria-label="Elige cómo puedo ayudarte">
+          <nav className="experience-selector" aria-label="Elige cómo puedo ayudarte" data-reveal>
             <a href="/coaching-personal#reservar">
               <span>01 · Para ti</span>
               <strong>Quiero avanzar en mi vida</strong>
@@ -46,13 +48,13 @@ export function HomeExperience() {
 
       <section className="experience-story">
         <div className="shell experience-story-grid">
-          <div className="experience-story-photo">
+          <div className="experience-story-photo" data-reveal>
             <picture>
               <source media="(max-width: 700px)" srcSet="/images/guadalupe-trayectoria-mobile.webp" />
               <img src="/images/guadalupe-trayectoria.webp" alt="Guadalupe Gómez Pezuela durante una sesión de trabajo" loading="lazy" />
             </picture>
           </div>
-          <div className="experience-story-copy">
+          <div className="experience-story-copy" data-reveal>
             <span className="experience-kicker">Antes de ofrecerte una solución, quiero escucharte.</span>
             <h2>No trabajo con respuestas prefabricadas.</h2>
             <p>Durante más de tres décadas he acompañado a personas, líderes y equipos en momentos donde algo necesita cambiar. Mi trabajo comienza comprendiendo tu realidad, no tratando de acomodarte a un programa.</p>
@@ -64,7 +66,7 @@ export function HomeExperience() {
 
       <section className="experience-paths" id="caminos">
         <article className="experience-path experience-path-personal">
-          <div className="experience-path-inner">
+          <div className="experience-path-inner" data-reveal>
             <span>Coaching personal</span>
             <h2>Vuelve a elegirte.</h2>
             <p>Si has dedicado mucho tiempo a responder por los demás, atraviesas un cambio o necesitas tomar una decisión, trabajaremos para recuperar claridad, establecer límites y avanzar con confianza.</p>
@@ -75,7 +77,7 @@ export function HomeExperience() {
           </div>
         </article>
         <article className="experience-path experience-path-business">
-          <div className="experience-path-inner">
+          <div className="experience-path-inner" data-reveal>
             <span>Coaching empresarial</span>
             <h2>Haz que tu equipo avance.</h2>
             <p>Diseño capacitación y procesos para organizaciones que necesitan líderes capaces de comunicar, delegar, resolver conflictos y convertir acuerdos en resultados.</p>
@@ -89,21 +91,21 @@ export function HomeExperience() {
 
       <section className="experience-method">
         <div className="shell">
-          <header className="experience-method-head">
+          <header className="experience-method-head" data-reveal>
             <span className="experience-kicker">Mi forma de trabajar</span>
             <h2>Una conversación que se convierte en dirección.</h2>
           </header>
           <div className="experience-method-line">
-            <article><span>01</span><h3>Te escucho</h3><p>Comprendo lo que estás viviendo y qué necesita cambiar.</p></article>
-            <article><span>02</span><h3>Definimos el objetivo</h3><p>Convertimos tu necesidad en un resultado claro y observable.</p></article>
-            <article><span>03</span><h3>Diseño el camino</h3><p>Elegimos el proceso, formato y acciones adecuadas para avanzar.</p></article>
-            <article><span>04</span><h3>Medimos el avance</h3><p>Revisamos aprendizajes, decisiones y resultados alcanzados.</p></article>
+            <article data-reveal><span>01</span><h3>Te escucho</h3><p>Comprendo lo que estás viviendo y qué necesita cambiar.</p></article>
+            <article data-reveal><span>02</span><h3>Definimos el objetivo</h3><p>Convertimos tu necesidad en un resultado claro y observable.</p></article>
+            <article data-reveal><span>03</span><h3>Diseño el camino</h3><p>Elegimos el proceso, formato y acciones adecuadas para avanzar.</p></article>
+            <article data-reveal><span>04</span><h3>Medimos el avance</h3><p>Revisamos aprendizajes, decisiones y resultados alcanzados.</p></article>
           </div>
         </div>
       </section>
 
       <section className="experience-closing">
-        <div className="shell experience-closing-grid">
+        <div className="shell experience-closing-grid" data-reveal>
           <div>
             <span className="experience-signature">Conversemos</span>
             <h2>No necesitas tener todo resuelto para dar el primer paso.</h2>
