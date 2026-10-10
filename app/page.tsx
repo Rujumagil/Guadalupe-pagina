@@ -17,13 +17,13 @@ export default function HomePage() {
       <Hero />
       <AudienceGate />
       <Authority />
-      <BusinessPreview />
-      <Events />
       <HelpPaths />
+      <BusinessPreview />
       <About />
       <Process />
-      <Services compact />
       <CTA />
+      <Events />
+      <Services compact />
       <Resources />
       <Testimonials />
     </main>
