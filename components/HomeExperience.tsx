@@ -4,9 +4,9 @@ const personalUrl = buildWhatsAppUrl("Hola Guadalupe, quiero agendar una orienta
 const businessUrl = buildWhatsAppUrl("Hola Guadalupe, quiero solicitar un diagnóstico para mi empresa. Necesitamos fortalecer a nuestros líderes y equipos.");
 
 const services = [
-  { number: "01", audience: "Para ti", title: "Coaching personal", description: "Te acompaño a recuperar confianza, poner límites y tomar decisiones con claridad para construir la siguiente etapa de tu vida.", items: ["Confianza y autoestima", "Relaciones y límites", "Cambios de vida y decisiones"], action: "Agendar mi orientación personal", href: personalUrl, external: true, tone: "personal" },
-  { number: "02", audience: "Para líderes", title: "Coaching ejecutivo", description: "Trabajo uno a uno con líderes que necesitan comunicar mejor, delegar, sostener conversaciones difíciles y dirigir con mayor seguridad.", items: ["Liderazgo consciente", "Comunicación directiva", "Decisiones bajo presión"], action: "Solicitar coaching ejecutivo", href: businessUrl, external: true, tone: "executive" },
-  { number: "03", audience: "Para empresas", title: "Capacitación de equipos", description: "Diseño experiencias prácticas para que los equipos coordinen su trabajo, cumplan acuerdos y transformen los conflictos en conversaciones productivas.", items: ["Equipos que cumplen acuerdos", "Inteligencia emocional", "Comunicación entre áreas"], action: "Solicitar una propuesta", href: "/empresas#solicitud", external: false, tone: "business" },
+  { number: "01", audience: "Para ti", title: "Coaching personal", description: "Te acompaño a recuperar confianza, poner límites y tomar decisiones con claridad para construir la siguiente etapa de tu vida.", items: ["Confianza y autoestima", "Relaciones y límites", "Cambios de vida y decisiones"], action: "Agendar mi orientación personal", href: personalUrl, external: true, tone: "personal", image: "/images/servicio-coaching-personal.webp" },
+  { number: "02", audience: "Para líderes", title: "Coaching ejecutivo", description: "Trabajo uno a uno con líderes que necesitan comunicar mejor, delegar, sostener conversaciones difíciles y dirigir con mayor seguridad.", items: ["Liderazgo consciente", "Comunicación directiva", "Decisiones bajo presión"], action: "Solicitar coaching ejecutivo", href: businessUrl, external: true, tone: "executive", image: "/images/servicio-coaching-ejecutivo.webp" },
+  { number: "03", audience: "Para empresas", title: "Capacitación de equipos", description: "Diseño experiencias prácticas para que los equipos coordinen su trabajo, cumplan acuerdos y transformen los conflictos en conversaciones productivas.", items: ["Equipos que cumplen acuerdos", "Inteligencia emocional", "Comunicación entre áreas"], action: "Solicitar una propuesta", href: "/empresas#solicitud", external: false, tone: "business", image: "/images/servicio-capacitacion-equipos.webp" },
 ];
 
 export function HomeExperience() {
@@ -42,9 +42,12 @@ export function HomeExperience() {
           {services.map((service) => (
             <article className={`service-row service-row-${service.tone}`} key={service.number}>
               <div className="service-row-index"><span>{service.number}</span><small>{service.audience}</small></div>
-              <div className="service-row-main"><h2>{service.title}</h2><p>{service.description}</p></div>
-              <ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul>
-              <a className="service-row-action" href={service.href} rel={service.external ? "noopener" : undefined} target={service.external ? "_blank" : undefined}>{service.action} <span>↗</span></a>
+              <div className="service-row-media"><img src={service.image} alt={`${service.title} con Guadalupe Gómez Pezuela`} loading="lazy" /></div>
+              <div className="service-row-content">
+                <div className="service-row-main"><h2>{service.title}</h2><p>{service.description}</p></div>
+                <ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul>
+                <a className="service-row-action" href={service.href} rel={service.external ? "noopener" : undefined} target={service.external ? "_blank" : undefined}>{service.action} <span>↗</span></a>
+              </div>
             </article>
           ))}
         </div>

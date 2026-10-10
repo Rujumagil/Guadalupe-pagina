@@ -1759,3 +1759,24 @@ h3 {
 .services-final{padding:clamp(5rem,10vw,9rem) 0;color:#fff;background:#42284d}.services-final-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,7vw,7rem);align-items:end}.services-final h2{margin:.8rem 0;color:#fff;font-size:clamp(3rem,5vw,5.5rem);line-height:.92}.services-final p{color:rgba(255,255,255,.7)}.services-final-actions{display:grid;gap:.8rem}.btn-gold{color:#2b1d34;background:#d6ba82}.btn-outline-light{color:#fff;border:1px solid rgba(255,255,255,.55);background:transparent}
 @media(max-width:960px){.service-row{grid-template-columns:80px 1fr}.service-row ul,.service-row-action{grid-column:2}.services-process-grid{grid-template-columns:repeat(2,1fr)}.business-focus-grid,.services-about-grid,.services-final-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.services-hero{min-height:auto;padding-bottom:0}.services-hero-image{position:relative;inset:auto;height:55vh;order:1}.services-hero-image img{object-position:62% center}.services-hero{display:flex;flex-direction:column}.services-hero:after{background:linear-gradient(0deg,#271a30 0%,rgba(39,26,48,.15) 65%,transparent 100%)}.services-hero-grid{z-index:3;order:2;margin-top:-4rem;padding:0 0 3rem}.services-hero-copy{padding:1.6rem;background:#271a30}.services-hero h1{font-size:clamp(2.7rem,13vw,4.3rem)}.services-hero-actions,.services-hero-actions .btn{width:100%}.services-scroll{display:none}.services-intro-grid{grid-template-columns:1fr;gap:1.5rem}.service-row{grid-template-columns:1fr;gap:1.2rem;padding:2.5rem 0}.service-row:hover{padding-inline:0}.service-row-index{display:flex;justify-content:space-between}.service-row ul,.service-row-action{grid-column:auto}.services-process-grid{grid-template-columns:1fr}.services-credentials{grid-template-columns:1fr}.services-about-photo{box-shadow:14px 14px 0 rgba(255,255,255,.75)}.services-final-actions .btn{width:100%;text-align:center}}
+
+/* Service picture cards — staggered editorial layout */
+.services-catalog{overflow:hidden;padding-top:2rem}
+.services-list{display:grid;gap:clamp(2rem,5vw,4.5rem);border:0}
+.service-row{position:relative;width:94%;min-height:430px;display:grid;grid-template-columns:minmax(330px,.9fr) minmax(0,1.1fr);gap:0;padding:0;border:0;border-radius:28px;background:#fff;box-shadow:0 28px 70px rgba(47,30,55,.13);overflow:visible;transition:transform .35s ease,box-shadow .35s ease}
+.service-row:nth-child(even){margin-left:6%;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr)}
+.service-row:nth-child(even) .service-row-media{grid-column:2;grid-row:1}
+.service-row:nth-child(even) .service-row-content{grid-column:1;grid-row:1}
+.service-row:hover{padding:0;background:#fff;transform:translateY(-8px);box-shadow:0 36px 90px rgba(47,30,55,.18)}
+.service-row-index{position:absolute;z-index:3;top:24px;left:-22px;width:92px;padding:1rem .8rem;display:grid;gap:.35rem;color:#fff;border-radius:16px;background:#4a2e55;box-shadow:0 14px 32px rgba(47,30,55,.2)}
+.service-row:nth-child(even) .service-row-index{right:-22px;left:auto}
+.service-row-index>span{color:#d9bd83;font-size:2rem}.service-row-index small{color:rgba(255,255,255,.82)}
+.service-row-media{min-height:430px;overflow:hidden;border-radius:28px 0 0 28px}
+.service-row:nth-child(even) .service-row-media{border-radius:0 28px 28px 0}
+.service-row-media img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.service-row:hover .service-row-media img{transform:scale(1.045)}
+.service-row-content{padding:clamp(2.2rem,5vw,4rem);display:flex;flex-direction:column;justify-content:center}
+.service-row-main h2{font-size:clamp(2.5rem,4vw,4.2rem)}
+.service-row-content ul{margin:1.4rem 0 1.7rem}
+.service-row-content .service-row-action{max-width:310px;justify-self:auto}
+@media(max-width:800px){.service-row,.service-row:nth-child(even){width:100%;margin:0;grid-template-columns:1fr}.service-row:nth-child(even) .service-row-media,.service-row:nth-child(even) .service-row-content{grid-column:auto;grid-row:auto}.service-row-media,.service-row:nth-child(even) .service-row-media{min-height:280px;border-radius:28px 28px 0 0}.service-row-index,.service-row:nth-child(even) .service-row-index{top:18px;left:18px;right:auto}.service-row-content{padding:2rem 1.4rem}.service-row-content .service-row-action{max-width:none}}
