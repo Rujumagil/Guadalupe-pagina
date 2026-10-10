@@ -16,7 +16,7 @@ export function AudienceGate() {
               <span className="eyebrow">{item.kicker}</span>
               <h3>{item.title}</h3>
               <p>{item.description}</p>
-              <a className="btn btn-outline" href={item.href}>{item.label}</a>
+              <a className="btn btn-primary" href={item.href}>{item.label}</a>
             </article>
           ))}
         </div>
