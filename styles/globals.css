@@ -1688,8 +1688,9 @@ h3 {
 @media(max-width:620px){.experience-selector{grid-template-columns:1fr}.experience-selector a:first-child{border-right:0;border-bottom:1px solid #ded5df}.experience-intro h1{font-size:clamp(2.75rem,14vw,4.3rem)}.experience-story-photo{box-shadow:14px 14px 0 #e8dde8}.experience-path{min-height:auto;padding:5rem 1.5rem}.experience-method-line{grid-template-columns:1fr}.experience-trust-row{grid-template-columns:1fr}.experience-trust-row span{border-right:0;border-bottom:1px solid #e4dde3}.experience-closing-actions .btn{width:100%;text-align:center}}
 
 /* V3 motion system */
-[data-reveal]{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
-[data-reveal].is-visible{opacity:1;transform:translateY(0)}
+[data-reveal]{opacity:1;transform:none}
+.effects-ready [data-reveal]{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.effects-ready [data-reveal].is-visible{opacity:1;transform:translateY(0)}
 .experience-method-line article:nth-child(2){transition-delay:.08s}.experience-method-line article:nth-child(3){transition-delay:.16s}.experience-method-line article:nth-child(4){transition-delay:.24s}
 .experience-hero-media img{animation:hero-breathe 16s ease-in-out infinite alternate}
 .experience-hero:before{content:"";position:absolute;z-index:1;inset:-20%;pointer-events:none;background:radial-gradient(circle at 54% 40%,rgba(206,172,111,.2),transparent 30%);animation:light-drift 10s ease-in-out infinite alternate}
