@@ -7,6 +7,7 @@ const routes = [
   "",
   "/servicios",
   "/consultoria",
+  "/capacitacion",
   "/coaching-personal",
   "/empresas",
   "/liderazgo-desarrollo-profesional",
