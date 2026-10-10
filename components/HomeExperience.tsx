@@ -14,7 +14,7 @@ export function HomeExperience() {
     <main className="services-home">
       <section className="services-hero">
         <div className="services-hero-image" aria-hidden="true">
-          <picture><source media="(max-width: 700px)" srcSet="/images/guadalupe-hero-mobile.webp" /><img src="/images/guadalupe-hero.webp" alt="" fetchPriority="high" /></picture>
+          <img src="/images/coaching-empresarial-hero.webp" alt="" fetchPriority="high" />
         </div>
         <div className="shell services-hero-grid">
           <div className="services-hero-copy">
