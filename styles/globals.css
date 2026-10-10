@@ -1619,3 +1619,26 @@ h3 {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Conversion paths: personal and business */
+.conversion-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+.conversion-card{border-radius:28px;padding:clamp(1.6rem,4vw,3rem);box-shadow:0 18px 55px rgba(35,27,55,.12)}
+.conversion-card h2{margin:.55rem 0 1rem;font-size:clamp(1.65rem,3vw,2.5rem)}
+.conversion-card p{margin:0 0 1.5rem;max-width:58ch}
+.conversion-personal{background:linear-gradient(145deg,#39264f,#5d3c7c);color:#fff}
+.conversion-business{background:#fff;border:1px solid rgba(72,48,96,.14)}
+.personal-hero{padding:clamp(5rem,9vw,8rem) 0;background:linear-gradient(135deg,#fbf8fc 0%,#f0e8f5 100%)}
+.personal-hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:clamp(2rem,6vw,5rem);align-items:center}
+.personal-hero h1{font-size:clamp(2.5rem,5vw,5rem);max-width:13ch;margin:.7rem 0 1.3rem}
+.personal-promise{background:#fff;border-left:4px solid var(--gold,#b79a63);border-radius:0 24px 24px 0;padding:2rem;box-shadow:0 16px 45px rgba(42,31,54,.1)}
+.personal-promise strong{display:block;font-size:1.25rem;margin-bottom:.75rem}
+.personal-needs-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+.personal-needs-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.personal-needs-list li{background:#fff;border:1px solid rgba(72,48,96,.13);border-radius:16px;padding:1rem 1.1rem;font-weight:700;box-shadow:0 8px 24px rgba(42,31,54,.06)}
+.personal-process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.personal-process-grid article{background:#fff;border-radius:22px;padding:1.6rem;border:1px solid rgba(72,48,96,.1)}
+.personal-process-grid span{font-weight:800;color:var(--gold,#b79a63);letter-spacing:.12em}
+.personal-reserve{display:flex;justify-content:space-between;align-items:center;gap:2rem;padding:clamp(1.6rem,4vw,3rem);border-radius:28px;background:#30203f;color:#fff}
+.personal-reserve>div{max-width:65ch}
+.text-action{display:inline-block;margin-top:1rem;font-weight:800;color:var(--purple,#573b75)}
+@media(max-width:820px){.conversion-choice,.personal-hero-grid,.personal-needs-grid,.personal-process-grid{grid-template-columns:1fr}.personal-needs-list{grid-template-columns:1fr}.personal-reserve{align-items:flex-start;flex-direction:column}.personal-reserve .btn{width:100%;text-align:center}}
