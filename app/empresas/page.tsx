@@ -105,7 +105,7 @@ export default function EmpresasPage() {
       </section>
 
       <section className="g-section g-section-alt">
-        <div className="shell" id="solicitud"><BusinessInquiry /></div>
+        <div className="shell"><BusinessInquiry /></div>
       </section>
 
       <section className="g-section g-section-purple">
