@@ -1,0 +1,28 @@
+name: Validar cambios de la web
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Revisar TypeScript
+        run: npm run typecheck
+      - name: Revisar lint
+        run: npm run lint
+      - name: Compilar sitio estático
+        run: npm run build
