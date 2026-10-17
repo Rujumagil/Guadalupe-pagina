@@ -1,77 +1,124 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BusinessInquiry } from "@/components/BusinessInquiry";
+import { TrackedLink } from "@/components/TrackedLink";
+import { businessChallenges, businessFaq, coachingProcess, commercialLinks, executiveTopics } from "@/content/comercial";
 
 export const metadata: Metadata = {
-  title: "Capacitación y coaching para empresas",
-  description: "Programas de liderazgo, comunicación, inteligencia emocional y coordinación de equipos con Guadalupe Gómez Pezuela.",
+  title: "Coaching empresarial y ejecutivo",
+  description: "Coaching ejecutivo y de equipos con Guadalupe Gómez Pezuela: delegación, liderazgo, comunicación, decisiones y seguimiento para organizaciones.",
 };
-
-const programs = [
-  {
-    title: "Liderazgo y comunicación para mandos medios",
-    description: "Para supervisores y responsables con experiencia técnica que necesitan fortalecer su capacidad para dirigir personas.",
-    bullets: ["Delegación e instrucciones claras", "Retroalimentación útil", "Seguimiento y conversaciones de desempeño"],
-  },
-  {
-    title: "Equipos que cumplen acuerdos",
-    description: "Para organizaciones que necesitan mejorar la coordinación entre personas, áreas y responsabilidades.",
-    bullets: ["Acuerdos observables", "Responsabilidad compartida", "Comunicación y seguimiento entre áreas"],
-  },
-  {
-    title: "Inteligencia emocional para trabajar bajo presión",
-    description: "Para equipos que enfrentan cambios, conflictos, alta exigencia o conversaciones difíciles.",
-    bullets: ["Autorregulación", "Manejo de conflictos", "Conversaciones difíciles con claridad"],
-  },
-] as const;
 
 export default function EmpresasPage() {
   return (
-    <main className="business-page">
-      <section className="business-hero">
-        <div className="shell business-hero-grid">
+    <main className="g-page">
+      <section className="g-subhero">
+        <div className="shell g-subhero-grid">
           <div>
-            <span className="eyebrow">Quiero trabajar con tu organización</span>
-            <h1>Ayudo a tu empresa a desarrollar líderes y equipos que cumplan acuerdos.</h1>
-            <p className="lead">Escucho la necesidad de tu organización y diseño capacitación, coaching ejecutivo o conferencias para mejorar comunicación, liderazgo y coordinación.</p>
-            <a className="btn btn-primary" href="#solicitud">Solicitar mi diagnóstico empresarial</a>
+            <span className="g-eyebrow">Coaching empresarial · Liderazgo y equipos</span>
+            <h1>Mejores conversaciones. Decisiones más claras. Equipos mejor coordinados.</h1>
+            <p className="g-lead">Acompaño a líderes y organizaciones que necesitan
+            revisar su manera de decidir, delegar, comunicar y coordinar el trabajo.
+            Partimos de situaciones reales, no de recetas generales.</p>
+            <div className="g-actions">
+              <a className="btn btn-primary" href="#solicitud">Solicitar conversación empresarial</a>
+              <a className="btn g-btn-line" href="#soluciones">Ver modalidades</a>
+            </div>
           </div>
-          <aside className="business-hero-note">
-            <strong>No comenzaré recomendándote un programa sin conocer el reto.</strong>
-            <p>Primero comprenderé el contexto, los participantes y el resultado esperado. Después presentaré una propuesta con alcance, formato y seguimiento.</p>
-          </aside>
+          <img className="g-subhero-image" src="/images/coaching-empresarial-hero.webp" alt="Desarrollo de liderazgo en organizaciones" fetchPriority="high" />
         </div>
       </section>
 
-      <section className="section">
+      <section className="g-section" id="soluciones">
         <div className="shell">
-          <header className="section-head">
-            <h2>Programas iniciales para líderes y equipos</h2>
-            <p>Los contenidos se adaptan al nivel de responsabilidad, el contexto operativo y los retos de la organización.</p>
+          <header className="g-section-title">
+            <span className="g-eyebrow">Dos rutas de acompañamiento</span>
+            <h2>El formato depende del reto, no al revés.</h2>
+            <p>Podemos trabajar con una persona en posición de liderazgo o con un equipo
+            que necesita fortalecer su coordinación.</p>
           </header>
-          <div className="company-program-grid">
-            {programs.map((program) => (
-              <article className="company-program-card" key={program.title}>
-                <h3>{program.title}</h3><p>{program.description}</p>
-                <ul>{program.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
-                <a className="text-action" href="#solicitud">Cotizar este programa →</a>
-              </article>
-            ))}
+          <div className="g-columns-2">
+            {executiveTopics.map((item) => <article className="g-card" key={item.title}>
+              <span className="g-card-num">{item.tag}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <a className="g-contact-link" href="#solicitud">Solicitar propuesta →</a>
+            </article>)}
           </div>
         </div>
       </section>
 
-      <section className="section section-soft">
-        <div className="shell business-format-grid">
-          <div><span className="eyebrow">Formatos</span><h2>Una intervención adecuada al objetivo.</h2></div>
-          <div className="format-list">
-            <article><strong>Capacitación</strong><p>Sesiones prácticas para desarrollar habilidades aplicables al trabajo.</p></article>
-            <article><strong>Coaching ejecutivo</strong><p>Acompañamiento individual para líderes que requieren objetivos y seguimiento.</p></article>
-            <article><strong>Conferencias</strong><p>Experiencias para sensibilizar, abrir conversación y movilizar a grupos amplios.</p></article>
+      <section className="g-section g-section-alt">
+        <div className="shell g-feature-grid">
+          <div>
+            <span className="g-eyebrow">Situaciones reales</span>
+            <h2>Trabajamos los desafíos que están afectando al liderazgo.</h2>
+            <ul className="g-checklist">
+              {businessChallenges.map((challenge) => <li key={challenge}>{challenge}</li>)}
+            </ul>
+            <div className="g-actions"><a className="btn btn-primary" href="#solicitud">Conversemos sobre tu equipo</a></div>
+          </div>
+          <div className="g-feature-image"><img src="/images/servicio-coaching-ejecutivo.webp" alt="Coaching ejecutivo para líderes y responsables de equipos" loading="lazy" /></div>
+        </div>
+      </section>
+
+      <section className="g-section">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">Cómo trabajaremos</span>
+            <h2>Un proceso adaptado a las necesidades del negocio.</h2>
+            <p>El alcance, los participantes, la modalidad, el calendario y la inversión
+            se definen por propuesta y se acuerdan antes de comenzar.</p>
+          </header>
+          <div className="g-columns-4">
+            {coachingProcess.map((step) => <article className="g-card" key={step.step}>
+              <span className="g-card-num">{step.step}</span>
+              <h3>{step.title}</h3><p>{step.text}</p>
+            </article>)}
           </div>
         </div>
       </section>
 
-      <section className="section business-form-section"><div className="shell"><BusinessInquiry /></div></section>
+      <section className="g-section g-section-alt">
+        <div className="shell g-columns-2">
+          <div>
+            <span className="g-eyebrow">Servicios complementarios</span>
+            <h2>Capacitación y conferencias cuando el objetivo lo requiere.</h2>
+          </div>
+          <div>
+            <p>Además del coaching, es posible diseñar talleres de liderazgo,
+            comunicación, coordinación e inteligencia emocional, así como conferencias.
+            La propuesta adecuada se define después de comprender el contexto.</p>
+            <div className="g-actions"><Link className="btn g-btn-line" href="/capacitacion">Ver capacitación para equipos</Link></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">Preguntas frecuentes</span>
+            <h2>Antes de solicitar una propuesta</h2>
+          </header>
+          <div className="g-faq">{businessFaq.map((item) => <details key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
+        </div>
+      </section>
+
+      <section className="g-section g-section-alt">
+        <div className="shell" id="solicitud"><BusinessInquiry /></div>
+      </section>
+
+      <section className="g-section g-section-purple">
+        <div className="shell g-final">
+          <div>
+            <span className="g-eyebrow">¿Prefieres conversar primero?</span>
+            <h2>Hablemos del reto de tu organización.</h2>
+            <p>Un primer intercambio permite determinar si el coaching ejecutivo o de
+            equipos puede responder a la necesidad.</p>
+          </div>
+          <TrackedLink className="btn btn-gold" href={commercialLinks.businessWhatsApp} target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</TrackedLink>
+        </div>
+      </section>
     </main>
   );
 }
