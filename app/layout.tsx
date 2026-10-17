@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@/styles/globals.css";
+import "@/styles/comercial.css";
 import { CloudflareWebAnalytics } from "@/components/CloudflareWebAnalytics";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -11,7 +12,7 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Guadalupe Gómez Pezuela | Personas y Empresas",
+    default: "Guadalupe Gómez Pezuela | Coaching personal y empresarial",
     template: "%s | Guadalupe Gómez Pezuela",
   },
   description: siteConfig.description,
@@ -20,14 +21,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_MX",
     siteName: siteConfig.name,
-    title: "Guadalupe Gómez Pezuela | Personas y Empresas",
+    title: "Guadalupe Gómez Pezuela | Coaching personal y empresarial",
     description: siteConfig.description,
     url: siteConfig.url,
     images: [{ url: "/images/guadalupe-hero.webp", alt: siteConfig.name }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Guadalupe Gómez Pezuela | Personas y Empresas",
+    title: "Guadalupe Gómez Pezuela | Coaching personal y empresarial",
     description: siteConfig.description,
     images: ["/images/guadalupe-hero.webp"],
   },

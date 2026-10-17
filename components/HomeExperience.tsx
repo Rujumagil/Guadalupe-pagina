@@ -1,111 +1,163 @@
-import { buildWhatsAppUrl } from "@/config/site";
-
-const personalUrl = buildWhatsAppUrl("Hola Guadalupe, quiero agendar una orientación personal. Me gustaría contarte qué estoy viviendo.");
-const businessUrl = buildWhatsAppUrl("Hola Guadalupe, quiero solicitar un diagnóstico para mi empresa. Necesitamos fortalecer a nuestros líderes y equipos.");
-
-const services = [
-  { number: "01", audience: "Para ti", title: "Coaching personal", description: "Te acompaño a recuperar confianza, poner límites y tomar decisiones con claridad para construir la siguiente etapa de tu vida.", items: ["Confianza y autoestima", "Relaciones y límites", "Cambios de vida y decisiones"], action: "Agendar mi orientación personal", href: personalUrl, external: true, tone: "personal", image: "/images/servicio-coaching-personal.webp", details: { ideal: "Personas que atraviesan una separación, cambio laboral, nueva etapa de vida o que necesitan volver a atender sus propias necesidades.", work: "Claridad personal, autoestima, límites, relaciones, decisiones y acciones concretas para avanzar.", method: "Comenzamos con una conversación de orientación. Después definimos el objetivo y el proceso de acompañamiento más adecuado.", result: "Que comprendas mejor tu situación, recuperes confianza y construyas una dirección que puedas sostener en tu vida cotidiana." } },
-  { number: "02", audience: "Para líderes", title: "Coaching ejecutivo", description: "Trabajo uno a uno con líderes que necesitan comunicar mejor, delegar, sostener conversaciones difíciles y dirigir con mayor seguridad.", items: ["Liderazgo consciente", "Comunicación directiva", "Decisiones bajo presión"], action: "Trabajar mi liderazgo", href: "/coaching#ejecutivo", external: false, tone: "executive", image: "/images/servicio-coaching-ejecutivo.webp", details: { ideal: "Dueños, directivos, responsables de área y mandos medios que han crecido por su capacidad técnica y ahora necesitan fortalecer su manera de dirigir.", work: "Comunicación, delegación, retroalimentación, manejo de conflictos, prioridades y toma de decisiones bajo presión.", method: "Definimos el reto de liderazgo, acordamos indicadores observables y trabajamos situaciones reales de la operación.", result: "Un liderazgo más claro, conversaciones más productivas y mayor capacidad para coordinar personas y compromisos." } },
-  { number: "03", audience: "Para empresas", title: "Capacitación de equipos", description: "Diseño experiencias prácticas para que los equipos coordinen su trabajo, cumplan acuerdos y transformen los conflictos en conversaciones productivas.", items: ["Equipos que cumplen acuerdos", "Inteligencia emocional", "Comunicación entre áreas"], action: "Conocer la capacitación", href: "/capacitacion", external: false, tone: "business", image: "/images/servicio-capacitacion-equipos.webp", details: { ideal: "Empresas pequeñas y medianas que necesitan fortalecer la coordinación entre líderes, supervisores, áreas operativas y equipos en crecimiento.", work: "Acuerdos, responsabilidad compartida, comunicación entre áreas, inteligencia emocional y manejo de conversaciones difíciles.", method: "Realizo un diagnóstico inicial y diseño talleres, conferencias o procesos de capacitación adaptados a la necesidad de la organización.", result: "Equipos que se comunican con mayor claridad, dan seguimiento a sus acuerdos y colaboran con objetivos compartidos." } },
-];
+import Link from "next/link";
+import { TrackedLink } from "@/components/TrackedLink";
+import { commercialLinks, coachingProcess, personalTopics, businessChallenges } from "@/content/comercial";
+import { siteConfig } from "@/config/site";
 
 export function HomeExperience() {
   return (
-    <main className="services-home">
-      <section className="services-hero">
-        <div className="services-hero-image" aria-hidden="true">
-          <img src="/images/coaching-empresarial-hero.webp" alt="" fetchPriority="high" />
-        </div>
-        <div className="shell services-hero-grid">
-          <div className="services-hero-copy">
-            <span className="services-eyebrow">Guadalupe Gómez Pezuela</span>
-            <h1>Desarrollo humano que se convierte en decisiones y resultados.</h1>
-            <p>Acompaño a personas a avanzar con confianza y ayudo a organizaciones a desarrollar líderes que comuniquen con claridad y equipos que cumplan acuerdos.</p>
-            <div className="services-hero-actions">
-              <a className="btn btn-primary" href="#servicios">Elegir el servicio que necesito</a>
-              <a className="btn btn-quiet" href="#guadalupe">Conocer a Guadalupe</a>
+    <main className="g-page">
+      <section className="g-hero">
+        <div className="shell g-hero-grid">
+          <div>
+            <span className="g-eyebrow">Guadalupe Gómez Pezuela · Coaching personal y empresarial</span>
+            <h1>Encuentra claridad para tomar decisiones y transformar tu camino.</h1>
+            <p className="g-lead">
+              Te acompaño a comprender tus desafíos, reconocer nuevas posibilidades y llevar
+              tus decisiones a acciones concretas. Para tu vida y para tu liderazgo.
+            </p>
+            <div className="g-actions">
+              <Link className="btn btn-primary" href={commercialLinks.personal}>Quiero coaching personal</Link>
+              <Link className="btn g-btn-line" href={commercialLinks.business}>Busco coaching empresarial</Link>
             </div>
+            <span className="g-kicker">Un espacio para escuchar, reflexionar y avanzar</span>
           </div>
-        </div>
-        <a className="services-scroll" href="#servicios" aria-label="Ver servicios">Explora mis servicios <span>↓</span></a>
-      </section>
-
-      <section className="services-intro" id="servicios">
-        <div className="shell services-intro-grid">
-          <div><span className="services-eyebrow">¿Cómo puedo ayudarte?</span><h2>Partimos de lo que hoy necesita cambiar.</h2></div>
-          <p>No trabajo con respuestas prefabricadas. Primero escucho tu realidad, definimos el objetivo y elegimos el proceso adecuado para avanzar.</p>
-        </div>
-      </section>
-
-      <section className="services-catalog" aria-label="Servicios de Guadalupe">
-        <div className="shell services-list">
-          {services.map((service) => (
-            <article className={`service-row service-row-${service.tone}`} key={service.number}>
-              <div className="service-row-index"><span>{service.number}</span><small>{service.audience}</small></div>
-              <div className="service-row-media"><img src={service.image} alt={`${service.title} con Guadalupe Gómez Pezuela`} loading="lazy" /></div>
-              <div className="service-row-content">
-                <div className="service-row-main"><h2>{service.title}</h2><p>{service.description}</p></div>
-                <ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul>
-                <details className="service-details">
-                  <summary>Ver información completa <span aria-hidden="true">+</span></summary>
-                  <div className="service-details-content">
-                    <section><h3>¿Para quién es?</h3><p>{service.details.ideal}</p></section>
-                    <section><h3>¿Qué trabajaremos?</h3><p>{service.details.work}</p></section>
-                    <section><h3>¿Cómo se desarrolla?</h3><p>{service.details.method}</p></section>
-                    <section><h3>Resultado que buscamos</h3><p>{service.details.result}</p></section>
-                  </div>
-                </details>
-                <a className="service-row-action" href={service.href} rel={service.external ? "noopener" : undefined} target={service.external ? "_blank" : undefined}>{service.action} <span>↗</span></a>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="services-business-focus">
-        <div className="shell business-focus-grid">
-          <div className="business-focus-heading"><span className="services-eyebrow services-eyebrow-light">Soluciones para empresas</span><h2>Cuando las personas se coordinan mejor, el negocio también avanza.</h2></div>
-          <div className="business-focus-copy">
-            <p>Adapto cada intervención a la realidad de la organización, su operación, sus líderes y el resultado que necesita alcanzar.</p>
-            <div className="business-focus-programs">
-              <article><strong>Liderazgo para mandos medios</strong><span>Delegación, retroalimentación y seguimiento.</span></article>
-              <article><strong>Equipos que cumplen acuerdos</strong><span>Coordinación y responsabilidad compartida.</span></article>
-              <article><strong>Inteligencia emocional</strong><span>Presión, conflicto y conversaciones difíciles.</span></article>
-            </div>
-            <a className="btn btn-light" href="/empresas#solicitud">Solicitar diagnóstico empresarial</a>
+          <div className="g-hero-photo">
+            <picture>
+              <source media="(max-width: 700px)" srcSet="/images/guadalupe-hero-mobile.webp" />
+              <img src="/images/guadalupe-hero.webp" alt="Guadalupe Gómez Pezuela, coach personal y empresarial" fetchPriority="high" />
+            </picture>
+            <span className="g-photo-note">Acompañamiento con una mirada humana y práctica</span>
           </div>
         </div>
       </section>
 
-      <section className="services-process">
+      <section className="g-section" id="coaching">
         <div className="shell">
-          <header className="services-section-head"><span className="services-eyebrow">Mi forma de trabajar</span><h2>Del reto actual a un camino concreto.</h2></header>
-          <div className="services-process-grid">
-            <article><span>01</span><h3>Te escucho</h3><p>Comprendo qué estás viviendo y qué necesita cambiar.</p></article>
-            <article><span>02</span><h3>Definimos el objetivo</h3><p>Acordamos un resultado claro, útil y observable.</p></article>
-            <article><span>03</span><h3>Diseño el proceso</h3><p>Elijo contigo el formato y las acciones adecuadas.</p></article>
-            <article><span>04</span><h3>Medimos el avance</h3><p>Revisamos aprendizajes, decisiones y resultados.</p></article>
+          <header className="g-section-title">
+            <span className="g-eyebrow">Elige tu camino</span>
+            <h2>Dos espacios de coaching. Un acompañamiento centrado en ti.</h2>
+            <p>Ya sea que estés atravesando un cambio personal o liderando una organización,
+            comenzamos por comprender lo que hoy necesitas.</p>
+          </header>
+          <div className="g-columns-2">
+            <Link className="g-choice" href={commercialLinks.personal}>
+              <img src="/images/servicio-coaching-personal.webp" alt="Acompañamiento de coaching personal" loading="lazy" />
+              <div className="g-choice-body">
+                <span className="g-eyebrow">Personas</span>
+                <h3>Coaching personal</h3>
+                <p>Para ganar claridad, fortalecer tu confianza, establecer límites y elegir
+                cómo avanzar en momentos importantes de tu vida.</p>
+                <strong>Conocer coaching personal →</strong>
+              </div>
+            </Link>
+            <Link className="g-choice" href={commercialLinks.business}>
+              <img src="/images/servicio-coaching-ejecutivo.webp" alt="Acompañamiento de coaching ejecutivo" loading="lazy" />
+              <div className="g-choice-body">
+                <span className="g-eyebrow">Líderes y organizaciones</span>
+                <h3>Coaching empresarial</h3>
+                <p>Para directivos, dueños de negocio y equipos que necesitan mejores
+                decisiones, conversaciones y coordinación.</p>
+                <strong>Conocer coaching empresarial →</strong>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="services-about" id="guadalupe">
-        <div className="shell services-about-grid">
-          <div className="services-about-photo"><picture><source media="(max-width: 700px)" srcSet="/images/guadalupe-trayectoria-mobile.webp" /><img src="/images/guadalupe-trayectoria.webp" alt="Guadalupe Gómez Pezuela" loading="lazy" /></picture></div>
-          <div className="services-about-copy">
-            <span className="services-eyebrow">Soy Guadalupe</span>
-            <h2>Más de tres décadas acompañando procesos de transformación.</h2>
-            <p>Mi experiencia como especialista en desarrollo humano, coach, formadora y consultora me permite trabajar tanto con la historia de una persona como con la dinámica de una organización.</p>
-            <p>Escucho con sensibilidad, hago preguntas directas y convierto lo que descubrimos en acciones que puedan sostenerse en la vida real.</p>
-            <div className="services-credentials"><span><strong>35+</strong> años de experiencia</span><span><strong>PNL</strong> Master Trainer</span><span><strong>Coach</strong> Senior Empresarial</span></div>
+      <section className="g-section g-section-alt">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">Lo que podemos trabajar</span>
+            <h2>El cambio comienza con situaciones reales.</h2>
+          </header>
+          <div className="g-columns-2">
+            <div>
+              <h3>En tu vida personal</h3>
+              <ul className="g-checklist">
+                {personalTopics.map((topic) => <li key={topic.title}><strong>{topic.title}.</strong> {topic.text}</li>)}
+              </ul>
+              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.personal}>Explorar coaching personal</Link></div>
+            </div>
+            <div>
+              <h3>En tu liderazgo o empresa</h3>
+              <ul className="g-checklist">
+                {businessChallenges.map((challenge) => <li key={challenge}>{challenge}</li>)}
+              </ul>
+              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.business}>Explorar coaching empresarial</Link></div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="services-final">
-        <div className="shell services-final-grid">
-          <div><span className="services-eyebrow services-eyebrow-light">El siguiente paso</span><h2>Hablemos de lo que quieres transformar.</h2><p>Elige la conversación que necesitas y cuéntame brevemente qué está ocurriendo.</p></div>
-          <div className="services-final-actions"><a className="btn btn-gold" href={personalUrl} target="_blank" rel="noopener">Agendar orientación personal</a><a className="btn btn-outline-light" href={businessUrl} target="_blank" rel="noopener">Solicitar propuesta empresarial</a></div>
+      <section className="g-section">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">Mi forma de trabajar</span>
+            <h2>Un proceso con dirección y seguimiento.</h2>
+            <p>La primera conversación nos ayuda a valorar el acompañamiento; cada proceso
+            se acuerda de acuerdo con la necesidad y el objetivo.</p>
+          </header>
+          <div className="g-columns-4">
+            {coachingProcess.map((step) => <article className="g-card" key={step.step}>
+              <span className="g-card-num">{step.step}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </article>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section g-section-alt" id="guadalupe">
+        <div className="shell g-feature-grid">
+          <div className="g-feature-image"><img src="/images/guadalupe-trayectoria.webp" alt="Guadalupe Gómez Pezuela" loading="lazy" /></div>
+          <div>
+            <span className="g-eyebrow">Conoce a Guadalupe</span>
+            <h2>Experiencia profesional con cercanía humana.</h2>
+            <p>Mi trayectoria reúne el desarrollo humano, el coaching y el trabajo con
+            líderes y equipos. Escucho sin imponer respuestas y busco que cada conversación
+            se traduzca en decisiones aplicables a la vida cotidiana.</p>
+            <p className="g-muted">Mi formación incluye coaching empresarial y Programación
+            Neurolingüística. El enfoque se elige según el objetivo y las necesidades
+            de cada persona u organización.</p>
+            <div className="g-actions"><Link className="btn btn-primary" href={commercialLinks.about}>Conocer mi trayectoria</Link></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section">
+        <div className="shell g-academy">
+          <div>
+            <span className="g-eyebrow">Un aprendizaje que puede continuar</span>
+            <h2>Recursos y experiencias complementarias.</h2>
+            <p>Además de las sesiones de coaching, puedes encontrar artículos, cursos y
+            experiencias de aprendizaje. Academia ETERNI es un espacio independiente
+            que complementa el trabajo de Guadalupe.</p>
+            <div className="g-academy-links">
+              <Link className="btn g-btn-line" href={commercialLinks.resources}>Explorar recursos</Link>
+              <a className="btn g-btn-line" href={siteConfig.academyUrl} rel="noopener noreferrer" target="_blank">Academia ETERNI ↗</a>
+            </div>
+          </div>
+          <div className="g-contact-panel">
+            <span className="g-eyebrow">Coaching primero</span>
+            <h3>El proceso individual y la formación no son lo mismo.</h3>
+            <p className="g-muted">Si buscas acompañamiento directo y personalizado, elige
+            coaching. Si prefieres explorar recursos a tu ritmo, conoce la academia.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section g-section-purple">
+        <div className="shell g-final">
+          <div>
+            <span className="g-eyebrow">Tu siguiente paso</span>
+            <h2>Hablemos de lo que quieres transformar.</h2>
+            <p>Cuéntame brevemente qué necesitas y conversemos sobre el servicio adecuado,
+            su modalidad y sus condiciones antes de comenzar.</p>
+          </div>
+          <div className="g-actions">
+            <TrackedLink className="btn btn-gold" href={commercialLinks.personalWhatsApp} target="_blank" rel="noopener noreferrer" eventName="Lead">Consultar coaching personal</TrackedLink>
+            <Link className="btn btn-outline-light" href={commercialLinks.contact}>Contactar a Guadalupe</Link>
+          </div>
         </div>
       </section>
     </main>

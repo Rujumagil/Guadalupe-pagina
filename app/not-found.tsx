@@ -6,7 +6,7 @@ export default function NotFound() {
       <section className="section">
         <div className="shell">
           <div className="coming-soon-card">
-            <span className="eyebrow">ETERNI</span>
+            <span className="eyebrow">Guadalupe Gómez Pezuela</span>
             <h1>Página no encontrada</h1>
             <p>La dirección que abriste ya no está disponible o fue reorganizada.</p>
             <Link className="btn btn-primary" href="/">Volver al inicio</Link>

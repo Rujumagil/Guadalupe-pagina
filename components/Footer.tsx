@@ -10,31 +10,29 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Image alt="Guadalupe Gómez Pezuela" height={900} src={branding.logoInverted} width={2400} />
-            <p>Desarrollo humano, coaching y capacitación para personas y empresas. ETERNI reúne cursos, talleres y experiencias que complementan su trabajo.</p>
+            <p>Coaching personal y empresarial con una mirada humana, profesional y práctica. ETERNI reúne experiencias formativas complementarias.</p>
           </div>
           <div>
             <h4>Explora</h4>
+            <Link href="/">Inicio</Link>
             <Link href="/coaching-personal">Coaching personal</Link>
-            <Link href="/empresas">Capacitación para empresas</Link>
-            <Link href="/liderazgo-desarrollo-profesional">Liderazgo y desarrollo profesional</Link>
-            <Link href="/programacion-neurolinguistica-pnl">Programación Neurolingüística (PNL)</Link>
-            <Link href="/cursos-talleres-conferencias">Cursos, talleres y conferencias</Link>
-            <Link href="/webinar">Próximo evento</Link>
-            <Link href="/podcast">Podcast</Link>
+            <Link href="/empresas">Coaching empresarial</Link>
+            <Link href="/sobre-mi">Sobre Guadalupe</Link>
+            <Link href="/contacto">Contacto</Link>
+            <Link href="/recursos">Artículos y recursos</Link>
             <Link href="/academia-eterni">Academia ETERNI</Link>
-            <Link href="/recursos">Recursos</Link>
           </div>
           <div>
             <h4>Contacto</h4>
-            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
-            <a href={`https://wa.me/${siteConfig.whatsappNumber}`} rel="noopener" target="_blank">{siteConfig.whatsappDisplay}</a>
-            <a href="/privacy.html">Privacidad</a>
+            <a href={"mailto:" + siteConfig.email}>{siteConfig.email}</a>
+            <a href={"https://wa.me/" + siteConfig.whatsappNumber} rel="noopener noreferrer" target="_blank">{siteConfig.whatsappDisplay}</a>
+            <a href="/privacy.html">Aviso de privacidad</a>
             <a href="/terms.html">Términos</a>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Guadalupe Gómez Pezuela / ETERNI.</span>
-          <span>Transformación Integral</span>
+          <span>© {new Date().getFullYear()} Guadalupe Gómez Pezuela.</span>
+          <span>Coaching personal y empresarial</span>
         </div>
       </div>
     </footer>

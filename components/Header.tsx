@@ -13,7 +13,7 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="shell nav">
-        <Link aria-label="Guadalupe · ETERNI" className="brand" href="/" onClick={() => setOpen(false)}>
+        <Link aria-label="Guadalupe Gómez Pezuela, ir al inicio" className="brand" href="/" onClick={() => setOpen(false)}>
           <Image alt="Guadalupe Gómez Pezuela" height={900} priority src={branding.logo} width={2400} />
         </Link>
 

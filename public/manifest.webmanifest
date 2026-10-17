@@ -1,16 +1,20 @@
 {
-  "name": "ETERNI | Transformación Integral",
-  "short_name": "ETERNI",
-  "description": "Libros, cursos, comunidad, podcast y programas de legado.",
-  "start_url": "./",
-  "scope": "./",
+  "name": "Guadalupe Gómez Pezuela | Coaching",
+  "short_name": "Guadalupe",
+  "description": "Coaching personal y empresarial con Guadalupe Gómez Pezuela.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f7f1e8",
-  "theme_color": "#4b1755",
+  "background_color": "#fbf7f1",
+  "theme_color": "#42125a",
   "lang": "es-MX",
   "icons": [
-    {"src":"icono-app-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icono-app-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "/icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

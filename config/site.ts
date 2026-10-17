@@ -1,9 +1,9 @@
 export const siteConfig = {
-  name: "Guadalupe Gómez Pezuela · ETERNI",
+  name: "Guadalupe Gómez Pezuela",
   shortName: "Guadalupe",
-  url: "https://www.somos-eterni.com",
+  url: "https://guadalupegomezpezuela.com",
   description:
-    "Guadalupe Gómez Pezuela ofrece coaching, desarrollo humano y capacitación para personas y empresas: liderazgo, comunicación, coordinación de equipos y crecimiento personal.",
+    "Coaching personal y empresarial con Guadalupe Gómez Pezuela. Acompañamiento para tomar decisiones, fortalecer el liderazgo y mejorar la comunicación.",
   email: "guadalupe@somoseterni.com",
   whatsappDisplay: "+52 55 5507 2350",
   whatsappNumber: "525555072350",

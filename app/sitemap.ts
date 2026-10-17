@@ -13,6 +13,8 @@ const routes = [
   "/certificacion",
   "/academia-eterni",
   "/coaching-personal",
+  "/sobre-mi",
+  "/contacto",
   "/empresas",
   "/liderazgo-desarrollo-profesional",
   "/cursos-talleres-conferencias",
