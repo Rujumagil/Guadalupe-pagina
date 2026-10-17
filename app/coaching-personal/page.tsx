@@ -1,59 +1,108 @@
 import type { Metadata } from "next";
-import { buildWhatsAppUrl } from "@/config/site";
+import Link from "next/link";
+import { TrackedLink } from "@/components/TrackedLink";
+import { commercialLinks, coachingProcess, personalFaq, personalTopics } from "@/content/comercial";
 
 export const metadata: Metadata = {
-  title: "Coaching personal con Guadalupe Gómez Pezuela",
-  description: "Un proceso cercano y práctico para recuperar confianza, establecer límites y tomar decisiones con claridad.",
+  title: "Coaching personal | Sesiones con Guadalupe Gómez Pezuela",
+  description: "Conoce el coaching personal con Guadalupe Gómez Pezuela: claridad para decidir, confianza, límites y acompañamiento con objetivos y seguimiento.",
 };
-
-const reserveUrl = buildWhatsAppUrl("Hola Guadalupe, quiero reservar mi orientación personal. Me gustaría contarte brevemente lo que estoy viviendo.");
-
-const needs = [
-  "Recuperar confianza en ti", "Establecer límites sin culpa", "Mejorar tus relaciones",
-  "Atravesar un cambio personal o profesional", "Tomar una decisión importante", "Fortalecer tu liderazgo personal",
-];
 
 export default function CoachingPersonalPage() {
   return (
-    <main className="personal-page">
-      <section className="personal-hero">
-        <div className="shell personal-hero-grid">
+    <main className="g-page">
+      <section className="g-subhero">
+        <div className="shell g-subhero-grid">
           <div>
-            <span className="eyebrow">Quiero acompañarte</span>
-            <h1>Recupera confianza y construye la siguiente etapa de tu vida.</h1>
-            <p className="lead">Si sabes que algo necesita cambiar, pero todavía no encuentras cómo comenzar, quiero ayudarte a comprender tu situación, definir lo que deseas y avanzar con acciones concretas.</p>
-            <a className="btn btn-primary" href="#reservar">Reservar mi orientación personal</a>
+            <span className="g-eyebrow">Coaching personal · Guadalupe Gómez Pezuela</span>
+            <h1>Un espacio para escucharte y elegir cómo avanzar.</h1>
+            <p className="g-lead">Cuando estás frente a una decisión, una transición o una
+            conversación pendiente, no necesitas respuestas prefabricadas. Trabajamos
+            para comprender tu situación, ampliar tu mirada y construir pasos concretos.</p>
+            <div className="g-actions">
+              <TrackedLink className="btn btn-primary" href={commercialLinks.personalWhatsApp} target="_blank" rel="noopener noreferrer">Quiero conocer las sesiones</TrackedLink>
+              <a className="btn g-btn-line" href="#como-trabajamos">Cómo es el proceso</a>
+            </div>
           </div>
-          <aside className="personal-promise">
-            <strong>Este proceso comienza contigo</strong>
-            <p>No voy a imponerte respuestas. Voy a escucharte, ayudarte a reconocer tus recursos y acompañarte a tomar decisiones que tengan sentido para ti.</p>
-          </aside>
+          <img className="g-subhero-image" src="/images/servicio-coaching-personal.webp" alt="Coaching personal y conversación de acompañamiento" fetchPriority="high" />
         </div>
       </section>
 
-      <section className="section">
-        <div className="shell personal-needs-grid">
-          <div><span className="eyebrow">Puedo ayudarte</span><h2>Cuando necesitas volver a elegirte.</h2><p>Trabajo contigo si has dedicado mucho tiempo a responder por otras personas, atraviesas un cambio o deseas recuperar claridad y dirección.</p></div>
-          <ul className="personal-needs-list">{needs.map((need) => <li key={need}>{need}</li>)}</ul>
-        </div>
-      </section>
-
-      <section className="section section-soft">
+      <section className="g-section">
         <div className="shell">
-          <header className="section-head"><span className="eyebrow">Así trabajaremos</span><h2>Un camino claro, humano y práctico.</h2></header>
-          <div className="personal-process-grid">
-            <article><span>01</span><h3>Te escucho</h3><p>Me cuentas qué estás viviendo y qué te gustaría cambiar.</p></article>
-            <article><span>02</span><h3>Definimos tu objetivo</h3><p>Aclaramos qué resultado deseas alcanzar y qué hoy te está deteniendo.</p></article>
-            <article><span>03</span><h3>Trabajamos contigo</h3><p>Construimos acciones concretas y revisamos tus avances durante el proceso.</p></article>
+          <header className="g-section-title">
+            <span className="g-eyebrow">¿Es para ti?</span>
+            <h2>Podemos trabajar lo que hoy necesita tu atención.</h2>
+            <p>El coaching personal puede ser útil para quienes desean actuar con mayor
+            conciencia y claridad ante desafíos de la vida cotidiana.</p>
+          </header>
+          <div className="g-columns-2">
+            {personalTopics.map((topic, i) => <article className="g-card" key={topic.title}>
+              <span className="g-card-num">0{i + 1}</span>
+              <h3>{topic.title}</h3>
+              <p>{topic.text}</p>
+            </article>)}
           </div>
         </div>
       </section>
 
-      <section className="section" id="reservar">
-        <div className="shell"><div className="personal-reserve">
-          <div><span className="eyebrow">Da el primer paso</span><h2>Cuéntame qué estás viviendo.</h2><p>La orientación inicial es una conversación breve para comprender tu necesidad, aclarar qué deseas trabajar y decidir cuál puede ser el siguiente paso. No te obliga a contratar un proceso.</p></div>
-          <a className="btn btn-primary" href={reserveUrl} rel="noopener" target="_blank">Agendar mi orientación con Guadalupe</a>
-        </div></div>
+      <section className="g-section g-section-alt" id="como-trabajamos">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">El acompañamiento</span>
+            <h2>Así comienza tu proceso de coaching.</h2>
+            <p>Partimos de tus necesidades. Antes de contratar acordamos objetivos,
+            modalidad, duración, frecuencia e inversión.</p>
+          </header>
+          <div className="g-columns-4">
+            {coachingProcess.map((step) => <article className="g-card" key={step.step}>
+              <span className="g-card-num">{step.step}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </article>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section">
+        <div className="shell g-feature-grid">
+          <div className="g-feature-image"><img src="/images/guadalupe-trayectoria.webp" alt="Guadalupe Gómez Pezuela" loading="lazy" /></div>
+          <div>
+            <span className="g-eyebrow">Quién te acompaña</span>
+            <h2>Sensibilidad para escuchar. Claridad para avanzar.</h2>
+            <p>Mi experiencia en coaching y desarrollo humano me permite acompañar
+            conversaciones difíciles con respeto por tu historia y por tus decisiones.
+            Tú defines los objetivos; yo aporto preguntas, herramientas y seguimiento.</p>
+            <p className="g-disclaimer">El coaching no sustituye la atención psicológica o
+            médica. Si tu situación requiere atención clínica, es importante acudir con
+            una persona profesional de la salud.</p>
+            <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.about}>Conoce mi trayectoria</Link></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section g-section-alt">
+        <div className="shell">
+          <header className="g-section-title">
+            <span className="g-eyebrow">Antes de empezar</span>
+            <h2>Preguntas frecuentes</h2>
+          </header>
+          <div className="g-faq">
+            {personalFaq.map((item) => <details key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="g-section g-section-purple" id="reservar">
+        <div className="shell g-final">
+          <div>
+            <span className="g-eyebrow">Primer contacto</span>
+            <h2>Cuéntame qué te gustaría trabajar.</h2>
+            <p>Podemos conversar sobre si este proceso es adecuado para ti y definir las
+            condiciones antes de agendar tu primera sesión.</p>
+          </div>
+          <TrackedLink className="btn btn-gold" href={commercialLinks.personalWhatsApp} target="_blank" rel="noopener noreferrer">Consultar disponibilidad</TrackedLink>
+        </div>
       </section>
     </main>
   );
