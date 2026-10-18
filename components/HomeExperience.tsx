@@ -19,7 +19,6 @@ export function HomeExperience() {
               <Link className="btn btn-primary" href={commercialLinks.personal}>Quiero coaching personal</Link>
               <Link className="btn g-btn-line" href={commercialLinks.business}>Busco coaching empresarial</Link>
             </div>
-            <span className="g-kicker">Un espacio para escuchar, reflexionar y avanzar</span>
           </div>
           <div className="g-hero-photo">
             <picture>
