@@ -57,21 +57,16 @@ jobs:
       - name: Verificar identidad visual oficial Guadalupe
         run: node --test tests/guadalupe-brand.test.mjs
 
-      - name: Compilar sitio
-        run: npm run build
+      - name: Compilar sitio con subruta real de GitHub Pages
+        run: GUADALUPE_GITHUB_PAGES=true npm run build
 
-      - name: Adaptar rutas para GitHub Pages
+      - name: Adaptar rutas literales sin duplicar el prefijo
         run: |
           touch out/.nojekyll
-          find out -type f -name '*.html' -print0 | xargs -0 sed -i \
-            -e 's|href="/|href="/Guadalupe-pagina/|g' \
-            -e 's|src="/|src="/Guadalupe-pagina/|g' \
-            -e 's|srcSet="/|srcSet="/Guadalupe-pagina/|g' \
-            -e 's|srcset="/|srcset="/Guadalupe-pagina/|g'
-          find out -type f -name '*.html' -print0 | xargs -0 sed -i \
-            -e 's|/Guadalupe-pagina/https://|https://|g' \
-            -e 's|/Guadalupe-pagina/mailto:|mailto:|g' \
-            -e 's|/Guadalupe-pagina/tel:|tel:|g'
+          node scripts/prepare-github-pages.mjs
+
+      - name: Verificar hidratación y archivos JS de la página
+        run: node --test tests/github-pages-hydration.test.mjs
 
       - name: Preparar GitHub Pages
         uses: actions/configure-pages@v5
