@@ -21,7 +21,8 @@ export function Footer() {
             <Link href="/contacto">Contacto</Link>
             <a href="/panel/" rel="nofollow">Acceso privado</a>
             <Link href="/recursos">Artículos y recursos</Link>
-            <Link href="/academia-eterni">Academia ETERNI</Link>
+            <a href="/academia-guadalupe/">Academia Guadalupe</a>
+            <Link href="/academia-eterni">Recursos de ETERNI</Link>
           </div>
           <div>
             <h4>Contacto</h4>
