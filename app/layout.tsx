@@ -13,7 +13,7 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Guadalupe Gómez Pezuela | Coaching personal y empresarial",
+    default: "Guadalupe Gómez Pezuela | Coach ejecutiva y de vida",
     template: "%s | Guadalupe Gómez Pezuela",
   },
   description: siteConfig.description,
