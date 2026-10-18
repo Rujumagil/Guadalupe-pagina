@@ -28,7 +28,10 @@ function empty(head,copy,action){
  if(action)box.append(action);
  return box;
 }
-function number(value){return new Intl.NumberFormat("es-MX").format(value||0);}
+function number(value){
+ if(typeof value==="string"&&!/^\d+(\.\d+)?$/.test(value))return value;
+ return new Intl.NumberFormat("es-MX").format(Number(value)||0);
+}
 function stat(name,value,detail,icon){
  const box=el("div","stat glass"),label=el("div","stat-head");
  label.append(el("span","",name),el("span","stat-icon",icon));
@@ -132,7 +135,7 @@ async function books(){
   ["Libros disponibles",list.length,"Títulos en el catálogo","▤"],
   ["Mi biblioteca",mine.length,"Con acceso autorizado","✓"],
   ["Por descubrir",list.length-mine.length,"Libros no asignados","✧"],
-  ["Lecturas terminadas",0,"Seguimiento aún no disponible","◉"],
+  ["Lecturas terminadas","—","Seguimiento pendiente","◉"],
  ]));
  if(!list.length){
   block("Mi biblioteca",empty("Tu biblioteca está en preparación","Los libros de Guadalupe aparecerán aquí cuando se publiquen y se asignen los accesos correspondientes."));
