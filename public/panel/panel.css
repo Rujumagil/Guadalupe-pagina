@@ -13,3 +13,21 @@
 .btn.light{background:#F4F7F5;color:#315F59}
 .btn.outline{color:#315F59;border-color:#bacfc3}
 .login-card h1,.panel-head h2,.stat strong{color:#315F59}
+
+
+/* Logotipo oficial nuevo sobre superficies verde petróleo, sin recuadro. */
+.login-brand img {
+  width:clamp(195px,24vw,260px);
+  max-height:none;height:auto;
+  aspect-ratio:1305 / 830;
+  object-fit:contain;
+  border-radius:0;background:transparent;filter:none;
+}
+.sidebar-logo img {
+  width:205px;max-width:100%;
+  height:auto;max-height:none;
+  aspect-ratio:1305 / 830;
+  object-fit:contain;
+  border-radius:0;background:transparent;filter:none;
+}
+.sidebar-logo {margin-bottom:16px}
