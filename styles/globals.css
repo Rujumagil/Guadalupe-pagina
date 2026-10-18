@@ -1,22 +1,22 @@
 /* =========================================================
-   ETERNI / GUADALUPE — ESTILOS GLOBALES
+   GUADALUPE · IDENTIDAD OFICIAL — ESTILOS GLOBALES
    Arquitectura limpia: tokens → base → componentes → responsive
    ========================================================= */
 
 :root {
-  --purple: #42125a;
-  --purple-2: #6d3a7b;
-  --aqua: #3fa9a2;
-  --aqua-soft: #e7f5f3;
-  --gold: #b28a35;
-  --cream: #fbf7f1;
-  --paper: #fffdfc;
-  --ink: #2f2930;
-  --muted: #6e6570;
-  --line: #e8dfe7;
+  --purple: #315f59;
+  --purple-2: #41736a;
+  --aqua: #6a9d92;
+  --aqua-soft: #f4f7f5;
+  --gold: #b79a63;
+  --cream: #faf9f6;
+  --paper: #faf9f6;
+  --ink: #202827;
+  --muted: #54645f;
+  --line: #dce6e0;
   --white: #ffffff;
-  --shadow: 0 20px 60px rgba(66, 18, 90, 0.1);
-  --shadow-soft: 0 12px 36px rgba(66, 18, 90, 0.07);
+  --shadow: 0 20px 60px rgba(49, 95, 89, 0.1);
+  --shadow-soft: 0 12px 36px rgba(49, 95, 89, 0.07);
   --radius: 26px;
   --radius-sm: 18px;
   --shell: 1180px;
@@ -131,7 +131,7 @@ h3 {
 
 .tag {
   color: var(--purple);
-  background: #f4edf6;
+  background: #f4f7f5;
   border-radius: 999px;
   padding: 8px 11px;
   letter-spacing: 0.08em;
@@ -174,11 +174,11 @@ h3 {
 .btn-primary {
   color: var(--white);
   background: var(--purple);
-  box-shadow: 0 12px 28px rgba(66, 18, 90, 0.18);
+  box-shadow: 0 12px 28px rgba(49, 95, 89, 0.18);
 }
 
 .btn-primary:hover {
-  background: #50166d;
+  background: #244d46;
 }
 
 .btn-aqua {
@@ -192,7 +192,7 @@ h3 {
 
 .btn-outline {
   color: var(--purple);
-  border-color: rgba(66, 18, 90, 0.24);
+  border-color: rgba(49, 95, 89, 0.24);
   background: rgba(255, 255, 255, 0.65);
 }
 
@@ -267,7 +267,7 @@ h3 {
 }
 
 .nav-links > a:not(.btn) {
-  color: #514951;
+  color: #345850;
   font-size: 0.83rem;
   font-weight: 700;
   text-decoration: none;
@@ -286,7 +286,7 @@ h3 {
   border: 0;
   border-radius: 12px;
   color: var(--purple);
-  background: #f4edf6;
+  background: #f4f7f5;
   cursor: pointer;
   font-size: 1.3rem;
 }
@@ -387,13 +387,13 @@ h3 {
   overflow: hidden;
 
   border-radius: 30px;
-  border: 1px solid rgba(66, 18, 90, 0.08);
+  border: 1px solid rgba(49, 95, 89, 0.08);
 
   background: #f2edef;
 
   box-shadow:
-    0 24px 60px rgba(66, 18, 90, 0.12),
-    0 5px 18px rgba(66, 18, 90, 0.05);
+    0 24px 60px rgba(49, 95, 89, 0.12),
+    0 5px 18px rgba(49, 95, 89, 0.05);
 }
 
 /* Foto */
@@ -469,7 +469,7 @@ h3 {
     minmax(320px, 0.95fr);
 
   overflow: hidden;
-  border: 1px solid rgba(66, 18, 90, 0.1);
+  border: 1px solid rgba(49, 95, 89, 0.1);
   border-radius: 30px;
   background: var(--white);
   box-shadow: var(--shadow);
@@ -901,7 +901,7 @@ h3 {
 .footer {
   padding: 64px 0 26px;
   color: rgba(255, 255, 255, 0.78);
-  background: #2d103b;
+  background: #173f39;
 }
 
 .footer-grid {
@@ -1876,3 +1876,31 @@ h3 {
 .academy-final{padding:clamp(5rem,9vw,8rem) 0;color:#fff;background:#42284d}.academy-final-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(2rem,7vw,7rem);align-items:end}.academy-final h2{margin:.8rem 0;color:#fff;font-size:clamp(3rem,5vw,5.3rem);line-height:.92}.academy-final p{max-width:62ch;color:rgba(255,255,255,.7)}.academy-final .btn{justify-self:end}
 @media(max-width:950px){.academy-hero-grid,.academy-intro-grid,.academy-path-grid,.academy-final-grid{grid-template-columns:1fr}.academy-interface{max-width:650px;transform:none}.academy-experience-grid,.academy-clarity-grid{grid-template-columns:1fr 1fr}.academy-final .btn{justify-self:start}}
 @media(max-width:650px){.academy-hero-copy h1{font-size:clamp(2.65rem,12.5vw,4.1rem)}.academy-hero-actions,.academy-hero-actions .btn{width:100%}.academy-interface-body{min-height:330px;grid-template-columns:82px 1fr}.academy-interface aside{padding:1rem .55rem}.academy-interface aside span{font-size:.58rem}.academy-interface-content{padding:1.2rem}.academy-mini-grid{grid-template-columns:1fr}.academy-mini-grid div:nth-child(2){display:none}.academy-experience-grid,.academy-clarity-grid,.academy-for-you-grid{grid-template-columns:1fr}.academy-experience-grid article{min-height:250px}.academy-for-you-visual{min-height:430px}.academy-final .btn{width:100%;text-align:center}}
+
+/* Marca Guadalupe: la firma oficial es vertical. Mantener proporción 340/227
+   sin recortes, filtros, deformaciones ni sombras en el logotipo. */
+:root { --header-height: 127px; }
+.site-header { background: rgba(250,249,246,.97); border-color: rgba(49,95,89,.18); }
+.site-header .brand img {
+  width: 190px;
+  height: auto;
+  max-height: 125px;
+  max-width: none;
+  aspect-ratio: 340 / 227;
+  object-fit: contain;
+  filter: none;
+}
+.footer { background: #173f39; }
+.footer-brand img {
+  width: clamp(230px,22vw,295px);
+  height: auto;
+  max-height: none;
+  max-width: 100%;
+  aspect-ratio: 340 / 227;
+  object-fit: contain;
+  filter: none;
+}
+@media(max-width:700px) {
+  :root { --header-height: 118px; }
+  .site-header .brand img { width: 178px; height: auto; max-width: none; }
+}
