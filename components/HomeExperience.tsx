@@ -42,7 +42,6 @@ export function HomeExperience() {
             <Link className="g-choice" href={commercialLinks.personal}>
               <img src="/images/servicio-coaching-personal.webp" alt="Acompañamiento de coaching personal" loading="lazy" />
               <div className="g-choice-body">
-                <span className="g-eyebrow">Personas</span>
                 <h3>Coaching personal</h3>
                 <p>Para ganar claridad, fortalecer tu confianza, establecer límites y elegir
                 cómo avanzar en momentos importantes de tu vida.</p>
@@ -52,7 +51,6 @@ export function HomeExperience() {
             <Link className="g-choice" href={commercialLinks.business}>
               <img src="/images/servicio-coaching-ejecutivo.webp" alt="Acompañamiento de coaching ejecutivo" loading="lazy" />
               <div className="g-choice-body">
-                <span className="g-eyebrow">Líderes y organizaciones</span>
                 <h3>Coaching empresarial</h3>
                 <p>Para directivos, dueños de negocio y equipos que necesitan mejores
                 decisiones, conversaciones y coordinación.</p>
