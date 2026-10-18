@@ -29,5 +29,10 @@ jobs:
           node --check public/panel/config.js
           node --check public/panel/panel.js
           node --test tests/portal-crm.test.mjs
+      - name: Validar nueva academia Guadalupe
+        run: |
+          node --check public/academia-guadalupe/aula.js
+          node --check public/academia-guadalupe/catalog.js
+          node --test tests/academy.test.mjs
       - name: Compilar sitio estático
         run: npm run build
