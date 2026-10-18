@@ -1,0 +1,19 @@
+name: Andy first-message live smoke (temporary)
+on:
+  push:
+    branches:
+      - fix/andy-anonymous-compat-20261018
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probar configuracion CORS y mensaje real (una prueba anonima)
+        run: node scripts/andy-live-smoke.mjs
