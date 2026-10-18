@@ -3,7 +3,7 @@ import { API_URL, PUBLISHABLE_KEY, WORKSPACE_ID, COMPAS_ONE_URL } from "./config
 /**
  * Portal independiente de Guadalupe. Autenticación Supabase Auth y datos
  * del mismo PostgreSQL de Compás One bajo RLS del workspace de Guadalupe.
- * Sólo se usa la publishable key; NUNCA service_role en el navegador.
+ * Únicamente se emplea la clave pública; no se incluye ninguna clave privilegiada.
  */
 const $ = (selector) => document.querySelector(selector);
 const html = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
