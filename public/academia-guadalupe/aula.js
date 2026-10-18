@@ -1,7 +1,7 @@
 import { API_URL,PUBLISHABLE_KEY,WORKSPACE_ID } from "./config.js";
 
 const $=s=>document.querySelector(s), STORE="ggp_academy_v2";
-const state={session:null,user:null,isAdmin:false,screen:"myCourses",chosen:null,lesson:null,mode:"login",
+const state={session:null,user:null,isAdmin:false,canManageStaff:false,staff:[],screen:"myCourses",chosen:null,lesson:null,mode:"login",
  courses:[],enrollments:[],progress:[],students:[],modules:[],lessons:[]};
 function node(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=String(txt);return e;}
 function button(txt,handler,cls="outline-btn"){const e=node("button",cls,txt);e.type="button";e.addEventListener("click",handler);return e;}
@@ -32,7 +32,9 @@ const write=(table,method,body,extra={})=>request("/rest/v1/"+table+"?"+qs("*",e
 async function identity(){
  const user=await request("/auth/v1/user",{auth:true});state.user=user;
  const r=await read("workspace_members","role",{user_id:"eq."+user.id,status:"eq.active",limit:"1"});
- state.isAdmin=r.some(m=>["owner","admin"].includes(m.role));
+ state.canManageStaff=r.some(m=>m.role==="owner");
+ const staff=await read("ggp_academy_staff","user_id,role,is_active",{user_id:"eq."+user.id,limit:"1"});
+ state.isAdmin=r.some(m=>["owner","admin"].includes(m.role))||staff.some(m=>m.role==="admin"&&m.is_active);
  const s=await read("ggp_academy_students","user_id",{user_id:"eq."+user.id,limit:"1"});
  if(!s.length){
   const name=String(user.user_metadata?.full_name||user.email.split("@")[0]).slice(0,160);
@@ -47,6 +49,7 @@ async function load(){
  ]);
  state.courses=c;state.enrollments=e;state.progress=p;
  if(state.isAdmin)state.students=await read("ggp_academy_students","user_id,display_name,email,created_at",{order:"created_at.desc",limit:"300"});
+ if(state.canManageStaff)state.staff=await read("ggp_academy_staff","user_id,role,is_active",{limit:"200"});
 }
 const hasCourse=c=>state.enrollments.some(e=>e.course_id===c.id&&e.student_id===state.user.id&&
  ["active","completed"].includes(e.status)&&(!e.expires_at||new Date(e.expires_at)>new Date()));
@@ -132,6 +135,34 @@ function admin(){
   },"Asignar matrícula"));
  }else registers.append(node("div","empty","Cuando existan alumnos registrados, podrás asignarles cursos."));
  root.append(registers);
+
+ if(state.canManageStaff){
+  const managers=node("section","app-card");managers.style.marginTop="18px";
+  managers.append(node("h3","","Accesos de administración académica"),node("p","small","Autoriza colaboradores para administrar cursos y estudiantes. No tendrán por este motivo acceso a tu CRM de Compás One."));
+  const available=state.students.filter(student=>!state.staff.some(m=>m.user_id===student.user_id&&m.is_active));
+  if(available.length)managers.append(form("Conceder rol de administrador",[
+   field("Cuenta registrada","staff_user","",available.map(s=>[s.user_id,s.display_name+" · "+s.email]))
+  ],async data=>{
+   const user_id=String(data.get("staff_user"));
+   const existing=state.staff.find(x=>x.user_id===user_id);
+   if(existing){await write("ggp_academy_staff","PATCH",{is_active:true},{user_id:"eq."+user_id});return;}
+   await write("ggp_academy_staff","POST",{user_id,workspace_id:WORKSPACE_ID,role:"admin",is_active:true,granted_by:state.user.id});
+  },"Conceder acceso"));
+  else managers.append(node("p","small","No hay cuentas pendientes de autorización. Cada colaborador debe crear primero su cuenta."));
+  for(const m of state.staff.filter(x=>x.is_active)){
+   const student=state.students.find(s=>s.user_id===m.user_id),line=node("div","grid-tools");
+   line.append(node("span","small",student?student.display_name+" · "+student.email:m.user_id));
+   line.append(button("Revocar acceso",async()=>{
+     if(!confirm("¿Revocar este acceso académico?"))return;
+     try{await write("ggp_academy_staff","PATCH",{is_active:false},{user_id:"eq."+m.user_id});
+      await load();render();note("Acceso revocado.");
+     }catch(error){note(error.message,true)}
+   }));
+   managers.append(line);
+  }
+  root.append(managers);
+ }
+
 }
 async function openCourse(id){
  const c=state.courses.find(x=>x.id===id);
