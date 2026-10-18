@@ -9,7 +9,7 @@ export function Footer() {
       <div className="shell">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Image alt="Guadalupe Gómez Pezuela" height={900} src={branding.logoInverted} width={2400} />
+            <Image alt="Guadalupe Gómez Pezuela" height={227} src={branding.logoInverted} width={340} />
             <p>Coaching personal y empresarial con una mirada humana, profesional y práctica. ETERNI reúne experiencias formativas complementarias.</p>
           </div>
           <div>
