@@ -78,9 +78,10 @@ async function loadLessonCounts(){
 }
 async function home(){
  const mine=ownedCourses(),published=visibleCourses();
- const completed=store.progress.filter(p=>p.student_id===ctx.user.id).length;
+ const myLessons=new Set(mine.flatMap(c=>store.lessonCounts?.[c.id]||[]));
+ const completed=store.progress.filter(p=>p.student_id===ctx.user.id&&myLessons.has(p.lesson_id)).length;
  const total=mine.reduce((n,c)=>n+(store.lessonCounts?.[c.id]?.length||0),0);
- const pct=total?Math.round(100*completed/total):0;
+ const pct=total?Math.min(100,Math.round(100*completed/total)):0;
  title("Hola, "+ctx.name.split(" ")[0]+" ✦","Todo lo que necesitas para seguir creciendo, en un solo espacio.");
  const feature=el("section","hero-feature glass"),copy=el("div","hero-copy");
  copy.append(el("span","kicker","TU ACADEMIA PERSONAL"),el("h2","","Cada aprendizaje transforma tu camino."),
@@ -428,7 +429,7 @@ async function start(){
   if(!hasSession()){location.replace("./");return}
   await accessToken();ctx=await identity();store=await loadData(ctx);
   if(page==="administracion"&&!ctx.isAdmin){location.replace("./inicio.html");return}
-  if(["inicio","progreso","mi-curso"].includes(page))await loadLessonCounts();
+  if(["inicio","cursos","progreso","mi-curso"].includes(page))await loadLessonCounts();
   document.getElementById("topGreeting").textContent="Hola, "+ctx.name;
   document.getElementById("initialAvatar").textContent=ctx.name[0]?.toUpperCase()||"G";
   if(ctx.isAdmin){
