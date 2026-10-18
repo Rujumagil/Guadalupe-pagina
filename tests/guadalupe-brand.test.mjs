@@ -41,6 +41,6 @@ test("all academy routes, CRM and legacy editor show official artwork",()=>{
 });
 test("favicon uses original lotus-G and the old app icon is gone",()=>{
  const icon=readFileSync("app/favicon.ico");
- assert.equal(sha(icon),"9200741749468baa933f8a5d21919d6f353751b3");
+ assert.equal(sha(icon),"22384ab9b35d4c814d8efaa409e9a7394d920f12");
  assert.equal(existsSync("app/icon.png"),false);
 });
