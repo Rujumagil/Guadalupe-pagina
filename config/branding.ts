@@ -1,5 +1,5 @@
 // Identidad oficial autorizada por el cliente, manual de marca Guadalupe Gómez Pezuela v1.0 (2026).
-// Las versiones WebP conservan la composición original; NO sustituirlas por monogramas recreados.
+// Versión 2026 confirmada: Coach ejecutiva y de vida. SVG vectorizado del logotipo aprobado, sin cambiar el isotipo.
 export const branding = {
   colors: {
     greenPetroleum: "#315F59",
@@ -21,6 +21,6 @@ export const branding = {
     display: "Cormorant Garamond",
     body: "Inter",
   },
-  logo: "/images/guadalupe-logo-oficial-principal.webp",
-  logoInverted: "/images/guadalupe-logo-oficial-invertido.webp",
+  logo: "/images/guadalupe-coach-ejecutiva-principal.svg",
+  logoInverted: "/images/guadalupe-coach-ejecutiva-invertido.svg",
 } as const;
