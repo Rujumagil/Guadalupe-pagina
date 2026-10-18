@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { branding } from "@/config/branding";
@@ -9,6 +9,13 @@ import { TrackedLink } from "./TrackedLink";
 
 export function Header() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
 
   return (
     <header className="site-header">
@@ -19,6 +26,7 @@ export function Header() {
 
         <button
           aria-expanded={open}
+          aria-controls="guadalupe-navigation"
           aria-label={open ? "Cerrar menú" : "Abrir menú"}
           className="menu-toggle"
           type="button"
@@ -27,7 +35,7 @@ export function Header() {
           {open ? "×" : "☰"}
         </button>
 
-        <nav aria-label="Navegación principal" className={`nav-links${open ? " open" : ""}`}>
+        <nav id="guadalupe-navigation" aria-label="Navegación principal" className={`nav-links${open ? " open" : ""}`}>
           {navigation.map((item) => (
             <a
               href={item.href}
