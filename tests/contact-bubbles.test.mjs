@@ -47,6 +47,8 @@ test("uses real Compas One API, sales route, public key and authenticated sessio
   assert.match(widget,/section: "config" \| "messages"/);
   assert.match(widget,/serviceRoute: "sales"/);
   assert.match(widget,/clientMessageId: messageId/);
+  assert.match(widget,/name: "Visitante"/);
+  assert.doesNotMatch(widget,/<input type="email"|<input type="tel"|Antes de comenzar/);
   assert.match(widget,/fetch\(endpoint\("messages"\)/);
   assert.match(widget,/X-Compas-Chat-Session/);
   assert.match(widget,/setMessages/);
