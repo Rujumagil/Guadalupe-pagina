@@ -58,7 +58,10 @@ function card(c,own=false){
   actions.append(pill(p.all?p.pct+"% completado":"Por comenzar","active"),a("Continuar →","./leccion.html?course="+encodeURIComponent(c.id),""));
  }else if(!isPublished(c)&&ctx.isAdmin){
   actions.append(pill("Borrador","locked"),a("Editar →","./aula.html?course="+encodeURIComponent(c.id),""));
- }else actions.append(pill("Sin matrícula","locked"),a("Ver cursos →","./cursos.html",""));
+ }else {
+  const ask=a("Solicitar acceso ↗",WHATSAPP,"");ask.target="_blank";ask.rel="noopener noreferrer";
+  actions.append(pill("Acceso bloqueado","locked"),ask);
+ }
  body.append(actions);
  if(own){
   const bar=el("div","progress-track"),inner=el("div","progress-fill");inner.style.width=learnerProgress(c).pct+"%";bar.append(inner);body.append(bar);
@@ -111,8 +114,11 @@ async function home(){
 function courses(){
  title("Explora tus próximos cursos","Programas publicados, contenido disponible y acceso según tu matrícula.");
  const list=visibleCourses();
- block("Catálogo de formación",list.length?mediaGrid(list):
-  empty("Próximamente nuevos cursos","El catálogo se abrirá cuando Guadalupe publique los programas. Mientras tanto, puedes solicitar información.",externalConsult()));
+ const active=list.filter(c=>enrolled(ctx,store,c)),locked=list.filter(c=>!enrolled(ctx,store,c));
+ block("Disponibles para ti",active.length?mediaGrid(active):
+  empty("Sin cursos habilitados","Aquí verás los programas donde tienes matrícula activa.",a("Ir a mis cursos →","./mi-curso.html","btn")));
+ block("Otros programas · Requieren inscripción",locked.length?mediaGrid(locked):
+  empty("No hay programas adicionales por ahora","Nuevos cursos aparecerán cuando Guadalupe los publique.",externalConsult()));
  if(ctx.isAdmin){
   const draft=store.courses.filter(c=>c.status!=="published");
   block("Borradores de administración",draft.length?mediaGrid(draft):
@@ -339,6 +345,7 @@ async function start(){
   document.getElementById("initialAvatar").textContent=ctx.name[0]?.toUpperCase()||"G";
   if(ctx.isAdmin){
    document.getElementById("staffSection").hidden=false;document.getElementById("staffNav").hidden=false;
+   document.querySelectorAll("[data-admin-only]").forEach(link=>{link.hidden=false});
   }
   root.replaceChildren();
   const warning=el("p","message");warning.id="notice";warning.setAttribute("role","status");root.append(warning);
