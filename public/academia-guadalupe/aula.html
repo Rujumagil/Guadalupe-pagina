@@ -19,6 +19,11 @@
     <button id="authSubmit" class="primary-btn" type="submit">Entrar a mi aprendizaje →</button>
   </form>
   <button class="outline-btn" id="forgotPassword" type="button" style="margin-top:14px">Recuperar mi contraseña</button>
+  <form id="resetForm" class="form-stack" hidden style="margin-top:18px">
+    <h2>Restablecer contraseña</h2>
+    <label>Nueva contraseña<input name="newPassword" type="password" autocomplete="new-password" minlength="10" required></label>
+    <button type="submit" class="primary-btn">Guardar nueva contraseña</button>
+  </form>
   <p id="authMessage" role="status" aria-live="polite" class="feedback"></p>
   <p class="small">El registro puede requerir confirmación de correo. Para recuperar el acceso, utiliza el botón anterior.</p>
 </section>
