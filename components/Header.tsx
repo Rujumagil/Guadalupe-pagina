@@ -21,7 +21,7 @@ export function Header() {
     <header className="site-header">
       <div className="shell nav">
         <Link aria-label="Guadalupe Gómez Pezuela, ir al inicio" className="brand" href="/" onClick={() => setOpen(false)}>
-          <Image alt="Guadalupe Gómez Pezuela" height={227} priority src={branding.logo} width={340} />
+          <Image alt="Guadalupe Gómez Pezuela, coach ejecutiva y de vida" height={830} priority src={branding.logo} width={1305} />
         </Link>
 
         <button
