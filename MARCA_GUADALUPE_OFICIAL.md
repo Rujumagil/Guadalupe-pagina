@@ -1,48 +1,46 @@
-# Identidad oficial confirmada — Guadalupe Gómez Pezuela
+# Marca oficial Guadalupe Gómez Pezuela — Actualización 2026
 
-Confirmación expresa: **18 de octubre de 2026**. La versión aprobada es la firma vertical del documento *Manual de marca Guadalupe Gómez Pezuela · versión 1.0, 2026*, con **flor de loto de cinco pétalos, G integrada, figura humana y descriptor “DESARROLLO HUMANO Y LEGADO”**.
+## Logotipo vigente
+La firma visual aprobada por el usuario es **Guadalupe Gómez Pezuela** con el descriptor:
 
-## Fuente de verdad
-Los recursos originales del manual son imágenes grandes de 1536 × 1024. Los siguientes archivos de este repositorio **son versiones optimizadas para web** (derivadas proporcionalmente, sin reilustrar el símbolo, editar tipografía ni alterar su geometría):
-- /images/guadalupe-logo-oficial-principal.webp — fondo marfil, flor/G verde y figura/detalles dorados
-- /images/guadalupe-logo-oficial-invertido.webp — fondo verde petróleo, firma en marfil y dorado
-- /images/guadalupe-isotipo-oficial.webp — símbolo original sobre fondo marfil, para espacios pequeños
-- /favicon.ico — recorte proporcional del isotipo oficial
+**COACH EJECUTIVA Y DE VIDA**
 
-La compresión web es para navegación; para impresos, diplomas y piezas de gran formato se debe utilizar el archivo original de alta resolución del manual, no ampliar la miniatura WebP.
+Este descriptor reemplaza **DESARROLLO HUMANO Y LEGADO** **en el logotipo**, sin eliminar el legado y el desarrollo humano como posibles temas del contenido editorial.
+
+La imagen aprobada conserva la composición de loto de cinco pétalos, G central, figura humana en oro, nombre serif, filete dorado y descriptor en letras espaciadas.
+
+## Recursos para el sitio
+- `public/images/guadalupe-coach-ejecutiva-principal.svg` — firma verde y oro, con fondo transparente para superficies claras.
+- `public/images/guadalupe-coach-ejecutiva-invertido.svg` — versión marfil y oro, con fondo transparente para superficies verde petróleo u oscuras.
+- `public/images/guadalupe-isotipo-oficial.webp` — símbolo oficial para tamaños reducidos; favicon anterior conservado.
+- Se preservan los archivos WebP/PNG antiguos en el repositorio como respaldo histórico, **sin usarlos en las páginas principales**.
+
+Los archivos SVG son una **vectorización optimizada** de la imagen aprobada en esta conversación (sin cambio intencional de composición). Para impresión a gran escala, antes de producir piezas finales, revisar trazos y espaciado sobre la imagen maestra, pues el trazado automático puede simplificar algunos detalles.
 
 ## Paleta
-- Principal: Verde petróleo \`#315F59\`
-- Secundario/acento: Dorado tenue \`#B79A63\`
-- Texto: Carbón \`#202827\`
-- Fondo: Marfil \`#FAF9F6\`
-- Alternancia suave: Gris verde \`#F4F7F5\`
+- Verde petróleo: `#315F59`
+- Verde de la ilustración: `#075448`
+- Dorado: `#B79A63`
+- Marfil en logo invertido: `#F7F8F4`
+- Carbón: `#202827`
+- Fondo cálido: `#FAF9F6`
 
-Proporción sugerida: 70% fondos claros/neutros, 20% verde petróleo, 10% dorado.
+## Uso y accesibilidad
+- Fondo claro: versión principal.
+- Fondo oscuro: versión invertida; nunca invertir toda la imagen con un filtro, ya que altera el oro.
+- Mantener proporción `1305 / 830`, `object-fit: contain`, fondo transparente y área de seguridad.
+- No estirar ni añadir sombras o cristal sobre el símbolo.
+- No colocar texto nuevo encima del logo. La descripción de servicios puede ir aparte.
+- Texto alternativo recomendado: «Guadalupe Gómez Pezuela, coach ejecutiva y de vida».
+- Configuración canónica de Next: `config/branding.ts`.
 
-## Uso
-- Fondos claros: logo oficial principal.
-- Fondos oscuros: logo invertido, sin aplicar efectos a la imagen.
-- Los cristales/esmerilados y demás efectos se aplican a las **tarjetas**, nunca al logotipo.
-- No recortar, estirar, superponer, sombrear, alterar el color, reproducir mediante letras sueltas ni recrear el loto.
-- Usar \`object-fit: contain\`, proporción vertical 340×227 en los archivos web, y área de seguridad.
-- Manual: logo firma completa con ancho recomendado mínimo 180 px digital; isotipo desde 48 px.
-- Evitar el logo horizontal anterior (no coincide con la versión aprobada).
+## Dónde se aplica
+Página web pública, menú y footer; acceso principal y páginas de la Academia Guadalupe; CRM de Guadalupe; avisos legales; título de inicio, descripción y manifiesto de la aplicación.
 
-## Aplicación técnica
-- \`config/branding.ts\` es la fuente canónica para sitio Next.js.
-- Todas las rutas de \`public/academia-guadalupe\` usan rutas relativas al WebP oficial; incluye login, dashboard, cursos, libros, comunidad, perfil y editor.
-- \`public/panel\` usa logo invertido con base verde petróleo.
-- Se reemplaza el favicon legado por el isotipo autorizado.
-- Paleta de los componentes y tokens de la web y ambas aplicaciones corregida. La academia mantiene el concepto cinematográfico + vidrio, con un entorno verde petróleo y acentos dorados.
-- El usuario no debe tener que borrar credenciales ni cambiar workspaces; solo los archivos de diseño.
-
-## QA
-\`\`\`sh
+## Control de calidad
+```sh
 node --test tests/guadalupe-brand.test.mjs
-npm run typecheck
 npm run lint
 npm run build
-\`\`\`
-
-**No eliminar recursos usados por páginas antiguas sin auditoría**: los archivos PNG anteriores se mantienen solo como legado, y el test comprueba que no se referencian desde las interfaces principales.
+```
+GitHub Pages se compila con `GUADALUPE_GITHUB_PAGES=true`; en otras plataformas no se fuerza la subruta de GitHub Pages.
