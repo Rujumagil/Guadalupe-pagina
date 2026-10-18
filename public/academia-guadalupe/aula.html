@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es-MX"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#42125a">
+<title>Mi aprendizaje | Academia Guadalupe</title><link rel="stylesheet" href="./academy.css">
+</head><body class="academy-app">
+<header class="academy-header"><a class="brand-link" href="./" aria-label="Academia Guadalupe"><img src="../images/guadalupe-logo-principal.png" alt="Guadalupe Gómez Pezuela"></a>
+<nav aria-label="Enlaces"><a href="./">Programas</a><a href="../">Sitio Guadalupe</a><a href="../panel/">CRM privado</a></nav></header>
+<main class="container aula-main">
+<section id="authView" class="auth-card">
+  <span class="eyebrow">ACADEMIA GUADALUPE</span><h1>Tu espacio de aprendizaje.</h1>
+  <p>Accede a tus cursos, retoma las lecciones y consulta tu progreso. Registrarte no habilita cursos de forma automática.</p>
+  <div class="auth-tabs" role="group" aria-label="Acceso"><button id="signInTab" type="button" aria-selected="true">Iniciar sesión</button><button id="signUpTab" type="button" aria-selected="false">Crear cuenta</button></div>
+  <form id="authForm" class="form-stack">
+    <label id="fullNameLabel" hidden>Nombre completo<input type="text" name="fullName" maxlength="160" autocomplete="name"></label>
+    <label>Correo electrónico<input type="email" name="email" autocomplete="email" required></label>
+    <label>Contraseña<input type="password" name="password" autocomplete="current-password" minlength="8" required></label>
+    <button id="authSubmit" class="primary-btn" type="submit">Entrar a mi aprendizaje →</button>
+  </form>
+  <button class="outline-btn" id="forgotPassword" type="button" style="margin-top:14px">Recuperar mi contraseña</button>
+  <p id="authMessage" role="status" aria-live="polite" class="feedback"></p>
+  <p class="small">El registro puede requerir confirmación de correo. Para recuperar el acceso, utiliza el botón anterior.</p>
+</section>
+<section id="learningView" hidden>
+  <div class="app-head"><div><span class="eyebrow">ACADEMIA GUADALUPE</span><h1 id="learningHeading">Mi aprendizaje</h1><p id="who" class="small"></p></div><button id="signOut" type="button" class="outline-btn">Cerrar sesión</button></div>
+  <nav class="app-tabs" aria-label="Secciones">
+    <button data-view="myCourses" class="selected" type="button">Mis cursos</button>
+    <button data-view="catalog" type="button">Catálogo</button>
+    <button data-view="admin" id="adminTab" type="button" hidden>Administración</button>
+  </nav>
+  <p id="appNotice" role="status" aria-live="polite" class="feedback"></p>
+  <div id="appContent"></div>
+</section>
+</main>
+<footer class="academy-footer"><span>Guadalupe Gómez Pezuela · Academia</span><a href="../privacy.html">Aviso de privacidad</a><span class="foot-tech">Infraestructura conectada con Compás One</span></footer>
+<script type="module" src="./aula.js"></script>
+</body></html>
