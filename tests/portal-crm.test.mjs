@@ -13,7 +13,7 @@ test("independent branded CRM has private login", () => {
   assert.match(portal, /name="robots" content="noindex,nofollow/);
   assert.match(portal, /id="loginForm"/);
   assert.match(portal, /id="portal"/);
-  assert.match(portal, /guadalupe-logo-oficial-invertido\.webp/);
+  assert.match(portal, /guadalupe-coach-ejecutiva-invertido\.svg/);
   assert.match(portal, /panel\.js/);
   assert.match(css, /\.mobile-nav/);
 });

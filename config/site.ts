@@ -3,7 +3,7 @@ export const siteConfig = {
   shortName: "Guadalupe",
   url: "https://guadalupegomezpezuela.com",
   description:
-    "Coaching personal y empresarial con Guadalupe Gómez Pezuela. Acompañamiento para tomar decisiones, fortalecer el liderazgo y mejorar la comunicación.",
+    "Guadalupe Gómez Pezuela, coach ejecutiva y de vida. Coaching personal, liderazgo ejecutivo y acompañamiento para transformar decisiones en acciones.",
   email: "guadalupe@somoseterni.com",
   whatsappDisplay: "+52 55 5507 2350",
   whatsappNumber: "525555072350",

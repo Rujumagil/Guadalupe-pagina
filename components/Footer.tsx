@@ -9,8 +9,8 @@ export function Footer() {
       <div className="shell">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Image alt="Guadalupe Gómez Pezuela" height={227} src={branding.logoInverted} width={340} />
-            <p>Coaching personal y empresarial con cercanía humana. La Academia Guadalupe es un espacio propio de aprendizaje y desarrollo.</p>
+            <Image alt="Guadalupe Gómez Pezuela, coach ejecutiva y de vida" height={830} src={branding.logoInverted} width={1305} />
+            <p>Coaching ejecutivo y de vida para acompañarte con claridad y cercanía. La Academia Guadalupe es un espacio propio de aprendizaje y desarrollo.</p>
           </div>
           <div>
             <h4>Explora</h4>
@@ -33,7 +33,7 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Guadalupe Gómez Pezuela.</span>
-          <span>Desarrollo humano y legado</span>
+          <span>Coach ejecutiva y de vida</span>
         </div>
       </div>
     </footer>

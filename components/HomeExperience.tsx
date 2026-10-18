@@ -9,7 +9,7 @@ export function HomeExperience() {
       <section className="g-hero">
         <div className="shell g-hero-grid">
           <div>
-            <span className="g-eyebrow">Guadalupe Gómez Pezuela · Coaching personal y empresarial</span>
+            <span className="g-eyebrow">Guadalupe Gómez Pezuela · Coach ejecutiva y de vida</span>
             <h1>Encuentra claridad para tomar decisiones y transformar tu camino.</h1>
             <p className="g-lead">
               Te acompaño a comprender tus desafíos, reconocer nuevas posibilidades y llevar
