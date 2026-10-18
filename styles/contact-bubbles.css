@@ -96,3 +96,115 @@
   .guadalupe-contact-bubble { transition: none; }
   .guadalupe-contact-bubble:hover { transform: none; }
 }
+
+
+/* Ventana real de Andy: independiente del launcher de terceros.
+   Se abre por estado React aun cuando la red o el servidor no responden. */
+.guadalupe-andy-panel{
+  position:fixed;
+  right:98px;
+  bottom:max(20px,env(safe-area-inset-bottom));
+  width:min(390px,calc(100vw - 120px));
+  height:min(620px,calc(100dvh - 45px));
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto auto auto;
+  z-index:2147483002;
+  overflow:hidden;
+  pointer-events:auto;
+  color:#202827;
+  background:rgba(250,249,246,.98);
+  border:1px solid rgba(49,95,89,.23);
+  border-radius:24px;
+  box-shadow:0 22px 66px rgba(17,45,39,.32);
+  font-family:Inter,system-ui,sans-serif;
+  text-align:left;
+}
+.guadalupe-andy-panel *{box-sizing:border-box}
+.guadalupe-andy-header{
+  background:linear-gradient(118deg,#315F59,#173f39);
+  color:#fff;
+  padding:17px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.guadalupe-andy-header strong{display:block;font-size:17px;font-weight:850}
+.guadalupe-andy-header small{display:block;opacity:.86;margin-top:4px;font-size:12px}
+.guadalupe-andy-close{
+  display:grid;place-items:center;flex:0 0 35px;
+  width:35px;height:35px;border:0;border-radius:11px;
+  background:rgba(255,255,255,.18);color:#fff;
+  cursor:pointer;font-size:24px;line-height:1;
+}
+.guadalupe-andy-content{overflow-y:auto;min-height:0;background:#f4f7f5}
+.guadalupe-andy-info{padding:25px 19px;font-size:14px;line-height:1.6}
+.guadalupe-andy-info strong{display:block;margin-bottom:8px}
+.guadalupe-andy-info p{margin:7px 0 17px}
+.guadalupe-andy-textlink{display:block;margin-top:15px;color:#315F59;font-weight:800}
+.guadalupe-andy-form{padding:18px;display:grid;gap:12px;color:#202827}
+.guadalupe-andy-form h3{font-size:20px;margin:0;font-weight:850;color:#173f39}
+.guadalupe-andy-form p{font-size:12px;line-height:1.5;color:#54645f;margin:0}
+.guadalupe-andy-form label{display:grid;gap:6px;font-size:12px;font-weight:750}
+.guadalupe-andy-form input:not([type=checkbox]){
+  display:block;width:100%;border:1px solid #baccbf;
+  border-radius:11px;padding:11px 12px;min-height:42px;
+  font:inherit;font-size:14px;color:#202827;background:#fff;
+}
+.guadalupe-andy-consent{display:flex!important;align-items:flex-start;gap:9px;line-height:1.48;font-weight:500!important}
+.guadalupe-andy-consent input{width:17px;height:17px;flex:0 0 17px;margin-top:1px;accent-color:#315F59}
+.guadalupe-andy-consent a{color:#315F59;text-decoration:underline;font-weight:750}
+.guadalupe-andy-submit{
+  border:0;border-radius:12px;padding:12px 15px;
+  color:white;background:#315F59;font:inherit;font-size:13px;
+  font-weight:850;cursor:pointer;margin-top:4px;
+}
+.guadalupe-andy-transcript{height:100%;padding:18px 14px;display:grid;align-content:start;gap:11px;overflow-y:auto}
+.guadalupe-andy-message{
+  max-width:90%;border-radius:15px;padding:11px 13px;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+  font-size:13px;line-height:1.52;
+}
+.guadalupe-andy-message.agent{
+  background:#fff;justify-self:start;border:1px solid #dce6e0;border-bottom-left-radius:4px;
+}
+.guadalupe-andy-message.visitor{
+  background:#315F59;color:#fff;justify-self:end;border-bottom-right-radius:4px;
+}
+.guadalupe-andy-composer{
+  padding:12px;border-top:1px solid #dce6e0;
+  display:grid;grid-template-columns:minmax(0,1fr) 45px;gap:9px;
+  background:#fff;
+}
+.guadalupe-andy-composer textarea{
+  resize:none;max-height:120px;width:100%;min-height:43px;
+  border:1px solid #baccbf;border-radius:12px;padding:10px;
+  color:#202827;background:#fff;font:inherit;font-size:13px;
+}
+.guadalupe-andy-composer button{
+  border:0;border-radius:12px;color:#fff;background:#315F59;font-size:20px;cursor:pointer;
+}
+.guadalupe-andy-composer button:disabled,.guadalupe-andy-submit:disabled{opacity:.5;cursor:wait}
+.guadalupe-andy-notice{
+  margin:0;padding:8px 13px;font-size:12px;line-height:1.4;
+  color:#8c3d3d;background:#fff0ef;border-top:1px solid #eac8c3;
+}
+.guadalupe-andy-footnote{
+  padding:9px 15px;text-align:center;border-top:1px solid #dce6e0;
+  color:#60726b;font-size:10px;background:#fff;
+}
+.guadalupe-andy-panel button:focus-visible,.guadalupe-andy-panel a:focus-visible,
+.guadalupe-andy-panel input:focus-visible,.guadalupe-andy-panel textarea:focus-visible{
+  outline:3px solid #B79A63;outline-offset:2px;
+}
+.guadalupe-andy-sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+@media(max-width:600px){
+  .guadalupe-andy-panel{
+    top:max(9px,env(safe-area-inset-top));
+    right:9px;left:9px;
+    bottom:157px;width:auto;height:auto;
+    max-height:none;border-radius:18px;
+  }
+  .guadalupe-andy-header{padding:14px}
+  .guadalupe-andy-form{padding:13px;gap:10px}
+}
