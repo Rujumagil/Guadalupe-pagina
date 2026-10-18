@@ -19,6 +19,7 @@ export function Footer() {
             <Link href="/empresas">Coaching empresarial</Link>
             <Link href="/sobre-mi">Sobre Guadalupe</Link>
             <Link href="/contacto">Contacto</Link>
+            <a href="/panel/" rel="nofollow">Acceso privado</a>
             <Link href="/recursos">Artículos y recursos</Link>
             <Link href="/academia-eterni">Academia ETERNI</Link>
           </div>

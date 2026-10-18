@@ -24,5 +24,10 @@ jobs:
         run: npm run typecheck
       - name: Revisar lint
         run: npm run lint
+      - name: Validar el portal CRM
+        run: |
+          node --check public/panel/config.js
+          node --check public/panel/panel.js
+          node --test tests/portal-crm.test.mjs
       - name: Compilar sitio estático
         run: npm run build

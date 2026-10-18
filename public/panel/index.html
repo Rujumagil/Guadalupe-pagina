@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#42125a">
+<title>Panel de Guadalupe | Clientes, sesiones y resultados</title>
+<meta name="description" content="Área de administración privada para la marca Guadalupe Gómez Pezuela.">
+<link rel="icon" href="../favicon.ico">
+<link rel="stylesheet" href="./panel.css">
+</head>
+<body>
+<div id="app">
+  <section id="login" class="login-screen">
+    <div class="login-brand"><img src="../images/guadalupe-logo-invertido.png" alt="Guadalupe Gómez Pezuela" class="login-logo"></div>
+    <div class="login-card">
+      <div class="eyebrow">ACCESO PRIVADO</div>
+      <h1>Tu negocio, en un solo lugar.</h1>
+      <p>Ingresa con la cuenta autorizada de Guadalupe en Compás One. Tus clientes y sesiones se mantienen separados de ETERNI.</p>
+      <form id="loginForm">
+        <label>Correo electrónico<input name="email" type="email" autocomplete="username" required placeholder="correo@dominio.com"></label>
+        <label>Contraseña<input name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Tu contraseña"></label>
+        <p class="form-error" id="loginError" role="alert" hidden></p>
+        <button class="btn primary full" type="submit">Entrar al panel <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="small">Este es un espacio de administración, no un área para alumnos ni clientes.</p>
+      <a href="../" class="text-link">← Volver a la página pública</a>
+    </div>
+    <footer>Administración de Guadalupe · Tecnología de Compás One</footer>
+  </section>
+
+  <section id="portal" class="portal" hidden>
+    <aside class="sidebar">
+      <a class="sidebar-logo" href="#inicio" aria-label="Guadalupe, inicio">
+        <img class="sidebar-image" src="../images/guadalupe-logo-invertido.png" alt="Guadalupe Gómez Pezuela"><span class="sr-only">Centro de gestión</span>
+      </a>
+      <p class="sidebar-label">ADMINISTRACIÓN</p>
+      <nav id="nav" aria-label="Secciones del panel">
+        <button class="nav-item active" data-page="inicio" type="button"><span>◈</span> Inicio</button>
+        <button class="nav-item" data-page="clientes" type="button"><span>♧</span> Mi CRM</button>
+        <button class="nav-item" data-page="mensajes" type="button"><span>▤</span> Mensajes</button>
+        <button class="nav-item" data-page="reservas" type="button"><span>▦</span> Reservas</button>
+        <button class="nav-item" data-page="calendario" type="button"><span>▣</span> Calendario</button>
+        <button class="nav-item" data-page="trafico" type="button"><span>▥</span> Tráfico web</button>
+        <button class="nav-item" data-page="agentes" type="button"><span>✦</span> Mis agentes</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="powered">Conectado a <strong>Compás One</strong></div><button type="button" class="logout" id="logout">Cerrar sesión</button></div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div><small>ESPACIO DE TRABAJO</small><strong>Guadalupe Gómez Pezuela</strong></div>
+        <div class="top-actions"><span class="tag" id="syncState">Sincronizando</span><span class="avatar">G</span></div>
+      </header>
+      <div class="page" id="view" aria-live="polite"></div>
+    </main>
+    <nav class="mobile-nav" aria-label="Accesos rápidos">
+      <button data-page="inicio" type="button">Inicio</button>
+      <button data-page="clientes" type="button">Clientes</button>
+      <button data-page="mensajes" type="button">Mensajes</button>
+      <button data-page="reservas" type="button">Reservas</button>
+      <button data-page="calendario" type="button">Agenda</button>
+    </nav>
+  </section>
+</div>
+<script type="module" src="./panel.js"></script>
+</body></html>
