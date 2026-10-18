@@ -11,7 +11,7 @@ const html = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
 }[c]));
 const urlParam = (value) => encodeURIComponent(String(value));
 const nowISO = () => new Date().toISOString();
-const fmt = (n) => n == null ? "—" : new Intl.NumberFormat("es-MX").format(n);
+const fmt = (n) => n == null ? "—" : (typeof n === "string" && !Number.isFinite(Number(n)) ? n : new Intl.NumberFormat("es-MX").format(Number(n)));
 const niceDate = (input) => {
   if (!input) return "Por definir";
   const d = new Date(input);
