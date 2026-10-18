@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import { homeContent } from "@/content/home";
 
-export const metadata: Metadata = {
-  title: "Recursos",
-  description: "Recursos de Guadalupe Gómez Pezuela sobre coaching, decisiones, PNL y desarrollo personal.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Recursos | Guadalupe Gómez Pezuela",
+  description: "Lecturas y recursos sobre coaching personal, decisiones, PNL y comunicación.",
+  path: "/recursos",
+});
 
 export default function RecursosPage() {
   const resources = homeContent.resources;
