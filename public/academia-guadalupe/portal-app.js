@@ -2,7 +2,7 @@ import {
  make as el, note, shortDate, accessToken, hasSession, captureLink, identity, logOut,
  get,add,patch,updatePassword,data as loadData,enrolled,hasBook,hasCommunity,courseDetail,secureMedia
 } from "./portal-core.js";
-import { WHATSAPP } from "./config.js";
+import { WHATSAPP,API_URL,PUBLISHABLE_KEY } from "./config.js";
 
 const page=document.body.dataset.page;
 let ctx,store;
@@ -320,9 +320,9 @@ async function uploadBook(book,file){
  if(!file||file.type!=="application/pdf")throw Error("Selecciona un archivo PDF válido.");
  if(file.size>80*1024*1024)throw Error("El PDF supera el tamaño máximo permitido de 80 MB.");
  const filename=crypto.randomUUID()+".pdf",path=book.id+"/"+book.id+"/"+filename;
- const url=new URL(path.split("/").map(encodeURIComponent).join("/"),"https://unused.invalid/");
- const res=await fetch("https://qwxydjotwhniahaovrff.supabase.co/storage/v1/object/ggp-academy-private/"+url.pathname.slice(1),{
-  method:"POST",headers:{apikey:(await import("./config.js")).PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),
+ const encoded=path.split("/").map(encodeURIComponent).join("/");
+ const res=await fetch(API_URL+"/storage/v1/object/ggp-academy-private/"+encoded,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),
    "Content-Type":"application/pdf","x-upsert":"false"},body:file,cache:"no-store"
  });
  const response=await res.json().catch(()=>({}));
