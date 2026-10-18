@@ -140,11 +140,50 @@ async function openCourse(id){
  try{
  [state.modules,state.lessons]=await Promise.all([
   read("ggp_academy_modules","id,title,position,course_id",{course_id:"eq."+id,order:"position.asc"}),
-  read("ggp_academy_lessons","id,module_id,title,lesson_type,content,position,course_id",{course_id:"eq."+id,order:"position.asc"})
+  read("ggp_academy_lessons","id,module_id,title,lesson_type,content,media_path,position,course_id",{course_id:"eq."+id,order:"position.asc"})
  ]);
  renderCourse();
  }catch(error){note(error.message,true);}
 }
+
+const MEDIA_BUCKET="ggp-academy-private";
+const VALID_MEDIA=new Set(["application/pdf","video/mp4","video/webm","audio/mpeg","audio/mp4","audio/x-m4a","audio/wav","audio/webm","image/jpeg","image/png","image/webp"]);
+async function uploadMedia(course,lesson,file){
+ if(!state.isAdmin)throw Error("Solo un administrador puede añadir materiales.");
+ if(!file||!VALID_MEDIA.has(file.type))throw Error("Tipo de archivo no autorizado. Usa PDF, video MP4/WebM, audio o imagen.");
+ if(file.size>250*1024*1024)throw Error("El archivo supera el límite de 250 MB.");
+ const extension=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12);
+ const path=course.id+"/"+lesson.id+"/"+crypto.randomUUID()+"."+extension;
+ const res=await fetch(API_URL+"/storage/v1/object/"+MEDIA_BUCKET+"/"+path,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await token(),
+   "Content-Type":file.type,"x-upsert":"false"},body:file,cache:"no-store"
+ });
+ if(!res.ok){const error=await res.json().catch(()=>({}));throw Error(error.message||error.error||"No fue posible subir el archivo.");}
+ await write("ggp_academy_lessons","PATCH",{media_path:path,lesson_type:file.type.startsWith("video/")?"video":file.type.startsWith("audio/")?"audio":"text"},{id:"eq."+lesson.id,course_id:"eq."+course.id});
+}
+async function signedMedia(path){
+ const r=await fetch(API_URL+"/storage/v1/object/sign/"+MEDIA_BUCKET+"/"+path,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await token(),"Content-Type":"application/json"},
+  body:JSON.stringify({expiresIn:120}),cache:"no-store"
+ });
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok||!data.signedURL&&!data.signedUrl)throw Error(data.message||"Material no disponible.");
+ const uri=data.signedURL||data.signedUrl;
+ return new URL(uri.startsWith("http")?uri:uri.startsWith("/storage/v1")?uri:"/storage/v1"+(uri.startsWith("/")?"":"/")+uri,API_URL).href;
+}
+function mediaPanel(course,lesson){
+ const box=node("div","app-card");box.style.marginTop="17px";box.append(node("h3","","Material audiovisual o PDF"));
+ const file=document.createElement("input");file.type="file";file.accept=".pdf,.mp4,.webm,.mp3,.m4a,.wav,.jpg,.jpeg,.png,.webp";
+ const b=button("Subir material privado",async()=>{
+  b.disabled=true;try{
+   await uploadMedia(course,lesson,file.files?.[0]);
+   await openCourse(course.id);note("Archivo guardado en el almacenamiento privado.");
+  }catch(error){note(error.message,true)}finally{b.disabled=false}
+ },"primary-btn");
+ box.append(node("p","small","Solo estudiantes matriculados podrán abrir este material. PDF, audio, video o imágenes; máximo 250 MB."),file,b);
+ return box;
+}
+
 function renderCourse(){
  const c=state.courses.find(x=>x.id===state.chosen);if(!c)return;
  const root=mount(),head=heading(c.title,c.summary);
@@ -189,7 +228,19 @@ function renderCourse(){
   const l=state.lessons.find(x=>x.id===state.lesson)||state.lessons[0];
   state.lesson=l.id;
   body.append(node("span","eyebrow","LECCIÓN"),node("h3","",l.title),node("p","lesson-copy",l.content));
+  if(l.media_path){
+   const open=button("Abrir material privado ↗",async()=>{
+    open.disabled=true;try{
+     const url=await signedMedia(l.media_path);
+     const link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";
+     document.body.append(link);link.click();link.remove();
+    }catch(error){note(error.message,true)}finally{open.disabled=false}
+   });
+   body.append(open);
+  }
+
   if(state.isAdmin){
+   body.append(mediaPanel(c,l));
    body.append(form("Actualizar lección",[field("Título","title",l.title),field("Contenido","content",l.content)],async data=>{
     await write("ggp_academy_lessons","PATCH",{title:String(data.get("title")),content:String(data.get("content"))},{id:"eq."+l.id});
     await openCourse(c.id);
