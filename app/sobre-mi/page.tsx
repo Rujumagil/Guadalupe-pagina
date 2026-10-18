@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import Link from "next/link";
 import { commercialLinks } from "@/content/comercial";
 
-export const metadata: Metadata = {
-  title: "Sobre mí | Guadalupe Gómez Pezuela",
-  description: "Conoce la trayectoria, la formación y el enfoque de Guadalupe Gómez Pezuela en coaching personal, coaching ejecutivo y desarrollo humano.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Sobre Guadalupe Gómez Pezuela | Trayectoria y enfoque",
+  description: "Conoce la trayectoria, formación y filosofía de acompañamiento de Guadalupe en coaching, liderazgo y desarrollo humano.",
+  path: "/sobre-mi",
+  image: "/images/guadalupe-trayectoria.webp",
+});
 
 export default function SobreMiPage() {
   return (

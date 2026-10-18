@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { articles, type ArticleSlug } from "@/content/articles";
@@ -10,7 +11,7 @@ export function generateStaticParams() { return Object.keys(articles).map((slug)
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const article = articles[slug as ArticleSlug];
-  return article ? { title: article.title, description: article.intro } : {};
+  return article ? pageMetadata({ title: article.title, description: article.intro, path: `/recursos/${slug}` }) : {};
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,8 +33,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
         <div className="article-cta">
           <h2>¿Quieres conversar sobre tu situación?</h2>
-          <p>Agenda una orientación inicial gratuita para identificar el siguiente paso más adecuado.</p>
-          <a className="btn btn-primary" href={buildWhatsAppUrl("Hola Guadalupe, leí uno de tus recursos y quiero agendar una orientación inicial.")} rel="noopener" target="_blank">Agendar orientación gratuita</a>
+          <p>Si deseas iniciar un proceso, solicita información sobre la orientación, disponibilidad y condiciones antes de contratar.</p>
+          <a className="btn btn-primary" href={buildWhatsAppUrl("Hola Guadalupe, leí uno de tus recursos y quiero agendar una orientación inicial.")} rel="noopener" target="_blank">Consultar orientación inicial</a>
         </div>
       </article>
     </main>

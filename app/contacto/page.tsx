@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import { TrackedLink } from "@/components/TrackedLink";
 import { commercialLinks } from "@/content/comercial";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contacto | Guadalupe Gómez Pezuela",
-  description: "Contacta a Guadalupe Gómez Pezuela para conocer sus sesiones de coaching personal o solicitar coaching ejecutivo y de equipos.",
-};
+  description: "Solicita información para coaching personal o empresarial, sesiones y servicios de acompañamiento con Guadalupe.",
+  path: "/contacto",
+});
 
 export default function ContactoPage() {
   return (

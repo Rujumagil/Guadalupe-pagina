@@ -1,19 +1,18 @@
 {
   "name": "Guadalupe Gómez Pezuela | Coaching",
   "short_name": "Guadalupe",
-  "description": "Coaching personal y empresarial con Guadalupe Gómez Pezuela.",
-  "start_url": "/",
-  "scope": "/",
+  "description": "Coaching personal y empresarial, recursos y acceso a la Academia Guadalupe.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#fbf7f1",
-  "theme_color": "#42125a",
+  "background_color": "#FAF9F6",
+  "theme_color": "#315F59",
   "lang": "es-MX",
   "icons": [
     {
-      "src": "/icon.png",
-      "sizes": "any",
-      "type": "image/png",
+      "src": "./images/guadalupe-isotipo-oficial.webp",
+      "sizes": "128x128",
+      "type": "image/webp",
       "purpose": "any"
     }
   ]

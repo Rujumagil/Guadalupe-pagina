@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { siteConfig } from "@/config/site";
 
 export function BusinessInquiry() {
-  const [sent, setSent] = useState(false);
+  const [preparedUrl, setPreparedUrl] = useState<string | null>(null);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,8 +18,10 @@ export function BusinessInquiry() {
       `Fecha estimada: ${form.get("fecha") || "Por definir"}`,
       `Correo o teléfono: ${form.get("datos")}`,
     ].join("\n");
-    window.open(`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
-    setSent(true);
+    const url = `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
+    setPreparedUrl(url);
+    // El envío efectivo se realiza en WhatsApp; la nueva pestaña puede ser bloqueada.
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -39,7 +41,13 @@ export function BusinessInquiry() {
       </div>
       <label className="form-full" style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 20 }}><input type="checkbox" required style={{ marginTop: 6 }} /> <span>Confirmo que deseo compartir estos datos por WhatsApp para recibir respuesta a mi consulta. He podido revisar el <a href="/privacy.html" target="_blank" rel="noopener noreferrer">aviso de privacidad</a>.</span></label>
       <button className="btn btn-primary" type="submit">Preparar consulta en WhatsApp</button>
-      {sent && <p className="form-confirmation" role="status">Se abrió WhatsApp con un mensaje preparado. Revisa y envía el mensaje allí para completar tu solicitud.</p>}
+      {preparedUrl && (
+        <p className="form-confirmation" role="status">
+          El mensaje está preparado, pero todavía no se ha enviado. Si no se abrió WhatsApp,{" "}
+          <a href={preparedUrl} target="_blank" rel="noopener noreferrer">abre aquí tu consulta</a>.
+          Revisa el texto y pulsa enviar dentro de WhatsApp.
+        </p>
+      )}
     </form>
   );
 }

@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import Link from "next/link";
 import { TrackedLink } from "@/components/TrackedLink";
 import { commercialLinks, coachingProcess, personalFaq, personalTopics } from "@/content/comercial";
 
-export const metadata: Metadata = {
-  title: "Coaching personal | Sesiones con Guadalupe Gómez Pezuela",
-  description: "Conoce el coaching personal con Guadalupe Gómez Pezuela: claridad para decidir, confianza, límites y acompañamiento con objetivos y seguimiento.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Coaching personal con Guadalupe Gómez Pezuela",
+  description: "Sesiones de coaching personal para tomar decisiones, fortalecer límites y avanzar con claridad. Conoce cómo es el acompañamiento.",
+  path: "/coaching-personal",
+  image: "/images/servicio-coaching-personal.webp",
+});
 
 export default function CoachingPersonalPage() {
   return (

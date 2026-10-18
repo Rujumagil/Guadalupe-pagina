@@ -1904,3 +1904,41 @@ h3 {
   :root { --header-height: 118px; }
   .site-header .brand img { width: 178px; height: auto; max-width: none; }
 }
+
+/* Ajuste de navegación tras incorporar el logotipo oficial vertical.
+   Siete enlaces + CTA no caben de forma segura en tablet horizontal. */
+@media (min-width:901px) and (max-width:1250px) {
+  .menu-toggle {display:grid;place-items:center}
+  .nav-links {
+    position:absolute;
+    top:calc(var(--header-height) - 1px);
+    left:max(20px,calc((100vw - var(--shell))/2));
+    right:max(20px,calc((100vw - var(--shell))/2));
+    display:none;
+    margin:0;
+    padding:16px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:4px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:0 0 20px 20px;
+    box-shadow:var(--shadow);
+    max-height:calc(100dvh - var(--header-height) - 8px);
+    overflow-y:auto;
+  }
+  .nav-links.open{display:flex}
+  .nav-links > a:not(.btn){padding:9px 12px}
+}
+@media (max-width:900px) {
+  .nav-links{
+    max-height:calc(100dvh - var(--header-height) - 8px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+}
+/* Enlaces de ancla visibles bajo el encabezado fijo y navegación accesible. */
+[id]{scroll-margin-top:calc(var(--header-height) + 16px)}
+.site-header a:focus-visible,.site-header button:focus-visible,.footer a:focus-visible{
+  outline:3px solid #B79A63;outline-offset:3px;
+}

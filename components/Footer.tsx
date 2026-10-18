@@ -10,7 +10,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Image alt="Guadalupe Gómez Pezuela" height={227} src={branding.logoInverted} width={340} />
-            <p>Coaching personal y empresarial con una mirada humana, profesional y práctica. ETERNI reúne experiencias formativas complementarias.</p>
+            <p>Coaching personal y empresarial con cercanía humana. La Academia Guadalupe es un espacio propio de aprendizaje y desarrollo.</p>
           </div>
           <div>
             <h4>Explora</h4>
@@ -21,8 +21,7 @@ export function Footer() {
             <Link href="/contacto">Contacto</Link>
             <a href="/panel/" rel="nofollow">Acceso privado</a>
             <Link href="/recursos">Artículos y recursos</Link>
-            <a href="/academia-guadalupe/">Academia Guadalupe</a>
-            <Link href="/academia-eterni">Recursos de ETERNI</Link>
+            <a href="/academia-guadalupe/">Ingresar a Academia Guadalupe</a>
           </div>
           <div>
             <h4>Contacto</h4>
@@ -34,7 +33,7 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Guadalupe Gómez Pezuela.</span>
-          <span>Coaching personal y empresarial</span>
+          <span>Desarrollo humano y legado</span>
         </div>
       </div>
     </footer>

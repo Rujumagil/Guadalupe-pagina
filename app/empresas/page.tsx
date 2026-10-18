@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/config/seo";
 import Link from "next/link";
 import { BusinessInquiry } from "@/components/BusinessInquiry";
 import { TrackedLink } from "@/components/TrackedLink";
 import { businessChallenges, businessFaq, coachingProcess, commercialLinks, executiveTopics } from "@/content/comercial";
 
-export const metadata: Metadata = {
-  title: "Coaching empresarial y ejecutivo",
-  description: "Coaching ejecutivo y de equipos con Guadalupe Gómez Pezuela: delegación, liderazgo, comunicación, decisiones y seguimiento para organizaciones.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Coaching empresarial y ejecutivo con Guadalupe Gómez Pezuela",
+  description: "Coaching ejecutivo y de equipos para delegación, comunicación, liderazgo y coordinación en organizaciones.",
+  path: "/empresas",
+  image: "/images/coaching-empresarial-hero.webp",
+});
 
 export default function EmpresasPage() {
   return (
