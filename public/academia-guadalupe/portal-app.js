@@ -1,6 +1,6 @@
 import {
  make as el, note, shortDate, accessToken, hasSession, captureLink, identity, logOut,
- get,add,patch,data as loadData,enrolled,hasBook,hasCommunity,courseDetail,secureMedia
+ get,add,patch,updatePassword,data as loadData,enrolled,hasBook,hasCommunity,courseDetail,secureMedia
 } from "./portal-core.js";
 import { WHATSAPP } from "./config.js";
 
@@ -295,9 +295,21 @@ function profile(){
  box.append(el("span","kicker","CUENTA DE ALUMNO"),el("h2","",ctx.name),
    el("p","",ctx.user.email),pill(ctx.isAdmin?"Administrador académico":"Alumno","active"));
  const more=el("div","list-rows");more.style.marginTop="23px";
- more.append(a("Cambiar contraseña →","./","btn"),a("Cerrar sesión","./","btn"));
- more.lastChild.addEventListener("click",async e=>{e.preventDefault();await logOut();location.replace("./")});
- box.append(more);
+ const form=el("form","form-grid"),password=el("input");
+ password.type="password";password.name="password";password.minLength=10;password.required=true;password.autocomplete="new-password";
+ const wrapper=el("label","","Nueva contraseña (mínimo 10 caracteres)");wrapper.append(password);
+ const submit=el("button","btn primary","Actualizar contraseña");
+ form.append(wrapper,submit);
+ form.addEventListener("submit",async e=>{
+  e.preventDefault();submit.disabled=true;
+  try{
+   await updatePassword(password.value);
+   password.value="";note("Tu contraseña se actualizó correctamente.","success");
+  }catch(error){note(error.message,"error")}finally{submit.disabled=false}
+ });
+ const logout=el("button","btn","Cerrar sesión");
+ logout.addEventListener("click",async()=>{await logOut();location.replace("./")});
+ more.append(form,logout);box.append(more);
  root.append(box);
  const info=el("section","notice","Tus datos académicos son independientes de ETERNI. Un registro nuevo no da acceso automático a cursos, libros ni comunidad.");
  root.append(info);
