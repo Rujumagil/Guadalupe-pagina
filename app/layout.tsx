@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@/styles/globals.css";
 import "@/styles/comercial.css";
+import "@/styles/contact-bubbles.css";
 import { CloudflareWebAnalytics } from "@/components/CloudflareWebAnalytics";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { MetaPixel } from "@/components/MetaPixel";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { ContactBubbles } from "@/components/ContactBubbles";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <Header />
         {children}
         <Footer />
-        <WhatsAppButton />
+        <ContactBubbles />
       </body>
     </html>
   );
