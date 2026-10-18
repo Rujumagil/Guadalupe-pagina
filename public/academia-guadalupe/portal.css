@@ -48,3 +48,25 @@ body{background:radial-gradient(circle at 82% 6%,#214b40 0%,transparent 38%),rad
 .progress-fill{background:linear-gradient(90deg,#628f82,#B79A63)}
 .gold{color:#d8bd84}
 @media(max-width:540px){.hero-feature{background:linear-gradient(90deg,rgba(9,37,30,.91),rgba(14,51,42,.76)),url('../images/guadalupe-trayectoria.webp') center/cover}}
+
+
+/* Logo vectorial actualizado en login y panel de alumno. */
+.auth-brand img {
+  width: clamp(190px, 22vw, 290px);
+  aspect-ratio: 1305 / 830;
+  height:auto; max-height:none;
+  object-fit:contain;
+  background:transparent;
+  border-radius:0;
+  filter:none;
+}
+.sidebar .brand img {
+  width:205px; max-width:100%;
+  height:auto; max-height:none;
+  aspect-ratio:1305 / 830; object-fit:contain;
+  border-radius:0;
+}
+.sidebar .brand { margin-bottom: 12px; padding-bottom: 16px; }
+@media(max-width:700px) {
+  .auth-brand img {width:230px;max-width:100%}
+}
