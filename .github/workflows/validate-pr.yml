@@ -34,5 +34,11 @@ jobs:
           node --check public/academia-guadalupe/aula.js
           node --check public/academia-guadalupe/catalog.js
           node --test tests/academy.test.mjs
+      - name: Validar portal cinematográfico multipágina
+        run: |
+          node --check public/academia-guadalupe/portal-core.js
+          node --check public/academia-guadalupe/portal-login.js
+          node --check public/academia-guadalupe/portal-app.js
+          node --test tests/academy-multipage.test.mjs
       - name: Compilar sitio estático
         run: npm run build
