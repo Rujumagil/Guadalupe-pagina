@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Script from "next/script";
 import { buildWhatsAppUrl } from "@/config/site";
 import { TrackedLink } from "./TrackedLink";
@@ -88,12 +88,6 @@ export function ContactBubbles() {
     else if (!ready) setNotice("No se pudo iniciar Fly Sales. Usa WhatsApp para contactar a Guadalupe.");
   }, [customizeFlyWidget, openFly]);
 
-  useEffect(() => {
-    // El script oficial del widget crea el custom element de forma síncrona.
-    // Este efecto también cubre la navegación interna entre rutas de Next.
-    if (customizeFlyWidget()) setFlyReady(true);
-  }, [customizeFlyWidget]);
-
   return (
     <>
       <Script
@@ -101,7 +95,7 @@ export function ContactBubbles() {
         src={FLY_SCRIPT}
         data-key={FLY_PUBLIC_KEY}
         strategy="afterInteractive"
-        onLoad={onFlyLoaded}
+        onReady={onFlyLoaded}
         onError={() => {
           setFlyUnavailable(true);
           setNotice("No se pudo conectar con Fly Sales. Puedes usar WhatsApp.");
