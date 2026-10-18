@@ -45,3 +45,20 @@ test("Sensitive learner content uses safe DOM primitives",()=>{
  assert.match(js,/textContent/);
  assert.doesNotMatch(app,/MetaPixel|facebook|cloudflareinsights/i);
 });
+
+test("Academy staff roles do not grant broad CRM access",()=>{
+ const staff=readFileSync("supabase/migrations/202610180003_ggp_academy_staff.sql","utf8");
+ assert.match(staff,/ggp_academy_staff/);
+ assert.match(staff,/ggp_academy_can_grant_staff/);
+ assert.match(staff,/workspace_members/);
+ assert.match(js,/Revocar acceso/);
+});
+test("Private course media uses constrained bucket and temporary signed links",()=>{
+ const storage=readFileSync("supabase/migrations/202610180002_ggp_private_media.sql","utf8");
+ assert.match(storage,/public\.ggp_academy_enrolled/);
+ assert.match(storage,/ggp-academy-private/);
+ assert.match(storage,/false,262144000/);
+ assert.match(js,/signedMedia/);
+ assert.match(js,/expiresIn:120/);
+ assert.match(js,/uploadMedia/);
+});
