@@ -48,6 +48,9 @@ jobs:
           node --check public/academia-guadalupe/portal-app.js
           node --test tests/academy-multipage.test.mjs
 
+      - name: Verificar burbujas Fly Sales y WhatsApp
+        run: node --test tests/contact-bubbles.test.mjs
+
       - name: Verificar experiencia pública de Guadalupe
         run: node --test tests/guadalupe-web-experience.test.mjs
 
