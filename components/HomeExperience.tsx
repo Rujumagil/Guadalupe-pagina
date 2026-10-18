@@ -46,7 +46,7 @@ export function HomeExperience() {
                 <h3>Coaching personal</h3>
                 <p>Para ganar claridad, fortalecer tu confianza, establecer límites y elegir
                 cómo avanzar en momentos importantes de tu vida.</p>
-                <strong>Conocer coaching personal →</strong>
+                <strong>Agenda tu cita →</strong>
               </div>
             </Link>
             <Link className="g-choice" href={commercialLinks.business}>
@@ -56,7 +56,7 @@ export function HomeExperience() {
                 <h3>Coaching empresarial</h3>
                 <p>Para directivos, dueños de negocio y equipos que necesitan mejores
                 decisiones, conversaciones y coordinación.</p>
-                <strong>Conocer coaching empresarial →</strong>
+                <strong>Agenda tu cita →</strong>
               </div>
             </Link>
           </div>
