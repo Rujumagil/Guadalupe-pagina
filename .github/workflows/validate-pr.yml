@@ -49,5 +49,11 @@ jobs:
       - name: Verificar identidad visual oficial Guadalupe
         run: node --test tests/guadalupe-brand.test.mjs
 
-      - name: Compilar sitio estático
-        run: npm run build
+      - name: Compilar sitio como GitHub Pages
+        run: GUADALUPE_GITHUB_PAGES=true npm run build
+
+      - name: Adaptar enlaces literales para subruta
+        run: node scripts/prepare-github-pages.mjs
+
+      - name: Verificar hidratación de Andy y rutas de Next
+        run: node --test tests/github-pages-hydration.test.mjs
