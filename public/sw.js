@@ -69,7 +69,7 @@ self.addEventListener("fetch", (event) => {
 
   const requestUrl = new URL(event.request.url);
   // El CRM privado no se almacena ni se sirve desde caché del sitio público.
-  if (/(?:^|\/)panel(?:\/|$)/.test(requestUrl.pathname)) return;
+  if (/(?:^|\/)(?:panel|academia-guadalupe)(?:\/|$)/.test(requestUrl.pathname)) return;
 
   if (event.request.mode === "navigate") {
     event.respondWith(

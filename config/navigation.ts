@@ -5,6 +5,7 @@ export const navigation = [
   { label: "Coaching personal", href: "/coaching-personal" },
   { label: "Coaching empresarial", href: "/empresas" },
   { label: "Sobre mí", href: "/sobre-mi" },
+  { label: "Mi academia", href: "/academia-guadalupe/" },
   { label: "Recursos", href: "/recursos" },
   { label: "Contacto", href: "/contacto" },
 ] as const;
