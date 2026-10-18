@@ -130,11 +130,11 @@ export function HomeExperience() {
             <span className="g-eyebrow">Un aprendizaje que puede continuar</span>
             <h2>Recursos y experiencias complementarias.</h2>
             <p>Además de las sesiones de coaching, puedes encontrar artículos, cursos y
-            experiencias de aprendizaje. Academia ETERNI es un espacio independiente
+            experiencias de aprendizaje. Academia Guadalupe es un espacio educativo propio de Guadalupe; ETERNI sigue siendo una marca independiente
             que complementa el trabajo de Guadalupe.</p>
             <div className="g-academy-links">
               <Link className="btn g-btn-line" href={commercialLinks.resources}>Explorar recursos</Link>
-              <a className="btn g-btn-line" href={siteConfig.academyUrl} rel="noopener noreferrer" target="_blank">Academia ETERNI ↗</a>
+              <a className="btn g-btn-line" href="/academia-guadalupe/">Mi Academia →</a>
             </div>
           </div>
           <div className="g-contact-panel">
