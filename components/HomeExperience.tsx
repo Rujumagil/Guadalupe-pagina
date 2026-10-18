@@ -73,14 +73,14 @@ export function HomeExperience() {
               <ul className="g-checklist">
                 {personalTopics.map((topic) => <li key={topic.title}><strong>{topic.title}.</strong> {topic.text}</li>)}
               </ul>
-              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.personal}>Explorar coaching personal</Link></div>
+              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.personal}>Agendar una cita</Link></div>
             </div>
             <div>
               <h3>En tu liderazgo o empresa</h3>
               <ul className="g-checklist">
                 {businessChallenges.map((challenge) => <li key={challenge}>{challenge}</li>)}
               </ul>
-              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.business}>Explorar coaching empresarial</Link></div>
+              <div className="g-actions"><Link className="btn g-btn-line" href={commercialLinks.business}>Agendar una cita</Link></div>
             </div>
           </div>
         </div>
