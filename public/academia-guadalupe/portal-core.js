@@ -112,7 +112,7 @@ export async function data(ctx){
   get("ggp_academy_progress","lesson_id,course_id,student_id,completed_at",ctx.isAdmin?{limit:"1000"}:{student_id:"eq."+ctx.user.id,limit:"1000"}),
   get("ggp_academy_books","id,title,author,description,status,media_path,cover_url",{limit:"100"}),
   get("ggp_academy_book_grants","book_id,student_id,expires_at",ctx.isAdmin?{limit:"500"}:{student_id:"eq."+ctx.user.id,limit:"100"}),
-  get("ggp_academy_community_members","user_id,status",ctx.isAdmin?{limit:"500"}:{user_id:"eq."+ctx.user.id,limit:"1"}),
+  get("ggp_academy_community_members","id,user_id,status",ctx.isAdmin?{limit:"500"}:{user_id:"eq."+ctx.user.id,limit:"1"}),
  ]);
  return {courses,enrollments,progress,books,bookGrants,memberships};
 }
