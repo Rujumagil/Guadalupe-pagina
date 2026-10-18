@@ -314,6 +314,22 @@ function profile(){
  const info=el("section","notice","Tus datos académicos son independientes de ETERNI. Un registro nuevo no da acceso automático a cursos, libros ni comunidad.");
  root.append(info);
 }
+
+async function uploadBook(book,file){
+ if(!ctx.isAdmin)throw Error("Solo un administrador puede subir libros.");
+ if(!file||file.type!=="application/pdf")throw Error("Selecciona un archivo PDF válido.");
+ if(file.size>80*1024*1024)throw Error("El PDF supera el tamaño máximo permitido de 80 MB.");
+ const filename=crypto.randomUUID()+".pdf",path=book.id+"/"+book.id+"/"+filename;
+ const url=new URL(path.split("/").map(encodeURIComponent).join("/"),"https://unused.invalid/");
+ const res=await fetch("https://qwxydjotwhniahaovrff.supabase.co/storage/v1/object/ggp-academy-private/"+url.pathname.slice(1),{
+  method:"POST",headers:{apikey:(await import("./config.js")).PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),
+   "Content-Type":"application/pdf","x-upsert":"false"},body:file,cache:"no-store"
+ });
+ const response=await res.json().catch(()=>({}));
+ if(!res.ok)throw Error(response.message||response.error||"No se pudo almacenar el libro.");
+ await patch("ggp_academy_books",book.id,{media_path:path});
+}
+
 async function admin(){
  if(!ctx.isAdmin){location.replace("./inicio.html");return}
  title("Administración de academia","Gestiona la formación, los alumnos, los libros y tu comunidad.");
@@ -340,12 +356,72 @@ async function admin(){
  books.append(form);
  const help=el("p","muted","La publicación de archivos y la entrega de libros requiere autorización. Los libros en borrador no aparecen a los alumnos.");
  books.append(help);
+ for(const book of store.books){
+  const line=el("div","list-row"),description=el("div");
+  description.append(el("strong","",book.title),el("small","",book.status==="published"?" · Publicado":" · Borrador"));
+  line.append(description);
+  const actions=el("div","hero-actions");
+  const input=el("input");input.type="file";input.accept=".pdf,application/pdf";input.style.maxWidth="170px";
+  const upload=el("button","btn small","Subir PDF");
+  upload.addEventListener("click",async()=>{
+   upload.disabled=true;
+   try{await uploadBook(book,input.files?.[0]);note("Libro guardado en espacio privado.","success");await refresh()}
+   catch(e){note(e.message,"error")}finally{upload.disabled=false}
+  });
+  actions.append(input,upload);
+  const publish=el("button","btn small",book.status==="published"?"Ocultar libro":"Publicar libro");
+  publish.addEventListener("click",async()=>{
+   if(book.status!=="published"&&!book.media_path){note("Antes de publicar agrega su archivo PDF.","error");return}
+   publish.disabled=true;
+   try{await patch("ggp_academy_books",book.id,{status:book.status==="published"?"draft":"published"});await refresh();note("Estado del libro actualizado.","success")}
+   catch(e){note(e.message,"error")}finally{publish.disabled=false}
+  });
+  actions.append(publish);line.append(actions);books.append(line);
+ }
  root.append(books);
+ const students=await get("ggp_academy_students","user_id,display_name,email",{order:"created_at.desc",limit:"200"});
+ if(students.length){
+  const rights=el("section","panel glass"),options=el("form","form-grid");
+  rights.append(el("h3","","Asignar accesos"));
+  const person=el("select");person.name="student";
+  for(const st of students){const opt=el("option","",st.display_name+" · "+st.email);opt.value=st.user_id;person.append(opt)}
+  const who=el("label","","Alumno");who.append(person);options.append(who);
+  if(store.books.length){
+   const bookSelect=el("select");bookSelect.name="book";
+   for(const b of store.books){const opt=el("option","",b.title);opt.value=b.id;bookSelect.append(opt)}
+   const bookLabel=el("label","","Libro");bookLabel.append(bookSelect);options.append(bookLabel);
+   const grant=el("button","btn","Asignar libro");
+   grant.type="submit";grant.dataset.type="book";options.append(grant);
+  }
+  const community=el("button","btn primary","Activar comunidad para alumno");community.type="button";
+  community.addEventListener("click",async()=>{
+   community.disabled=true;
+   try{
+    const student=person.value;
+    const old=store.memberships.find(m=>m.user_id===student);
+    if(old)await patch("ggp_academy_community_members",old.id,{status:"active"});
+    else await add("ggp_academy_community_members",{user_id:student,status:"active"});
+    note("Membresía de comunidad activada.","success");await refresh();
+   }catch(e){note(e.message,"error")}finally{community.disabled=false}
+  });
+  options.addEventListener("submit",async e=>{
+   e.preventDefault();const btn=e.submitter;btn.disabled=true;
+   try{
+    const d=new FormData(options);
+    const existing=store.bookGrants.find(g=>g.book_id===String(d.get("book"))&&g.student_id===String(d.get("student")));
+    if(existing){note("Ese alumno ya tiene el libro asignado.","error");return}
+    await add("ggp_academy_book_grants",{book_id:String(d.get("book")),student_id:String(d.get("student"))});
+    note("Acceso al libro asignado.","success");await refresh();
+   }catch(e){note(e.message,"error")}finally{btn.disabled=false}
+  });
+  options.append(community);rights.append(options);root.append(rights);
+ }
  const communityBox=el("section","panel glass");
  communityBox.append(el("h3","","Comunidad"));
  communityBox.append(a("Crear publicaciones y responder →","./comunidad.html","btn"));
  root.append(communityBox);
 }
+async function refresh(){store=await loadData(ctx);root.replaceChildren();const warning=el("p","message");warning.id="notice";warning.setAttribute("role","status");root.append(warning);await admin();}
 async function start(){
  try{
   await captureLink();
