@@ -32,8 +32,8 @@ export function ContactBubbles() {
     const launcher = host.shadowRoot.querySelector<HTMLButtonElement>(".launcher");
     if (!launcher) return false;
 
-    launcher.setAttribute("aria-label", "Compás Fly Sales");
-    launcher.setAttribute("title", "Abrir chat de Compás Fly Sales");
+    launcher.setAttribute("aria-label", "Habla con Andy");
+    launcher.setAttribute("title", "Habla con Andy");
 
     if (!host.shadowRoot.querySelector("#guadalupe-fly-widget-position")) {
       const style = document.createElement("style");
@@ -73,10 +73,10 @@ export function ContactBubbles() {
       setNotice("");
       openWhenReady.current = false;
     } else if (flyUnavailable) {
-      setNotice("Fly Sales no está disponible en este momento. Puedes comunicarte directamente por WhatsApp.");
+      setNotice("Andy no está disponible en este momento. Puedes comunicarte directamente por WhatsApp.");
     } else {
       openWhenReady.current = true;
-      setNotice("Conectando con Compás Fly Sales…");
+      setNotice("Conectando con Andy…");
     }
   }, [customizeFlyWidget, findLauncher, flyUnavailable]);
 
@@ -85,7 +85,7 @@ export function ContactBubbles() {
     setFlyReady(ready);
     setFlyUnavailable(!ready);
     if (ready && openWhenReady.current) openFly();
-    else if (!ready) setNotice("No se pudo iniciar Fly Sales. Usa WhatsApp para contactar a Guadalupe.");
+    else if (!ready) setNotice("No se pudo iniciar el chat de Andy. Usa WhatsApp para contactar a Guadalupe.");
   }, [customizeFlyWidget, openFly]);
 
   return (
@@ -98,7 +98,7 @@ export function ContactBubbles() {
         onReady={onFlyLoaded}
         onError={() => {
           setFlyUnavailable(true);
-          setNotice("No se pudo conectar con Fly Sales. Puedes usar WhatsApp.");
+          setNotice("No se pudo conectar con Andy. Puedes usar WhatsApp.");
         }}
       />
 
@@ -110,12 +110,12 @@ export function ContactBubbles() {
         )}
 
         <div className="guadalupe-contact-option">
-          <span className="guadalupe-contact-caption">Compás Fly Sales</span>
+          <span className="guadalupe-contact-caption">Habla con Andy</span>
           <button
             type="button"
-            aria-label="Abrir conversación con Compás Fly Sales, asistente virtual de Guadalupe"
+            aria-label="Habla con Andy, asistente virtual de Guadalupe"
             aria-haspopup="dialog"
-            title={flyReady ? "Hablar con Compás Fly Sales" : "Conectar con Fly Sales"}
+            title={flyReady ? "Habla con Andy" : "Conectando con Andy"}
             className="guadalupe-contact-bubble guadalupe-contact-bubble-fly"
             onClick={openFly}
           >

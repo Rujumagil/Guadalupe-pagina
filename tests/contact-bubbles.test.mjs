@@ -20,15 +20,16 @@ test("Fly Sales links to real Compas One web chat, never a fake AI answer",()=>{
  assert.match(widget,/setFlyUnavailable/);
  assert.doesNotMatch(widget,/api\.openai\.com|NEXT_PUBLIC_.*SECRET|supabase\.co\/rest\/v1\/contacts/);
 });
-test("exactly two visible launchers: Fly Sales and direct WhatsApp, with accessibility",()=>{
+test("exactly two visible launchers: Habla con Andy and direct WhatsApp, with accessibility",()=>{
  const code=read("components/ContactBubbles.tsx");
  const dock=read("styles/contact-bubbles.css");
- assert.match(code,/Compás Fly Sales/);
+ assert.match(code,/Habla con Andy/);
  assert.match(code,/WhatsApp/);
  assert.match(code,/buildWhatsAppUrl/);
- assert.match(code,/aria-label="Abrir conversación con Compás Fly Sales/);
+ assert.match(code,/aria-label="Habla con Andy, asistente virtual de Guadalupe/);
  assert.match(code,/aria-label="Contactar directamente a Guadalupe por WhatsApp/);
  assert.match(code,/eventName="Contact"/);
+ assert.doesNotMatch(code,/<span className="guadalupe-contact-caption">Compás Fly Sales<\/span>/);
  assert.match(code,/\.launcher \{ opacity: 0 !important; pointer-events: none/);
  assert.match(dock,/guadalupe-contact-bubble-fly/);
  assert.match(dock,/guadalupe-contact-bubble-whatsapp/);
