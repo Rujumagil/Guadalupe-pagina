@@ -35,6 +35,12 @@ jobs:
           npm run typecheck
           npm run lint
 
+      - name: Probar academia Guadalupe
+        run: |
+          node --check public/academia-guadalupe/aula.js
+          node --check public/academia-guadalupe/catalog.js
+          node --test tests/academy.test.mjs
+
       - name: Compilar sitio
         run: npm run build
 
