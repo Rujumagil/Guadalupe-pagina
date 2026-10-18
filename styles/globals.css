@@ -1942,3 +1942,37 @@ h3 {
 .site-header a:focus-visible,.site-header button:focus-visible,.footer a:focus-visible{
   outline:3px solid #B79A63;outline-offset:3px;
 }
+
+
+/* Identidad aprobada: logotipo completo con descriptor Coach ejecutiva y de vida.
+   SVG proporcional, fondo transparente, sin filtros ni estiramientos. */
+.site-header .brand img {
+  width: clamp(166px, 15vw, 198px);
+  height: auto;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 1305 / 830;
+  object-fit: contain;
+  filter: none;
+}
+.site-header .nav {
+  min-height: clamp(88px, 8.5vw, 116px);
+}
+.footer-brand img {
+  width: clamp(235px, 27vw, 315px);
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+  aspect-ratio: 1305 / 830;
+  object-fit: contain;
+  filter: none;
+}
+@media(max-width:700px) {
+  :root { --header-height: 108px; }
+  .site-header .brand img { width: 170px; }
+  .site-header .nav { min-height: 108px; }
+}
+@media(max-width:400px) {
+  .site-header .brand img { width: 148px; }
+  .site-header .nav { gap: 12px; }
+}
