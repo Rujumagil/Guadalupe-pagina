@@ -330,6 +330,18 @@ $("#forgotPassword").addEventListener("click",async()=>{
   authNote("Si existe una cuenta con ese correo, recibirás instrucciones para restablecer tu contraseña.");
  }catch(error){authNote(error.message,true)}
 });
+$("#resetForm").addEventListener("submit",async e=>{
+ e.preventDefault();const button=e.currentTarget.querySelector("button[type=submit]");
+ button.disabled=true;
+ try{
+  const password=String(new FormData(e.currentTarget).get("newPassword")||"");
+  if(password.length<10)throw Error("Usa una contraseña de 10 caracteres como mínimo.");
+  await request("/auth/v1/user",{method:"PUT",auth:true,body:{password}});
+  e.currentTarget.reset();$("#resetForm").hidden=true;$("#authForm").hidden=false;
+  await enter();note("La contraseña se actualizó correctamente.");
+ }catch(error){authNote(error.message,true)}
+ finally{button.disabled=false;}
+});
 $("#signOut").addEventListener("click",signOut);
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.view)));
 async function restore(){
@@ -340,12 +352,13 @@ async function restore(){
    expires_at:Math.floor(Date.now()/1000)+Number(hash.get("expires_in")||3600)};
   save();history.replaceState(null,"",location.pathname+location.search);
  }
- if(state.session)try{await enter();if(hash.get("type")==="recovery"){
-  const password=prompt("Escribe tu nueva contraseña (mínimo 8 caracteres).");
-  if(password&&password.length>=8){
-   await request("/auth/v1/user",{method:"PUT",auth:true,body:{password}});
-   note("Contraseña actualizada.");
-  }
- }}catch(error){await signOut();authNote("No fue posible validar la sesión: "+error.message,true)}
+ if(state.session)try{
+  await token();
+  if(hash.get("type")==="recovery"){
+    $("#authView").hidden=false;$("#learningView").hidden=true;
+    $("#authForm").hidden=true;$("#resetForm").hidden=false;
+    authNote("Confirma una contraseña nueva para tu cuenta.");
+  }else await enter();
+ }catch(error){await signOut();authNote("No fue posible validar la sesión: "+error.message,true)}
 }
 restore();
