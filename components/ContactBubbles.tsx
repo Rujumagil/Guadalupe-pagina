@@ -42,6 +42,7 @@ function endpoint(section: "config" | "messages"): string {
 function publicError(response: Response, result: { error?: string }) {
   if (response.status === 429) return "Hay muchos mensajes por el momento. Inténtalo de nuevo en un minuto.";
   if (response.status === 403) return "No se pudo autorizar la conexión con Andy. Puedes utilizar WhatsApp.";
+  if (response.status >= 500) return "Andy no pudo iniciar la conversación. Tu mensaje no se envió; puedes reintentarlo o usar WhatsApp.";
   return typeof result.error === "string" && result.error.length < 180
     ? result.error
     : "No fue posible contactar a Andy. Intenta nuevamente o utiliza WhatsApp.";
@@ -160,6 +161,9 @@ export function ContactBubbles() {
           publicKey: PUBLIC_KEY,
           clientMessageId: messageId,
           message: content,
+          // Compatibilidad con versiones del backend que todavía exigen un nombre.
+          // Es un seudónimo genérico, no datos personales ni un formulario.
+          name: "Visitante",
           sessionToken: sessionToken || undefined,
           consent: consent || Boolean(sessionToken),
           serviceRoute: "sales",
