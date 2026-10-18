@@ -60,3 +60,40 @@ node --check public/academia-guadalupe/aula.js
 node --test tests/academy.test.mjs
 npm run build
 ```
+
+
+## V2: academia estilo Apple TV con efecto cristal
+La raíz \`/academia-guadalupe/\` es **solo el acceso**: login, registro y recuperación. No muestra catálogo ni datos privados.
+Tras iniciar sesión, \`./inicio.html\` es el dashboard.
+Cada sección tiene un documento independiente y menú lateral en escritorio, navegación inferior desplazable en móvil:
+
+| Página | Uso |
+| --- | --- |
+| \`inicio.html\` | Dashboard, inscripciones, métricas de lecciones, próximas opciones |
+| \`cursos.html\` | Programas disponibles (matrícula vigente) y publicados bloqueados |
+| \`mi-curso.html\` | Todos los programas asignados |
+| \`leccion.html?course=<id>\` | Lecciones, materiales con URLs firmadas y marcar progreso |
+| \`libros.html\` | Biblioteca de publicaciones con permisos independientes |
+| \`comunidad.html\` | Comunidad con membresía, publicaciones y respuestas |
+| \`progreso.html\` | Porcentaje por curso basado en lecciones reales |
+| \`perfil.html\` | Cuenta y cambio de contraseña |
+| \`administracion.html\` | Gestión general, libros, membresías; enlace al editor avanzado |
+| \`aula.html\` | Editor anterior de cursos/módulos/matrículas conservado por compatibilidad |
+
+### Modelo de seguridad
+- Autenticación de Supabase compartida con Compás One; roles académicos propios.
+- Ninguna persona puede ver contenidos privados por crear una cuenta.
+- Libros requieren una concesión individual \`ggp_academy_book_grants\`.
+- Comunidad requiere membresía \`ggp_academy_community_members\`; mensajes y comentarios por RLS.
+- El panel no carga scripts de Meta Pixel. Los documentos llevan \`noindex\`, y en Cloudflare se recomienda \`Cache-Control: no-store\` (GitHub Pages no aplica \`_headers\`).
+- Persistencia de tokens en \`sessionStorage\` durante la sesión de navegador: antes de escalar, migrar a sesiones mediante cookie HttpOnly y BFF.
+- No incluye compra ni matrícula automática. Pago/Stripe o concesiones deben verificarse servidor-side antes de habilitar acceso.
+
+### Enlaces de prueba (después de fusionar)
+- Acceso: \`https://rujumagil.github.io/Guadalupe-pagina/academia-guadalupe/\`
+- Dashboard: \`https://rujumagil.github.io/Guadalupe-pagina/academia-guadalupe/inicio.html\`
+- Cursos: \`https://rujumagil.github.io/Guadalupe-pagina/academia-guadalupe/cursos.html\`
+- Libros: \`https://rujumagil.github.io/Guadalupe-pagina/academia-guadalupe/libros.html\`
+- Comunidad: \`https://rujumagil.github.io/Guadalupe-pagina/academia-guadalupe/comunidad.html\`
+
+La portada responde con diseño oscuro/cinematográfico y cristal; el dashboard usa las imágenes oficiales existentes en \`public/images\`. No se usan cifras inventadas.
