@@ -44,7 +44,7 @@ test("responsive nav has an accessible button and fits tablet breakpoints",()=>{
 test("Guadalupe educational site and ETERNI remain separate",()=>{
  const footer=file("components/Footer.tsx");
  const bridge=file("app/academia-eterni/page.tsx");
- assert.match(footer,/Ingresar a Academia Guadalupe/);
+ assert.match(footer,/Ingresar a Academia Nicté Ha/);
  assert.doesNotMatch(footer,/href="\/academia-eterni"/);
  assert.match(bridge,/dos academias|Dos academias/i);
  assert.match(bridge,/credenciales no se comparten/i);
@@ -59,7 +59,7 @@ test("all academy private pages excluded from crawler access",()=>{
 test("privacy and legal pages acknowledge new academy and correct branding",()=>{
  for(const path of ["public/privacy.html","public/terms.html"]){
   const html=file(path);
-  assert.match(html,/Academia Guadalupe/);
+  assert.match(html,/Academia Nicté Ha/);
   assert.match(html,/#315F59/);
   assert.match(html,/revisi[oó]n/);
  }

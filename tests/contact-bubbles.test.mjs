@@ -31,7 +31,7 @@ test("Andy starts in a conversation; no name, email or phone form gates",()=>{
   assert.match(widget,/config\.welcomeMessage/);
   assert.match(widget,/showWelcome/);
   assert.match(widget,/showTopics/);
-  for(const topic of ["Coaching personal","Coaching empresarial","Academia Guadalupe"]){
+  for(const topic of ["Coaching personal","Coaching empresarial","Academia Nicté Ha"]){
     assert.ok(widget.includes(topic));
   }
   assert.match(widget,/className="guadalupe-andy-transcript"/);

@@ -7,9 +7,9 @@ const file=name=>readFileSync(root+name,"utf8");
 const landing=file("index.html"),app=file("aula.html"),js=file("aula.js"),catalog=file("catalog.js"),config=file("config.js"),css=file("academy.css");
 const migration=readFileSync("supabase/migrations/202610180001_ggp_academy_foundation.sql","utf8");
 
-test("Academia Guadalupe has its own branding and access",()=>{
- assert.match(landing,/Academia Guadalupe Gómez Pezuela/);
- assert.match(app,/Mi aprendizaje/);
+test("Academia Nicté Ha has its own branding and access",()=>{
+ assert.match(landing,/Academia Nicté Ha/);
+ assert.match(app,/Mi aprendizaje/);\n assert.match(landing,/academia-nicte-ha-logo\\.webp/);
  assert.match(app,/signUpTab/);
  assert.match(app,/forgotPassword/);
  assert.match(app,/id="adminTab"/);

@@ -28,14 +28,16 @@ test("branding and Next header/footer use the NEW logo",()=>{
  assert.match(read("components/Footer.tsx"),/branding\.logoInverted/);
  assert.match(read("components/Footer.tsx"),/Coach ejecutiva y de vida/);
 });
-test("academy routes and CRM all show the new approved signature",()=>{
- const paths=["public/panel/index.html","public/academia-guadalupe/index.html","public/academia-guadalupe/aula.html",
+test("personal CRM and Academia Nicté Ha keep their approved identities separate",()=>{
+ assert.match(read("public/panel/index.html"),/guadalupe-coach-ejecutiva-(principal|invertido)\.svg/);
+ const paths=["public/academia-guadalupe/index.html","public/academia-guadalupe/aula.html",
  ...["inicio","cursos","mi-curso","libros","comunidad","progreso","perfil","administracion","leccion"]
    .map(name=>"public/academia-guadalupe/"+name+".html")];
  for(const path of paths){
-   assert.match(read(path),/guadalupe-coach-ejecutiva-(principal|invertido)\.svg/,path+" missing new logo");
-   assert.doesNotMatch(read(path),/guadalupe-logo-oficial-(principal|invertido)\.webp/,path+" still uses old identity");
+   assert.match(read(path),/academia-nicte-ha-logo\.webp/,path+" missing Academia Nicté Ha logo");
+   assert.doesNotMatch(read(path),/guadalupe-coach-ejecutiva-(principal|invertido)\.svg/,path+" still uses personal logo");
  }
+ assert.ok(existsSync(root+"academia-nicte-ha-logo.webp"));
 });
 test("the lotus-G favicon remains unchanged and valid",()=>{
  const icon=readFileSync("app/favicon.ico");
