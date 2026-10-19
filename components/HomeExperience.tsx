@@ -110,13 +110,21 @@ export function HomeExperience() {
           <div>
             <span className="g-eyebrow">Conoce a Guadalupe</span>
             <h2>Experiencia profesional con cercanía humana.</h2>
-            <p>Mi trayectoria reúne el desarrollo humano, el coaching y el trabajo con
-            líderes y equipos. Escucho sin imponer respuestas y busco que cada conversación
-            se traduzca en decisiones aplicables a la vida cotidiana.</p>
-            <p className="g-muted">Mi formación incluye coaching empresarial y Programación
-            Neurolingüística. El enfoque se elige según el objetivo y las necesidades
-            de cada persona u organización.</p>
-            <div className="g-actions"><Link className="btn btn-primary" href={commercialLinks.about}>Conocer mi trayectoria</Link></div>
+            <p>Soy Guadalupe Gómez Pezuela, coach personal y empresarial con más de 20 años
+            de experiencia acompañando a personas, líderes y equipos en México,
+            Latinoamérica y España.</p>
+            <p>Trabajo desde la escucha, la reflexión y preguntas que ayudan a encontrar
+            claridad, fortalecer la confianza y convertir decisiones en acciones concretas.</p>
+            <p className="g-muted">Soy coach senior empresarial por Newfield Consulting,
+            coach con Programación Neurolingüística y coach de vida.</p>
+            <ul className="g-checklist">
+              <li><strong>Coaching personal.</strong> Toma de decisiones, confianza, relaciones y proyectos.</li>
+              <li><strong>Coaching empresarial.</strong> Liderazgo, comunicación y retos profesionales.</li>
+              <li><strong>Coaching de equipos.</strong> Acuerdos, colaboración y objetivos compartidos.</li>
+            </ul>
+            <p>Podemos reunirnos en sesiones presenciales o en línea.</p>
+            <p><strong>Cuéntame qué quieres transformar y encontremos juntos el camino para avanzar.</strong></p>
+            <div className="g-actions"><TrackedLink className="btn btn-primary" href={commercialLinks.personalWhatsApp} target="_blank" rel="noopener noreferrer" eventName="Lead">Agendar una cita</TrackedLink></div>
           </div>
         </div>
       </section>
