@@ -129,24 +129,27 @@ export function HomeExperience() {
         </div>
       </section>
 
-      <section className="g-section">
+      <section className="g-section" id="academia-nicte-ha">
         <div className="shell g-academy">
           <div>
-            <span className="g-eyebrow">Un aprendizaje que puede continuar</span>
-            <h2>Recursos y experiencias complementarias.</h2>
-            <p>Además de las sesiones de coaching, puedes encontrar artículos, cursos y
-            experiencias de aprendizaje. Academia Nicté Ha ofrece formación en coaching y desarrollo humano, con el respaldo de Guadalupe Gómez Pezuela. ETERNI sigue siendo una marca independiente
-            con sus propios programas y accesos.</p>
+            <span className="g-eyebrow">Un espacio para aprender, crecer y transformarte</span>
+            <h2>Academia Nicté Ha</h2>
+            <h3>Formación en coaching y desarrollo humano</h3>
+            <p className="g-eyebrow">Por Guadalupe Gómez Pezuela</p>
+            <p>Un espacio de aprendizaje creado para acompañarte en tu crecimiento personal y profesional.</p>
+            <p>Descubre cursos, talleres y programas de formación que te ayudarán a conocerte mejor, fortalecer tus habilidades y transformar lo aprendido en acciones que generen cambios significativos en tu vida.</p>
             <div className="g-academy-links">
-              <Link className="btn g-btn-line" href={commercialLinks.resources}>Explorar recursos</Link>
-              <a className="btn g-btn-line" href="/academia-guadalupe/">Conocer Academia Nicté Ha →</a>
+              <Link className="btn btn-primary" href="/academia-guadalupe/">Conoce la Academia →</Link>
+              <Link className="btn g-btn-line" href="/academia-guadalupe/">Explorar programas</Link>
             </div>
           </div>
           <div className="g-contact-panel">
-            <span className="g-eyebrow">Coaching primero</span>
-            <h3>El proceso individual y la formación no son lo mismo.</h3>
-            <p className="g-muted">Si buscas acompañamiento directo y personalizado, elige
-            coaching. Si prefieres explorar recursos a tu ritmo, conoce la academia.</p>
+            <span className="g-eyebrow">Dos caminos para acompañar tu crecimiento</span>
+            <h3>Coaching con Guadalupe</h3>
+            <p className="g-muted">Acompañamiento individual y personalizado para trabajar tus objetivos y desafíos.</p>
+            <h3>Academia Nicté Ha</h3>
+            <p className="g-muted">Formación, herramientas y experiencias de aprendizaje para avanzar a tu propio ritmo.</p>
+            <p><strong>Tu proceso es único. Elige cómo quieres comenzar.</strong></p>
           </div>
         </div>
       </section>
