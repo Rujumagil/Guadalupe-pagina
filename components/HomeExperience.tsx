@@ -135,11 +135,11 @@ export function HomeExperience() {
             <span className="g-eyebrow">Un aprendizaje que puede continuar</span>
             <h2>Recursos y experiencias complementarias.</h2>
             <p>Además de las sesiones de coaching, puedes encontrar artículos, cursos y
-            experiencias de aprendizaje. Academia Guadalupe es un espacio educativo propio de Guadalupe; ETERNI sigue siendo una marca independiente
+            experiencias de aprendizaje. Academia Nicté Ha ofrece formación en coaching y desarrollo humano, con el respaldo de Guadalupe Gómez Pezuela. ETERNI sigue siendo una marca independiente
             con sus propios programas y accesos.</p>
             <div className="g-academy-links">
               <Link className="btn g-btn-line" href={commercialLinks.resources}>Explorar recursos</Link>
-              <a className="btn g-btn-line" href="/academia-guadalupe/">Ingresar o registrarme en la Academia →</a>
+              <a className="btn g-btn-line" href="/academia-guadalupe/">Conocer Academia Nicté Ha →</a>
             </div>
           </div>
           <div className="g-contact-panel">

@@ -10,7 +10,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Image alt="Guadalupe Gómez Pezuela, coach ejecutiva y de vida" height={830} src={branding.logoInverted} width={1305} />
-            <p>Coaching ejecutivo y de vida para acompañarte con claridad y cercanía. La Academia Guadalupe es un espacio propio de aprendizaje y desarrollo.</p>
+            <p>Coaching ejecutivo y de vida para acompañarte con claridad y cercanía. La Academia Nicté Ha es un espacio propio de aprendizaje y desarrollo.</p>
           </div>
           <div>
             <h4>Explora</h4>
@@ -21,7 +21,7 @@ export function Footer() {
             <Link href="/contacto">Contacto</Link>
             <a href="/panel/" rel="nofollow">Acceso privado</a>
             <Link href="/recursos">Artículos y recursos</Link>
-            <a href="/academia-guadalupe/">Ingresar a Academia Guadalupe</a>
+            <a href="/academia-guadalupe/">Ingresar a Academia Nicté Ha</a>
           </div>
           <div>
             <h4>Contacto</h4>

@@ -25,14 +25,14 @@ type PublicConfig = {
 const INITIAL_CONFIG: PublicConfig = {
   title: "Habla con Andy",
   subtitle: "Asistente virtual de Guadalupe",
-  welcomeMessage: "¡Hola! Soy Andy 👋 Estoy aquí para orientarte. ¿Te interesa el coaching personal, el coaching empresarial o la Academia Guadalupe?",
+  welcomeMessage: "¡Hola! Soy Andy 👋 Estoy aquí para orientarte. ¿Te interesa el coaching personal, el coaching empresarial o la Academia Nicté Ha?",
   privacyUrl: "https://rujumagil.github.io/Guadalupe-pagina/privacy.html",
 };
 
 const TOPICS = [
   { label: "Coaching personal", message: "Hola Andy, quiero conocer el coaching personal." },
   { label: "Coaching empresarial", message: "Hola Andy, quiero información sobre coaching empresarial." },
-  { label: "Academia Guadalupe", message: "Hola Andy, quiero saber cómo funciona la Academia Guadalupe." },
+  { label: "Academia Nicté Ha", message: "Hola Andy, quiero saber cómo funciona la Academia Nicté Ha." },
 ] as const;
 
 function endpoint(section: "config" | "messages"): string {

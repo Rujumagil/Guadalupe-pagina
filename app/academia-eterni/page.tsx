@@ -4,7 +4,7 @@ import { siteConfig } from "@/config/site";
 import { pageMetadata } from "@/config/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Academia Guadalupe y ETERNI | Accesos independientes",
+  title: "Academia Nicté Ha y ETERNI | Accesos independientes",
   description: "Guadalupe tiene su propia academia de desarrollo. ETERNI mantiene un espacio formativo independiente con accesos y contenidos diferentes.",
   path: "/academia-eterni",
 });
@@ -16,7 +16,7 @@ export default function AcademiasPage() {
         <div className="shell g-section-title">
           <span className="g-eyebrow">Espacios de aprendizaje diferentes</span>
           <h1>Dos academias. Dos experiencias independientes.</h1>
-          <p className="g-lead">La nueva Academia Guadalupe Gómez Pezuela cuenta con su propio acceso, cursos,
+          <p className="g-lead">La nueva Academia Nicté Ha cuenta con su propio acceso, cursos,
           biblioteca, comunidad y seguimiento. ETERNI es una iniciativa distinta:
           las inscripciones y credenciales no se comparten automáticamente.</p>
         </div>
@@ -25,7 +25,7 @@ export default function AcademiasPage() {
         <div className="shell g-columns-2 g-contact-grid">
           <article className="g-contact-panel">
             <span className="g-eyebrow">Marca personal Guadalupe</span>
-            <h2>Academia Guadalupe</h2>
+            <h2>Academia Nicté Ha</h2>
             <p>El espacio privado de desarrollo, cursos y recursos creados para el proyecto de Guadalupe.
             Los contenidos se habilitan conforme exista matrícula o autorización.</p>
             <Link href="/academia-guadalupe/" className="btn btn-primary">Ingresar o registrarme →</Link>

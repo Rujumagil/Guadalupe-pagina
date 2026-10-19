@@ -13,7 +13,7 @@ function a(text,href,cls="btn"){
 function pill(text,cls=""){return el("span","state-pill "+cls,text);}
 function title(name,copy,action){
  const box=el("div","heading"),content=el("div");
- content.append(el("span","kicker","ACADEMIA GUADALUPE"),el("h1","",name),el("p","",copy));
+ content.append(el("span","kicker","ACADEMIA NICTÉ HA"),el("h1","",name),el("p","",copy));
  box.append(content);if(action)box.append(action);root.append(box);
 }
 function block(heading,content,href,label){
@@ -209,7 +209,7 @@ async function communityList(){
   if(!posts.length){wall.append(empty("Comunidad recién creada","Los mensajes aparecerán aquí cuando Guadalupe publique el primero."));return}
   for(const post of posts){
    const box=el("article","community-post glass");
-   box.append(el("div","community-meta","ACADEMIA GUADALUPE · "+shortDate(post.created_at)),
+   box.append(el("div","community-meta","ACADEMIA NICTÉ HA · "+shortDate(post.created_at)),
     el("h3","",post.title),el("p","community-body",post.body));
    const replies=await get("ggp_academy_community_replies","id,body,created_at,author_id",
     {post_id:"eq."+post.id,order:"created_at.asc",limit:"50"});

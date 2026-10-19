@@ -9,7 +9,7 @@ async function load(){
   const courses=await r.json();
   status.textContent=courses.length?"":"Los programas están en preparación. Por ahora no hay inscripciones abiertas.";
   for(const c of courses){
-   const card=el("article","course-card"),banner=el("div","course-mark","GP · ACADEMIA"),content=el("div","course-content");
+   const card=el("article","course-card"),banner=el("div","course-mark","NICTÉ HA · ACADEMIA"),content=el("div","course-content");
    content.append(el("span","eyebrow",c.category),el("h3","",c.title),el("p","",c.summary));
    const meta=el("div","course-meta");
    meta.append(el("span","",c.level),el("span","",c.duration_minutes?c.duration_minutes+" min":"Duración por confirmar"));
