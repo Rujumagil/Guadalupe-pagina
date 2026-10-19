@@ -6,3 +6,8 @@
 .academy-footer{background:#173f39}
 .academy-cta{background:#315F59}
 .course-mark{background:linear-gradient(120deg,#315F59,#173f39)}
+
+/* Identidad oficial de Academia Nicté Ha */
+.academy-header{min-height:138px}
+.academy-header .brand-link img{width:125px;max-width:125px;max-height:none;height:auto;aspect-ratio:auto;object-fit:contain;background:#fbf8ef;border-radius:12px;padding:5px;filter:none}
+@media(max-width:620px){.academy-header{min-height:112px}.academy-header .brand-link img{width:96px;max-width:96px}}
