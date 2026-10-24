@@ -175,3 +175,36 @@ body.academy-app .bar-track>div{background:#6f9481}
 body.academy-app .app-pill{background:#eaf1e9;color:#345e50}
 body.academy-app .auth-card{box-shadow:0 14px 40px #2a5e4910}
 @media(max-width:650px){body.academy-app .academy-header nav a{color:#496658}.stream-hero-caption{background:#ffffffdc}}
+
+/* Entrada editorial de dos columnas — perla y salvia */
+body.academy-app:has(#authView:not([hidden])) .aula-main{width:min(1260px,calc(100% - 54px));padding-block:65px 88px;min-height:calc(100vh - 175px);display:flex;align-items:center}
+.nh-auth-layout{width:100%;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);gap:clamp(24px,5vw,100px);align-items:center}
+.nh-auth-welcome{padding:20px 10px 20px 0;min-width:0}
+.nh-auth-kicker{display:block;font-size:.7rem;font-weight:850;letter-spacing:.16em;color:#9b8251}
+body.academy-app .nh-auth-welcome h1{font:600 clamp(3.2rem,5.2vw,5.3rem)/1.03 Georgia,serif;letter-spacing:-.045em;color:#315a4e;margin:25px 0}
+body.academy-app .nh-auth-welcome h1 em{font-style:normal;color:#ae9661}
+body.academy-app .nh-auth-welcome>p{max-width:570px;color:#60766c;font-size:1.05rem;line-height:1.85}
+.nh-auth-visual{position:relative;overflow:hidden;height:230px;margin:35px 0 23px;border-radius:26px;background:radial-gradient(circle at 62% 30%,#fcf9ef 0%,#e4eee5 43%,#cbded1 100%);border:1px solid #d9e3d8;display:grid;place-items:center}
+.nh-auth-orbit{position:absolute;border-radius:50%;border:1px solid #fffefaad;width:205px;height:205px;transform:rotate(-20deg)}
+.nh-orbit-two{width:305px;height:305px;border-color:#ffffff70}
+.nh-auth-visual-symbol{font:150px Georgia,serif;color:#c9ae74;line-height:1;filter:drop-shadow(0 18px 25px #99855d40)}
+.nh-auth-visual-label{position:absolute;bottom:20px;left:25px;font-size:.75rem;color:#42675b;letter-spacing:.1em;font-weight:800}
+.nh-auth-benefits{display:grid;gap:10px}
+.nh-auth-benefits span{font-size:.85rem;color:#61776b}
+.nh-auth-benefits strong{font-size:.71rem;color:#ad935d;letter-spacing:.09em;margin-right:13px}
+body.academy-app .nh-auth-panel{width:100%;margin:0;padding:clamp(27px,3vw,45px);background:#fffefa;border-color:#e4e8df;box-shadow:0 20px 65px #375c4b12;border-radius:25px}
+body.academy-app .nh-auth-panel h2{font:600 clamp(2.1rem,3.1vw,2.8rem)/1.09 Georgia,serif;color:#315b50;letter-spacing:-.03em;margin:14px 0 16px}
+body.academy-app .nh-auth-panel>.eyebrow{color:#ab8c52}
+body.academy-app .nh-auth-panel>p{font-size:.89rem;color:#6e8074}
+body.academy-app .nh-auth-panel .auth-tabs{background:#f3f5f0;border-radius:12px;border:1px solid #e3e9e2;padding:4px;gap:4px}
+body.academy-app .nh-auth-panel .auth-tabs button{border:0;border-radius:9px;background:transparent;color:#60776c;padding:12px}
+body.academy-app .nh-auth-panel .auth-tabs button[aria-selected=true]{background:#fffefa;color:#285b4d;box-shadow:0 2px 9px #244c3e12}
+body.academy-app .nh-auth-panel .form-stack label{color:#445d52}
+body.academy-app .nh-auth-panel input{background:#fff;border-color:#d5e0d7}
+body.academy-app .nh-auth-panel #authSubmit{width:100%;border-radius:12px;padding:15px}
+body.academy-app .nh-auth-panel #forgotPassword{border:0;padding:10px 0;background:none;font-weight:700;box-shadow:none}
+body.academy-app .nh-auth-panel .small{font-size:.77rem;color:#748579;line-height:1.65}
+.nh-auth-back{display:inline-flex;margin-top:8px;color:#3b6d5c;font-size:.8rem;font-weight:750}
+.nh-auth-back:hover{text-decoration:underline}
+@media(max-width:850px){.nh-auth-layout{grid-template-columns:1fr;max-width:650px;margin:0 auto}body.academy-app:has(#authView:not([hidden])) .aula-main{padding-block:30px 55px}.nh-auth-welcome{padding:0}.nh-auth-visual{height:165px;margin:25px 0}.nh-auth-visual-symbol{font-size:100px}.nh-auth-benefits{grid-template-columns:1fr 1fr;gap:12px}.nh-auth-panel{max-width:none}}
+@media(max-width:540px){body.academy-app:has(#authView:not([hidden])) .aula-main{width:calc(100% - 28px)}body.academy-app .nh-auth-welcome h1{font-size:clamp(2.55rem,11vw,3.7rem);margin:17px 0}body.academy-app .nh-auth-welcome>p{font-size:.92rem}.nh-auth-visual{height:135px;margin:18px 0}.nh-auth-benefits{grid-template-columns:1fr}.nh-auth-layout{gap:24px}}
