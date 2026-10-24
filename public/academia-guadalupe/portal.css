@@ -75,3 +75,70 @@ body{background:radial-gradient(circle at 82% 6%,#214b40 0%,transparent 38%),rad
 .auth-brand img{width:clamp(210px,25vw,300px);height:auto;aspect-ratio:auto;object-fit:contain;background:#fbf8ef;border-radius:18px;padding:8px;filter:none}
 .sidebar .brand img{width:min(180px,100%);height:auto;max-height:none;aspect-ratio:auto;object-fit:contain;background:#fbf8ef;border-radius:14px;padding:7px;filter:none}
 @media(max-width:700px){.auth-brand img{width:220px}.sidebar .brand img{width:150px}}
+
+/* Experiencia clara: el blanco y el marfil dominan; el verde queda como acento. */
+:root{
+  color:#243530;
+  color-scheme:light;
+  --muted:#5f716b;
+  --muted2:#71827d;
+  --glass:rgba(255,255,255,.92);
+  --line:rgba(49,95,89,.16);
+  --shadow:0 24px 70px rgba(28,58,50,.14);
+  background:#fbfaf7;
+}
+body{
+  color:#243530;
+  background:linear-gradient(135deg,#fff 0%,#fbfaf7 56%,#f3f7f5 100%);
+}
+body::before{opacity:.18;background-image:radial-gradient(rgba(49,95,89,.22) .65px,transparent .65px)}
+p,small{color:var(--muted)}
+.glass{background:rgba(255,255,255,.92);border-color:rgba(49,95,89,.16);box-shadow:var(--shadow),inset 0 1px #fff}
+.auth-screen{max-width:none}
+.auth-background{
+  background:linear-gradient(90deg,rgba(255,255,255,.98) 5%,rgba(255,255,255,.94) 50%,rgba(250,248,242,.78)),url('../images/guadalupe-hero.webp') 78% center/cover no-repeat;
+  mask-image:none;
+  opacity:.42;
+}
+.auth-brand{margin-bottom:38px}
+.auth-brand img{box-shadow:0 14px 35px rgba(30,67,58,.1)}
+.auth-copy h1,.auth-card h2{color:#234b43}
+.auth-copy p{color:#53665f}
+.kicker{color:#9a7941}
+.gold{color:#a78343}
+.auth-bullets span{background:rgba(255,255,255,.82);border-color:rgba(49,95,89,.16);color:#315f59;box-shadow:0 8px 24px rgba(34,77,67,.08)}
+.auth-card{background:rgba(255,255,255,.96)}
+.auth-tabs{background:#f1f5f3;border:1px solid rgba(49,95,89,.1)}
+.auth-tabs button{color:#657771}
+.auth-tabs button[aria-selected=true]{background:#fff;color:#315f59;box-shadow:0 4px 14px rgba(35,78,68,.1)}
+label{color:#354942}
+input,select,textarea{background:#fff;border-color:#cbd9d4;color:#243530;box-shadow:0 3px 12px rgba(37,70,62,.04)}
+input::placeholder,textarea::placeholder{color:#8b9a95}
+.btn{background:#f5f7f6;color:#315f59;border-color:#cfdcd8}
+.btn:hover,.nav-link:hover,.media-card:hover{background:#edf3f1}
+.btn.primary{background:#315f59;color:#fff;box-shadow:0 9px 26px rgba(49,95,89,.22)}
+.btn.primary:hover{background:#244d46}
+.btn.plain{background:transparent;color:#536b64}
+.text-link{color:#8e6e38}
+.auth-footer{color:#64756f}
+
+/* Panel interior de la academia en la misma línea clara. */
+.shell{background:#fbfaf7}
+.sidebar{background:rgba(255,255,255,.96);border-right-color:rgba(49,95,89,.14);box-shadow:8px 0 30px rgba(31,63,55,.06)}
+.sidebar .brand,.sidebar-bottom{border-color:rgba(49,95,89,.12)}
+.sidebar .brand small,.nav-label{color:#8a7651}
+.nav-link{color:#50645e}
+.nav-link.active{background:#eef5f2;color:#234b43;border-color:rgba(49,95,89,.22);box-shadow:inset 3px 0 #b79a63}
+.topbar{background:rgba(255,255,255,.78);border-bottom-color:rgba(49,95,89,.12)}
+.tag,.state-pill{background:#f1f5f3;border-color:#dce6e2;color:#405a52}
+.stat,.panel,.media-card,.lesson-outline,.lesson-content,.form-panel,.community-post,.report-course{background:#fff}
+.section-title a,.media-actions a,.media-actions button,.list-row a{color:#95733b}
+.list-row,.empty-state,.lesson-outline button,.reply{background:#f7f9f8;border-color:#dde7e3;color:#385048}
+.lesson-outline button.active{background:#eaf3ef;border-color:#abc7be}
+.progress-track{background:#e3ebe8}
+.notice{background:#fbf6eb;border-color:#ddc89e;color:#775f35}
+.mobile-nav{background:rgba(255,255,255,.96);border-top-color:#dce6e2;box-shadow:0 -10px 30px rgba(31,63,55,.08)}
+.mobile-nav a{color:#60736d}.mobile-nav a.active{color:#8f6e36}
+@media(max-width:540px){
+  .auth-background{background:linear-gradient(rgba(255,255,255,.93),rgba(251,250,247,.95)),url('../images/guadalupe-hero.webp') center/cover no-repeat;opacity:.34}
+}
