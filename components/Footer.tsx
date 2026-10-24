@@ -21,7 +21,8 @@ export function Footer() {
             <Link href="/contacto">Contacto</Link>
             <a href="/panel/" rel="nofollow">Acceso privado</a>
             <Link href="/recursos">Artículos y recursos</Link>
-            <a href="/academia-guadalupe/">Ingresar a Academia Nicté Ha</a>
+            <Link href="/academia/">Conocer Academia Nicté Ha</Link>
+            <a href="/academia-guadalupe/">Acceso de alumnos</a>
           </div>
           <div>
             <h4>Contacto</h4>
