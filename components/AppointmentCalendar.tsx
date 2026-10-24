@@ -71,7 +71,7 @@ export function AppointmentCalendar() {
           <p className="g-booking-hint">Los horarios son preferencias; la disponibilidad se confirma personalmente.</p>
           {date && <div className="g-booking-hours">
             <strong>Horario preferido · Ciudad de México</strong>
-            <div className="g-booking-hour-grid">{HOURS.map(v=><button key={v} type="button" className={time===v?"selected":""} aria-pressed={time===v} onClick={()=>{setTime(v);setResult(null);}}>{v}</button>)}</div>
+            <div className="g-booking-hour-grid">{HOURS.map(v=><button key={v} type="button" disabled={new Date(date+"T"+v+":00-06:00").getTime() <= Date.now()+3600000} className={time===v?"selected":""} aria-pressed={time===v} onClick={()=>{setTime(v);setResult(null);}}>{v}</button>)}</div>
           </div>}
         </div>
         <form className="g-booking-card g-booking-form" onSubmit={submit}>
