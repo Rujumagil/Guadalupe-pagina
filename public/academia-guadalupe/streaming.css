@@ -239,6 +239,7 @@ body.academy-app .nh-auth-panel .small{font-size:.77rem;color:#748579;line-heigh
 /* Banner de aprendizaje empresarial Nicté Ha */
 .stream-hero-visual{
  background-image:linear-gradient(90deg,rgba(248,246,240,.38) 0%,rgba(248,246,240,0) 34%),
+ url("../images/nicte-ha-banner-hd.webp"),
  url("https://assets.lummi.ai/assets/QmaAHDQ5mDrD3gKbrwaBFBraSNiSJxiz7dwGNZGUogjioF?auto=format&w=1500");
  background-size:cover;
  background-position:center center;
@@ -260,3 +261,6 @@ body.academy-app .nh-auth-panel .small{font-size:.77rem;color:#748579;line-heigh
 .stream-hero-visual{background-position:center 39%;background-size:cover}
 .stream-hero-visual:after{background:linear-gradient(90deg,rgba(249,248,243,.35),transparent 30%)}
 @media(max-width:900px){.stream-hero-visual{background-position:center 31%}}
+
+/* Local HD image takes priority; second background is a graceful fallback. */
+.stream-hero-visual{background-size:cover,cover,cover;background-position:center 39%,center 39%,center 39%}
