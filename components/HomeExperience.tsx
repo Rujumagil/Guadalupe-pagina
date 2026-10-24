@@ -19,6 +19,7 @@ export function HomeExperience() {
             <div className="g-actions">
               <Link className="btn btn-primary" href={commercialLinks.personal}>Quiero coaching personal</Link>
               <Link className="btn g-btn-line" href={commercialLinks.business}>Busco coaching empresarial</Link>
+              <a className="btn g-btn-line" href="#agendar-cita">Agendar una cita</a>
             </div>
           </div>
           <div className="g-hero-photo">
