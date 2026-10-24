@@ -88,3 +88,90 @@ body.academy-app .auth-card label{color:#314d43}
 @media(max-width:900px){.stream-hero{grid-template-columns:1fr}.stream-hero-visual{min-height:180px}.stream-hero-emblem{font-size:125px}.stream-track{grid-auto-columns:minmax(260px,48%)}.stream-shelf-head{display:block}}
 @media(max-width:650px){body.academy-app .aula-main{width:min(100% - 28px,1380px)}body.academy-app .academy-header nav{gap:10px}body.academy-app .academy-header nav a{font-size:12px}.stream-hero{min-height:0;border-radius:18px}.stream-hero-copy{padding:28px 22px}.stream-hero-actions{flex-direction:column}.stream-hero-actions button{width:100%}.stream-hero-visual{min-height:140px}.stream-stats{gap:8px}.stream-stat{padding:14px 9px;display:block;text-align:center}.stream-stat strong{display:block;font-size:1.75rem}.stream-stat span{font-size:.67rem}.stream-track{grid-auto-columns:minmax(255px,82%)}.stream-empty{padding:25px;gap:10px}.stream-empty-symbol{font-size:65px}.stream-shelf-head p{margin-top:6px}.stream-hero-caption{bottom:10px;right:10px}.app-head{align-items:flex-start}body.academy-app .app-tabs button{padding:10px 13px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.stream-card,.stream-hero-primary,.stream-hero-secondary{transition:none}.stream-track{scroll-snap-type:none}}
+
+/* Nicté Ha Pearl Edition — claridad, calma y frescura.
+   Mantiene la experiencia de streaming sin una interfaz nocturna. */
+:root{
+ --nh-pearl:#f5f1eb;--nh-ivory:#fbf8f3;--nh-white:#fffdfb;
+ --nh-sand:#eee7dd;--nh-sage:#a8b8ae;--nh-deep:#315f59;
+ --nh-mid:#5d766c;--nh-gold:#c9ae74;--nh-ink:#33443d;
+ --nh-muted:#6e7a74;--nh-border:#e2ddd4;
+}
+body.academy-app{background:var(--nh-pearl);color:var(--nh-ink)}
+body.academy-app .academy-header{background:#fffdfb;border-bottom:1px solid var(--nh-border);box-shadow:0 4px 25px #3d63570b}
+body.academy-app .academy-header nav a{color:var(--nh-ink)}
+body.academy-app .academy-header nav a:hover{color:var(--nh-deep)}
+body.academy-app .academy-footer{background:#efebe3;color:#536b60;border-top:1px solid var(--nh-border)}
+body.academy-app .academy-footer .foot-tech{color:#76877b}
+body.academy-app .app-head .eyebrow{color:#987b42}
+body.academy-app .app-head h1{color:var(--nh-deep)}
+body.academy-app .app-head .small{color:var(--nh-muted)}
+body.academy-app .app-head .outline-btn{background:#fffdfb;border:1px solid #d4ddd4;color:var(--nh-deep)}
+body.academy-app .app-tabs button{background:#fffdfbaa;border-color:#dfe6dc;color:#536c60}
+body.academy-app .app-tabs button.selected{background:#315f59;border-color:#315f59;color:#fff}
+body.academy-app .app-tabs button:hover:not(.selected){background:#e8eee8}
+body.academy-app .feedback.error{color:#a13c36}
+body.academy-app .feedback.success{color:#277053}
+.stream-hero{
+ background:linear-gradient(115deg,#fffdfb 0%,#f5f1e9 52%,#e3eee7 100%);
+ border:1px solid #e1e4d9;
+ box-shadow:0 22px 64px #315f5910;
+}
+.stream-eyebrow{color:#9b824b}
+body.academy-app .stream-hero h2{color:#31574e}
+body.academy-app .stream-hero-copy p{color:#60766a}
+.stream-hero-primary{background:#315f59;color:#fff}
+.stream-hero-primary:hover{background:#204e47}
+.stream-hero-secondary{background:#fffdfa;border:1px solid #b9cbc0;color:#315f59}
+.stream-hero-secondary:hover{background:#e9f2ec}
+.stream-hero-visual{background:radial-gradient(circle at 54% 45%,#f5efe3 0%,#e7eee7 46%,#d7e5dc 100%)}
+.stream-hero-visual:after{background:linear-gradient(90deg,#f6f4ed 0%,transparent 55%)}
+.stream-hero-emblem{color:#c9ae74;text-shadow:0 20px 70px #c9ae7480}
+.stream-hero-caption{background:#fffcf3d9;color:#466055;border:1px solid #d7e3d9}
+.stream-stat{background:#fffdfa;border:1px solid #e4e2d9;box-shadow:0 7px 26px #284e4210}
+.stream-stat strong{color:#315f59}
+.stream-stat span{color:#687c70}
+body.academy-app .stream-shelf-head h2{color:#31584e}
+body.academy-app .stream-shelf-head p{color:#6e8177}
+.stream-track{scrollbar-color:#bacbbd transparent}
+.stream-card{background:#fffdfb;border:1px solid #e1e5dd;box-shadow:0 9px 30px #314a3c0d}
+.stream-card:hover{border-color:#b5c9ba;box-shadow:0 16px 40px #294b3d20}
+.stream-mind{background:radial-gradient(circle at 70% 26%,#f4e5c3,#c0d3c0 37%,#7da595 100%)}
+.stream-voice{background:radial-gradient(circle at 22% 72%,#f1ece1,#b8cace 40%,#779e9b 100%)}
+.stream-leadership{background:radial-gradient(circle at 70% 25%,#f6e7c7,#d1c7af 38%,#96afa1 100%)}
+.stream-team{background:radial-gradient(circle at 37% 32%,#e6e8db,#b8d0c7 40%,#87a6a0 100%)}
+.stream-glow{border-color:#ffffffc2;box-shadow:0 0 0 30px #ffffff25,0 0 0 70px #ffffff15}
+.stream-symbol{color:#fdf8e8;text-shadow:0 12px 32px #56786740}
+.stream-art-label{color:#34574e;text-shadow:0 1px #ffffff7a}
+.stream-card-pill{background:#fffef0ea;border:1px solid #e6e2cd;color:#3a5d4e}
+.stream-category{color:#947c4d}
+body.academy-app .stream-card h3{color:#32564b}
+body.academy-app .stream-card p{color:#687b71}
+.stream-course-stat{color:#64786d}
+.stream-card-action{background:#315f59;color:#fff}
+.stream-card-action:hover{background:#204b44}
+.stream-empty{background:linear-gradient(110deg,#fffdfb,#eaf1e9);border:1px solid #e1e5dc;box-shadow:0 12px 40px #2c564313}
+.stream-empty-symbol{color:#c1a66e}
+body.academy-app .stream-empty h2{color:#315f59}
+body.academy-app .stream-empty p{color:#63796e}
+.stream-catalog-notice{background:#fffdfa;border:1px solid var(--nh-border)}
+.stream-catalog-notice strong{color:#315f59}
+.stream-catalog-notice p{color:#6c8176}
+body.academy-app .grid-tools h2,body.academy-app .app-card h3{color:#315f59}
+body.academy-app .grid-tools p,body.academy-app .app-card p{color:#64766d}
+body.academy-app .app-card{background:#fffdfa;border-color:#e1e4dc;color:#344940;box-shadow:0 9px 30px #3053480b}
+body.academy-app .app-card label{color:#405c50}
+body.academy-app .app-card .small{color:#6a7a70}
+body.academy-app .app-card .primary-btn{background:#315f59;color:#fff}
+body.academy-app .app-card .outline-btn{background:#fffdfa;color:#315f59;border-color:#c9d9cd}
+body.academy-app .lesson-sidebar{background:#ecf2ec;border-color:#dbe7dc;color:#365448}
+body.academy-app .lesson-sidebar h3{color:#315f59}
+body.academy-app .lesson-sidebar button{background:#fffdfb;color:#49685a;border-color:#d9e4d8}
+body.academy-app .lesson-sidebar button.selected{background:#315f59;color:#fff}
+body.academy-app .lesson-copy{color:#455c50}
+body.academy-app .notice,body.academy-app .empty{background:#fdfbf8;color:#66796e;border-color:#dddcd5}
+body.academy-app .bar-track{background:#e8ede6}
+body.academy-app .bar-track>div{background:#6f9481}
+body.academy-app .app-pill{background:#eaf1e9;color:#345e50}
+body.academy-app .auth-card{box-shadow:0 14px 40px #2a5e4910}
+@media(max-width:650px){body.academy-app .academy-header nav a{color:#496658}.stream-hero-caption{background:#ffffffdc}}
