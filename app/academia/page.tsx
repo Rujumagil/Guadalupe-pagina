@@ -26,11 +26,26 @@ const inquiry = buildWhatsAppUrl("Hola, me interesa conocer los próximos cursos
 
 export default function AcademiaPage() {
   return <main className="nh-page">
+    <header className="nh-header">
+      <div className="shell nh-header-inner">
+        <Link href="/academia/" className="nh-header-brand" aria-label="Academia Nicté Ha, inicio">
+          <img src="/images/academia-nicte-ha-logo.webp" alt="Academia Nicté Ha" />
+          <span><strong>Academia Nicté Ha</strong><small>Por Guadalupe Gómez Pezuela</small></span>
+        </Link>
+        <nav className="nh-nav" aria-label="Navegación de Academia Nicté Ha">
+          <a href="#nosotros">Nuestra esencia</a>
+          <a href="#programas">Formación</a>
+          <a href="#guadalupe">Guadalupe</a>
+          <Link href="/">Sitio de Guadalupe ↗</Link>
+        </nav>
+        <a className="nh-header-campus" href="/academia-guadalupe/">Entrar a mi academia →</a>
+      </div>
+    </header>
     <section className="nh-hero">
       <div className="shell nh-hero-grid">
         <div className="nh-hero-copy">
           <span className="nh-kicker">Un espacio para aprender, crecer y transformar</span>
-          <h1>Tu crecimiento merece un espacio propio.</h1>
+          <h1>Un espacio para <em>seguir creciendo.</em></h1>
           <p className="nh-lead">En <strong>Academia Nicté Ha</strong> encontrarás experiencias de formación en coaching y desarrollo humano pensadas para acompañarte en cada nueva etapa.</p>
           <p>Aprende a tu ritmo, fortalece tus habilidades y convierte lo que descubres en acciones para tu vida y tu trabajo.</p>
           <div className="nh-actions">
@@ -41,16 +56,15 @@ export default function AcademiaPage() {
         </div>
         <div className="nh-hero-aside">
           <div className="nh-logo-card">
+            <span className="nh-card-eyebrow">ACADEMIA NICTÉ HA</span>
             <img src="/images/academia-nicte-ha-logo.webp" alt="Logo oficial de Academia Nicté Ha" />
-            <div className="nh-rule"/>
-            <strong>Formación en coaching y desarrollo humano</strong>
-            <span>Por Guadalupe Gómez Pezuela</span>
+            <p>Un espacio de formación creado para ti.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section className="nh-intro shell">
+    <section className="nh-intro shell" id="nosotros">
       <span className="nh-kicker">¿Qué es Nicté Ha?</span>
       <h2>Aprender también es una forma de florecer.</h2>
       <p>Una academia creada por Guadalupe Gómez Pezuela para acercar conocimientos, herramientas y experiencias que favorezcan el desarrollo personal, la comunicación y el liderazgo. Cada propuesta busca ayudarte a llevar el aprendizaje a tu realidad.</p>
@@ -65,19 +79,20 @@ export default function AcademiaPage() {
       <div className="shell">
         <div className="nh-section-head">
           <div><span className="nh-kicker">Nuestros caminos de aprendizaje</span><h2>Formación para cada etapa de tu vida.</h2></div>
-          <p>Estas son las líneas de aprendizaje en preparación. Los programas específicos, fechas y condiciones se anunciarán cuando estén confirmados.</p>
+          <p>Descubre las tres áreas que guían nuestra propuesta. Los cursos y sus inscripciones se anunciarán conforme estén listos.</p>
         </div>
         <div className="nh-program-grid">{routes.map(item=><article className="nh-program" key={item.number}>
           <div className="nh-program-top"><span>{item.number}</span><small>{item.tag}</small></div>
+          <div className="nh-program-status">Próximamente</div>
           <h3>{item.heading}</h3><p>{item.detail}</p>
           <div className="nh-topics">{item.topics.map(t=><span key={t}>{t}</span>)}</div>
-          <a href={inquiry} target="_blank" rel="noopener noreferrer">Quiero recibir información <span aria-hidden="true">↗</span></a>
+          <a href={inquiry} target="_blank" rel="noopener noreferrer">Consultar próximos cursos <span aria-hidden="true">↗</span></a>
         </article>)}</div>
         <p className="nh-catalog-note">Catálogo en preparación. No se están ofreciendo matrículas automáticas ni fechas sin confirmar.</p>
       </div>
     </section>
 
-    <section className="nh-founder shell">
+    <section className="nh-founder shell" id="guadalupe">
       <div className="nh-founder-photo"><img src="/images/guadalupe-trayectoria.webp" alt="Guadalupe Gómez Pezuela" loading="lazy"/></div>
       <div><span className="nh-kicker">La experiencia detrás de la academia</span>
         <h2>Una formación con la cercanía de Guadalupe.</h2>
