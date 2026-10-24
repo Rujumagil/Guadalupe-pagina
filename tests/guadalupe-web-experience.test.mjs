@@ -44,7 +44,11 @@ test("responsive nav has an accessible button and fits tablet breakpoints",()=>{
 test("Guadalupe educational site and ETERNI remain separate",()=>{
  const footer=file("components/Footer.tsx");
  const bridge=file("app/academia-eterni/page.tsx");
- assert.match(footer,/Ingresar a Academia Nicté Ha/);
+ assert.match(footer,/<Link href="\/academia\/">Conocer Academia Nicté Ha<\/Link>/);
+ assert.match(footer,/<a href="\/academia-guadalupe\/">Acceso de alumnos<\/a>/);
+ const publicAcademy=file("app/academia/page.tsx");
+ assert.match(publicAcademy,/Academia Nicté Ha/);
+ assert.match(publicAcademy,/Entrar a mi academia/);
  assert.doesNotMatch(footer,/href="\/academia-eterni"/);
  assert.match(bridge,/dos academias|Dos academias/i);
  assert.match(bridge,/credenciales no se comparten/i);
