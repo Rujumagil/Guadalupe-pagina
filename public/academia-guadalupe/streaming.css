@@ -1,0 +1,90 @@
+/* Nicté Ha · immersive learning experience. Scoped to aula.html. */
+:root{--stream-bg:#101b19;--stream-panel:#1b302b;--stream-gold:#d6bd7e}
+body.academy-app{background:var(--stream-bg);color:#eff5ee;font-family:Inter,Arial,sans-serif}
+body.academy-app .academy-header{position:relative;min-height:92px;background:#101a18;border-bottom:1px solid #ffffff18;padding-block:10px}
+body.academy-app .academy-header .brand-link img{width:78px;max-width:78px;border-radius:9px;background:#fdfbf6}
+body.academy-app .academy-header nav a{color:#dbe7df;font-weight:600}
+body.academy-app .academy-header nav a:hover{color:var(--stream-gold)}
+body.academy-app .academy-footer{background:#0d1716;border-top:1px solid #ffffff18;color:#bbc9bf}
+body.academy-app .aula-main{width:min(1380px,calc(100% - 58px));padding-top:24px;min-height:calc(100vh - 180px)}
+body.academy-app .app-head{padding:20px 0 6px}
+body.academy-app .app-head .eyebrow{color:var(--stream-gold);font-size:10px}
+body.academy-app .app-head h1{font:600 clamp(1.55rem,2.6vw,2.55rem) Georgia,serif;color:#fff;margin:9px 0 3px}
+body.academy-app .app-head .small{color:#9db4a9;margin:0}
+body.academy-app .app-head .outline-btn{background:#ffffff0c;border:1px solid #ffffff33;color:#e9f1ea}
+body.academy-app .app-tabs{border:0;margin:18px 0 24px;display:flex;gap:9px}
+body.academy-app .app-tabs button{border-radius:999px;background:#ffffff0b;border:1px solid #ffffff19;color:#c6d6ce;padding:11px 19px;font-size:13px;transition:.2s}
+body.academy-app .app-tabs button.selected{background:#e4c78b;color:#172c25;border-color:#e4c78b}
+body.academy-app .app-tabs button:hover:not(.selected){background:#ffffff20}
+body.academy-app .feedback{min-height:10px}
+body.academy-app .feedback.error{color:#ffc1b9}
+body.academy-app .feedback.success{color:#aedfc8}
+.stream-hero{display:grid;grid-template-columns:1.1fr .9fr;min-height:360px;background:radial-gradient(circle at 70% 48%,#395b49 0%,#1f3b32 38%,#162925 75%);overflow:hidden;border-radius:25px;border:1px solid #ffffff19;margin-bottom:20px}
+.stream-hero-copy{padding:clamp(26px,4vw,58px);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1}
+.stream-eyebrow{font-size:.7rem;color:#dbc38c;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+body.academy-app .stream-hero h2{font:600 clamp(2.25rem,4vw,4.15rem)/1.04 Georgia,serif;color:#fff;margin:19px 0;max-width:750px}
+body.academy-app .stream-hero-copy p{color:#deebe1;font-size:1rem;max-width:500px;line-height:1.75}
+.stream-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.stream-hero-primary,.stream-hero-secondary{border-radius:99px;padding:13px 20px;font-size:.85rem;font-weight:800;border:1px solid transparent}
+.stream-hero-primary{color:#1c3028;background:#e4c88f}.stream-hero-secondary{color:white;background:#ffffff18;border-color:#ffffff4d}
+.stream-hero-primary:hover{background:#f4dca9}.stream-hero-secondary:hover{background:#ffffff30}
+.stream-hero-visual{min-height:340px;position:relative;display:grid;place-items:center;isolation:isolate;overflow:hidden}
+.stream-hero-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1a302c 0%,transparent 60%);z-index:-1}
+.stream-hero-visual .stream-art{width:95%;height:100%;border:0;border-radius:0}
+.stream-hero-emblem{font:200px Georgia,serif;line-height:1;color:#d2b779;text-shadow:0 0 80px #b0ac754f;transform:rotate(-15deg)}
+.stream-hero-caption{position:absolute;bottom:30px;right:30px;color:#f6f6ed;font-size:.78rem;background:#13261fa8;padding:9px 12px;border-radius:12px;max-width:310px;text-align:right}
+.stream-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 34px}
+.stream-stat{background:#ffffff09;border:1px solid #ffffff16;border-radius:17px;padding:18px 24px;display:flex;align-items:center;gap:15px}
+.stream-stat strong{font:500 2.2rem Georgia,serif;color:#ebcf98}
+.stream-stat span{font-size:.83rem;color:#c6d7cd}
+.stream-shelf{margin:30px 0 46px}
+.stream-shelf-head{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-bottom:18px}
+body.academy-app .stream-shelf-head h2{font:600 clamp(1.45rem,2.5vw,2rem) Georgia,serif;color:#f9fbf5;margin:0}
+body.academy-app .stream-shelf-head p{color:#9cb2a8;font-size:.81rem;margin:0}
+.stream-track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,31%);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:15px;scrollbar-color:#688b7b transparent}
+.stream-card{scroll-snap-align:start;min-width:0;background:#1b2b27;border:1px solid #ffffff19;border-radius:19px;overflow:hidden;transition:transform .2s,border-color .2s}
+.stream-card:hover{transform:translateY(-4px);border-color:#d7bb806d}
+.stream-art{position:relative;height:188px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#406b5a,#112c28)}
+.stream-mind{background:radial-gradient(circle at 72% 24%,#d1b57c,#577f66 30%,#183f34 74%)}
+.stream-voice{background:radial-gradient(circle at 25% 70%,#8b9c94,#385a66 35%,#142b36 85%)}
+.stream-leadership{background:radial-gradient(circle at 70% 22%,#c9ab77,#776a50 31%,#263932 81%)}
+.stream-team{background:radial-gradient(circle at 36% 35%,#72958b,#32495d 40%,#152b33 90%)}
+.stream-glow{position:absolute;width:210px;height:210px;border:1px solid #ffffff49;border-radius:50%;box-shadow:0 0 0 30px #ffffff0a,0 0 0 70px #ffffff08;transform:translate(30px,5px)}
+.stream-symbol{position:relative;color:#f3e1b5;font:130px Georgia,serif;text-shadow:0 15px 30px #0b1b1e85;transform:rotate(-12deg)}
+.stream-art-label{position:absolute;top:18px;left:18px;letter-spacing:.15em;font-size:9px;font-weight:800;color:#f4f3e7}
+.stream-card-pill{position:absolute;bottom:14px;left:16px;border:1px solid #ffffff6b;background:#13281fb8;color:#fff;border-radius:99px;font-size:10px;padding:6px 10px}
+.stream-card-copy{padding:20px 20px 24px}
+.stream-category{font-size:.67rem;text-transform:uppercase;letter-spacing:.11em;color:#d6bd8b;font-weight:800}
+body.academy-app .stream-card h3{font:600 1.5rem Georgia,serif;color:#fff;margin:10px 0}
+body.academy-app .stream-card p{color:#b7c9be;font-size:.82rem;line-height:1.55;min-height:58px}
+.stream-course-stat{font-size:.76rem;color:#c6d3c9;margin-bottom:17px}
+.stream-card-action{width:100%;background:#e4c88f;border:0;color:#17362a;padding:12px;border-radius:10px;font-size:.81rem;font-weight:850}
+.stream-card-action:hover{background:#f7dfaa}
+.stream-empty{border:1px solid #ffffff24;border-radius:22px;background:linear-gradient(105deg,#223d35,#162b27);min-height:235px;display:flex;align-items:center;gap:40px;padding:32px 50px}
+.stream-empty-symbol{font:130px Georgia,serif;color:#c9b47d;line-height:1}
+.stream-empty-content{max-width:610px}
+body.academy-app .stream-empty h2{font:600 clamp(1.7rem,2.8vw,2.6rem) Georgia,serif;color:#fff;margin:12px 0}
+body.academy-app .stream-empty p{color:#c8d9ce;font-size:.9rem}
+.stream-catalog-notice{padding:35px;border-radius:20px;background:#ffffff0c;border:1px solid #ffffff25}
+.stream-catalog-notice strong{font:600 1.6rem Georgia,serif;color:#f6f2e7}
+.stream-catalog-notice p{color:#c8d6ce;font-size:.9rem}
+body.academy-app .grid-tools h2,body.academy-app .app-card h3{color:#e7f0e6}
+body.academy-app .grid-tools p,body.academy-app .app-card p{color:#c2d1c8}
+body.academy-app .app-card{background:#1c2f2a;color:#e8eee7;border-color:#ffffff22}
+body.academy-app .app-card input,body.academy-app .app-card textarea,body.academy-app .app-card select{background:#f8faf7;color:#233f32}
+body.academy-app .app-card label{color:#d8e3d9}
+body.academy-app .app-card .small{color:#b2c5b8}
+body.academy-app .app-card .primary-btn{background:#e3c68e;color:#213e34}
+body.academy-app .lesson-sidebar{background:#1d342d;border-color:#ffffff2b;color:#e7f1e8}
+body.academy-app .lesson-sidebar h3{color:#e8eee7}
+body.academy-app .lesson-sidebar button{background:#2d4a3d;color:#f5f7ef;border-color:#ffffff2a}
+body.academy-app .lesson-sidebar button.selected{background:#dfc58c;color:#1c392c}
+body.academy-app .lesson-copy{color:#e9f0e9;line-height:1.9}
+body.academy-app .notice,body.academy-app .empty{background:#21372e;color:#d2e3d6;border-color:#ffffff23}
+body.academy-app .bar-track{background:#ffffff26}body.academy-app .bar-track>div{background:#dfc58c}
+body.academy-app .auth-card{background:#f9faf7;color:#263a33}
+body.academy-app .auth-card h1,body.academy-app .auth-card p{color:#284b40}
+body.academy-app .auth-card label{color:#314d43}
+@media(max-width:900px){.stream-hero{grid-template-columns:1fr}.stream-hero-visual{min-height:180px}.stream-hero-emblem{font-size:125px}.stream-track{grid-auto-columns:minmax(260px,48%)}.stream-shelf-head{display:block}}
+@media(max-width:650px){body.academy-app .aula-main{width:min(100% - 28px,1380px)}body.academy-app .academy-header nav{gap:10px}body.academy-app .academy-header nav a{font-size:12px}.stream-hero{min-height:0;border-radius:18px}.stream-hero-copy{padding:28px 22px}.stream-hero-actions{flex-direction:column}.stream-hero-actions button{width:100%}.stream-hero-visual{min-height:140px}.stream-stats{gap:8px}.stream-stat{padding:14px 9px;display:block;text-align:center}.stream-stat strong{display:block;font-size:1.75rem}.stream-stat span{font-size:.67rem}.stream-track{grid-auto-columns:minmax(255px,82%)}.stream-empty{padding:25px;gap:10px}.stream-empty-symbol{font-size:65px}.stream-shelf-head p{margin-top:6px}.stream-hero-caption{bottom:10px;right:10px}.app-head{align-items:flex-start}body.academy-app .app-tabs button{padding:10px 13px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.stream-card,.stream-hero-primary,.stream-hero-secondary{transition:none}.stream-track{scroll-snap-type:none}}
