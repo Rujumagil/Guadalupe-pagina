@@ -235,3 +235,23 @@ body.academy-app .nh-auth-panel .small{font-size:.77rem;color:#748579;line-heigh
 .nh-auth-orbit{display:none}
 @media(max-width:850px){.nh-auth-visual{height:270px}}
 @media(max-width:540px){.nh-auth-visual{height:230px}}
+
+/* Banner de aprendizaje empresarial Nicté Ha */
+.stream-hero-visual{
+ background-image:linear-gradient(90deg,rgba(248,246,240,.38) 0%,rgba(248,246,240,0) 34%),
+ url("../images/nicte-ha-executive-hero.webp");
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+}
+.stream-hero-visual:after{
+ background:linear-gradient(90deg,rgba(249,248,243,.66),transparent 40%);
+}
+.stream-hero-emblem{display:none}
+.stream-hero-caption{z-index:1;background:rgba(255,253,247,.92);border:1px solid #ffffffa6}
+@media(max-width:900px){
+ .stream-hero-visual{min-height:235px;background-position:center 37%}
+}
+@media(max-width:650px){
+ .stream-hero-visual{min-height:185px}
+}
