@@ -2,15 +2,31 @@
 <html lang="es-MX"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="theme-color" content="#101c1a">
+<meta name="theme-color" content="#F5F1EB">
 <title>Mi aprendizaje | Academia Nicté Ha</title><link rel="stylesheet" href="./academy.css"><link rel="stylesheet" href="./streaming.css">
 </head><body class="academy-app">
 <header class="academy-header"><a class="brand-link" href="./" aria-label="Academia Nicté Ha"><img src="../images/academia-nicte-ha-logo.webp" alt="Academia Nicté Ha"></a>
-<nav aria-label="Enlaces"><a href="../academia/">Descubrir Nicté Ha</a><a href="../">Guadalupe</a><a href="../panel/">CRM privado</a></nav></header>
+<nav aria-label="Enlaces"><a href="../academia/">Descubrir Nicté Ha</a><a href="../">Guadalupe</a></nav></header>
 <main class="container aula-main">
-<section id="authView" class="auth-card">
-  <span class="eyebrow">ACADEMIA NICTÉ HA</span><h1>Tu espacio de aprendizaje.</h1>
-  <p>Accede a tus cursos, retoma las lecciones y consulta tu progreso. Registrarte no habilita cursos de forma automática.</p>
+<section id="authView" class="nh-auth-layout" aria-label="Acceso a Academia Nicté Ha">
+  <div class="nh-auth-welcome">
+    <span class="nh-auth-kicker">ACADEMIA NICTÉ HA · POR GUADALUPE GÓMEZ PEZUELA</span>
+    <h1>Tu siguiente capítulo <em>comienza aquí.</em></h1>
+    <p>Un lugar para aprender con calma, descubrir nuevas perspectivas y llevar tus ideas a la práctica.</p>
+    <div class="nh-auth-visual" aria-hidden="true">
+      <span class="nh-auth-orbit nh-orbit-one"></span><span class="nh-auth-orbit nh-orbit-two"></span>
+      <span class="nh-auth-visual-symbol">✦</span>
+      <span class="nh-auth-visual-label">Aprende · Reflexiona · Transforma</span>
+    </div>
+    <div class="nh-auth-benefits">
+      <span><strong>01</strong> Tus programas en un solo lugar</span>
+      <span><strong>02</strong> Avanza a tu propio ritmo</span>
+      <span><strong>03</strong> Continúa donde te quedaste</span>
+    </div>
+  </div>
+  <div class="auth-card nh-auth-panel">
+  <span class="eyebrow">BIENVENIDO A TU ACADEMIA</span><h2>Tu espacio de aprendizaje.</h2>
+  <p>Ingresa a tu cuenta para continuar tu formación y consultar tus avances.</p>
   <div class="auth-tabs" role="group" aria-label="Acceso"><button id="signInTab" type="button" aria-selected="true">Iniciar sesión</button><button id="signUpTab" type="button" aria-selected="false">Crear cuenta</button></div>
   <form id="authForm" class="form-stack">
     <label id="fullNameLabel" hidden>Nombre completo<input type="text" name="fullName" maxlength="160" autocomplete="name"></label>
@@ -25,7 +41,9 @@
     <button type="submit" class="primary-btn">Guardar nueva contraseña</button>
   </form>
   <p id="authMessage" role="status" aria-live="polite" class="feedback"></p>
-  <p class="small">El registro puede requerir confirmación de correo. Para recuperar el acceso, utiliza el botón anterior.</p>
+  <p class="small">Crear una cuenta no otorga automáticamente acceso a cursos. Guadalupe habilita las matrículas autorizadas.</p>
+    <a class="nh-auth-back" href="../academia/">← Conocer los programas de Nicté Ha</a>
+  </div>
 </section>
 <section id="learningView" hidden>
   <div class="app-head"><div><span class="eyebrow">ACADEMIA NICTÉ HA · CAMPUS DIGITAL</span><h1 id="learningHeading">Mi espacio de aprendizaje</h1><p id="who" class="small"></p></div><button id="signOut" type="button" class="outline-btn">Cerrar sesión</button></div>
