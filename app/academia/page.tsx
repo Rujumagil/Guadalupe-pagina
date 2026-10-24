@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildWhatsAppUrl } from "@/config/site";
+import { academyDrafts } from "@/content/nicte-ha-courses";
 import "./academia.css";
 
 export const metadata: Metadata = {
@@ -8,12 +9,6 @@ export const metadata: Metadata = {
   description: "Conoce Academia Nicté Ha, el espacio de formación de Guadalupe Gómez Pezuela. Explora nuestras líneas de aprendizaje y solicita información de próximos programas.",
   alternates: { canonical: "/academia/" },
 };
-
-const routes = [
-  {number:"01",heading:"Autoconocimiento y desarrollo personal",tag:"Desarrollo humano",detail:"Herramientas de reflexión y aprendizaje para reconocer tus recursos, mejorar tu comunicación y avanzar con mayor claridad.",topics:["Autoconocimiento","Confianza y límites","Decisiones conscientes"]},
-  {number:"02",heading:"Comunicación y nuevas perspectivas",tag:"Habilidades personales",detail:"Experiencias formativas para escuchar, conversar mejor y comprender cómo nuestras interpretaciones influyen en las decisiones.",topics:["Comunicación","Escucha","Cambio de perspectiva"]},
-  {number:"03",heading:"Liderazgo y coaching ejecutivo",tag:"Desarrollo profesional",detail:"Formación orientada a fortalecer conversaciones, colaboración, delegación y liderazgo en organizaciones y equipos.",topics:["Liderazgo","Trabajo con equipos","Conversaciones efectivas"]},
-];
 
 const questions = [
   {q:"¿Puedo conocer los programas antes de registrarme?",a:"Sí. Puedes consultar las líneas de formación y solicitar información sin crear una cuenta. El acceso al campus corresponde a alumnos con programas autorizados."},
@@ -79,16 +74,16 @@ export default function AcademiaPage() {
       <div className="shell">
         <div className="nh-section-head">
           <div><span className="nh-kicker">Nuestros caminos de aprendizaje</span><h2>Formación para cada etapa de tu vida.</h2></div>
-          <p>Descubre las tres áreas que guían nuestra propuesta. Los cursos y sus inscripciones se anunciarán conforme estén listos.</p>
+          <p>Conoce los cuatro programas en desarrollo. Consulta sus fichas informativas; las inscripciones abrirán cuando Guadalupe confirme sus detalles.</p>
         </div>
-        <div className="nh-program-grid">{routes.map(item=><article className="nh-program" key={item.number}>
-          <div className="nh-program-top"><span>{item.number}</span><small>{item.tag}</small></div>
-          <div className="nh-program-status">Próximamente</div>
-          <h3>{item.heading}</h3><p>{item.detail}</p>
-          <div className="nh-topics">{item.topics.map(t=><span key={t}>{t}</span>)}</div>
-          <a href={inquiry} target="_blank" rel="noopener noreferrer">Consultar próximos cursos <span aria-hidden="true">↗</span></a>
+        <div className="nh-program-grid">{academyDrafts.map((item,i)=><article className="nh-program" key={item.slug}>
+          <div className="nh-program-top"><span>{String(i+1).padStart(2,"0")}</span><small>{item.category}</small></div>
+          <div className="nh-program-status">Programa en preparación</div>
+          <h3>{item.title}</h3><p>{item.summary}</p>
+          <div className="nh-topics"><span>{item.level}</span><span>Duración por confirmar</span></div>
+          <Link className="nh-program-link" href={`/academia/programas/${item.slug}/`}>Conocer el programa <span aria-hidden="true">↗</span></Link>
         </article>)}</div>
-        <p className="nh-catalog-note">Catálogo en preparación. No se están ofreciendo matrículas automáticas ni fechas sin confirmar.</p>
+        <p className="nh-catalog-note">Los programas aún son borradores. Sus fichas son informativas: no hay temarios definitivos, precios ni fechas de inscripción anunciadas.</p>
       </div>
     </section>
 
