@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import "@/styles/appointment-calendar.css";
 
 const API = "https://app.proyectocompas.app/api/public/guadalupe/appointments";
@@ -23,6 +23,14 @@ export function AppointmentCalendar() {
   const [consent,setConsent] = useState(false);
   const [website,setWebsite] = useState("");
   const [busy,setBusy] = useState(false);
+  const [clock,setClock] = useState(0);
+  useEffect(()=>{
+    const refresh=()=>setClock(Date.now());
+    const id=window.setInterval(refresh, 30_000);
+    // Schedule first update outside render; the server and initial client render match.
+    const first=window.setTimeout(refresh,0);
+    return ()=>{window.clearInterval(id);window.clearTimeout(first);};
+  },[]);
   const [result,setResult] = useState<{ok:boolean;message:string}|null>(null);
 
   const today = todayInMexico();
@@ -71,7 +79,7 @@ export function AppointmentCalendar() {
           <p className="g-booking-hint">Los horarios son preferencias; la disponibilidad se confirma personalmente.</p>
           {date && <div className="g-booking-hours">
             <strong>Horario preferido · Ciudad de México</strong>
-            <div className="g-booking-hour-grid">{HOURS.map(v=><button key={v} type="button" disabled={new Date(date+"T"+v+":00-06:00").getTime() <= Date.now()+3600000} className={time===v?"selected":""} aria-pressed={time===v} onClick={()=>{setTime(v);setResult(null);}}>{v}</button>)}</div>
+            <div className="g-booking-hour-grid">{HOURS.map(v=><button key={v} type="button" disabled={(clock > 0 && new Date(date+"T"+v+":00-06:00").getTime() <= clock+3600000)} className={time===v?"selected":""} aria-pressed={time===v} onClick={()=>{setTime(v);setResult(null);}}>{v}</button>)}</div>
           </div>}
         </div>
         <form className="g-booking-card g-booking-form" onSubmit={submit}>
