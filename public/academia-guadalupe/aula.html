@@ -2,11 +2,11 @@
 <html lang="es-MX"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="theme-color" content="#315F59">
-<title>Mi aprendizaje | Academia Nicté Ha</title><link rel="stylesheet" href="./academy.css">
+<meta name="theme-color" content="#101c1a">
+<title>Mi aprendizaje | Academia Nicté Ha</title><link rel="stylesheet" href="./academy.css"><link rel="stylesheet" href="./streaming.css">
 </head><body class="academy-app">
 <header class="academy-header"><a class="brand-link" href="./" aria-label="Academia Nicté Ha"><img src="../images/academia-nicte-ha-logo.webp" alt="Academia Nicté Ha"></a>
-<nav aria-label="Enlaces"><a href="./">Programas</a><a href="../">Sitio Guadalupe</a><a href="../panel/">CRM privado</a></nav></header>
+<nav aria-label="Enlaces"><a href="../academia/">Descubrir Nicté Ha</a><a href="../">Guadalupe</a><a href="../panel/">CRM privado</a></nav></header>
 <main class="container aula-main">
 <section id="authView" class="auth-card">
   <span class="eyebrow">ACADEMIA NICTÉ HA</span><h1>Tu espacio de aprendizaje.</h1>
@@ -28,11 +28,11 @@
   <p class="small">El registro puede requerir confirmación de correo. Para recuperar el acceso, utiliza el botón anterior.</p>
 </section>
 <section id="learningView" hidden>
-  <div class="app-head"><div><span class="eyebrow">ACADEMIA NICTÉ HA</span><h1 id="learningHeading">Mi aprendizaje</h1><p id="who" class="small"></p></div><button id="signOut" type="button" class="outline-btn">Cerrar sesión</button></div>
+  <div class="app-head"><div><span class="eyebrow">ACADEMIA NICTÉ HA · CAMPUS DIGITAL</span><h1 id="learningHeading">Mi espacio de aprendizaje</h1><p id="who" class="small"></p></div><button id="signOut" type="button" class="outline-btn">Cerrar sesión</button></div>
   <nav class="app-tabs" aria-label="Secciones">
-    <button data-view="myCourses" class="selected" type="button">Mis cursos</button>
-    <button data-view="catalog" type="button">Catálogo</button>
-    <button data-view="admin" id="adminTab" type="button" hidden>Administración</button>
+    <button data-view="myCourses" class="selected" type="button" aria-selected="true">⌂ &nbsp; Inicio</button>
+    <button data-view="catalog" type="button" aria-selected="false">▦ &nbsp; Explorar</button>
+    <button data-view="admin" id="adminTab" type="button" aria-selected="false" hidden>⚙ &nbsp; Administración</button>
   </nav>
   <p id="appNotice" role="status" aria-live="polite" class="feedback"></p>
   <div id="appContent"></div>
