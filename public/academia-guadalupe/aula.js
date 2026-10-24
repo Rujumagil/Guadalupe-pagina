@@ -55,31 +55,89 @@ const hasCourse=c=>state.enrollments.some(e=>e.course_id===c.id&&e.student_id===
  ["active","completed"].includes(e.status)&&(!e.expires_at||new Date(e.expires_at)>new Date()));
 function mount(){const root=$("#appContent");root.replaceChildren();return root}
 function heading(text,copy){const box=node("div","grid-tools"),left=node("div");left.append(node("h2","",text),node("p","small",copy));box.append(left);return box}
-function card(course,info,handler,label="Continuar →"){
- const c=node("article","app-card");
- c.append(node("span","eyebrow",course.category),node("h3","",course.title),node("p","",course.summary),node("p","small",info));
- if(handler)c.append(button(label,handler,"primary-btn"));
- return c;
+const portraits={
+ "Desarrollo personal":"mind",
+ "Comunicación y PNL":"voice",
+ "Liderazgo profesional":"leadership",
+ "Desarrollo empresarial":"team"
+};
+function courseArtwork(course){
+ const art=node("div","stream-art stream-"+(portraits[course.category]||"mind"));
+ const glow=node("div","stream-glow");
+ const symbol=node("div","stream-symbol",({mind:"✦",voice:"◉",leadership:"◇",team:"◎"})[portraits[course.category]]||"✦");
+ const label=node("span","stream-art-label","ACADEMIA NICTÉ HA");
+ art.append(glow,symbol,label);return art;
 }
-function switchTab(tab){if(tab==="admin"&&!state.isAdmin)return;state.chosen=null;state.lesson=null;state.screen=tab;document.querySelectorAll("[data-view]").forEach(el=>el.classList.toggle("selected",el.dataset.view===tab));render()}
+function countCourseLessons(course){
+ return state.progress.filter(p=>p.student_id===state.user.id&&p.course_id===course.id).length;
+}
+function card(course,info,handler,label="Continuar →"){
+ const c=node("article","stream-card");
+ const cover=courseArtwork(course),details=node("div","stream-card-copy");
+ cover.append(node("span","stream-card-pill",course.status==="draft"?"En preparación":hasCourse(course)?"En mi biblioteca":"Disponible"));
+ details.append(node("span","stream-category",course.category),node("h3","",course.title),node("p","",course.summary));
+ if(hasCourse(course)){
+  const done=countCourseLessons(course);
+  details.append(node("div","stream-course-stat",done+" lecciones completadas"));
+ }else details.append(node("span","stream-course-stat",info));
+ if(handler)details.append(button(label,handler,"stream-card-action"));
+ c.append(cover,details);return c;
+}
+function streamRow(root,title,description,courses,handler,label){
+ const section=node("section","stream-shelf"),header=node("div","stream-shelf-head");
+ header.append(node("h2","",title),node("p","",description));section.append(header);
+ const track=node("div","stream-track");
+ for(const course of courses)track.append(card(course,hasCourse(course)?"En tu aprendizaje":course.status==="draft"?"Próximamente":"Disponible",()=>handler(course),label));
+ section.append(track);root.append(section);
+}
+function streamHero(root,headline,description,featured,onAction,actionLabel){
+ const hero=node("section","stream-hero"),copy=node("div","stream-hero-copy");
+ copy.append(node("span","stream-eyebrow","NICTÉ HA · TU ESPACIO DE FORMACIÓN"),node("h2","",headline),node("p","",description));
+ const actions=node("div","stream-hero-actions");
+ actions.append(button(actionLabel,onAction,"stream-hero-primary"));
+ actions.append(button("Explorar programas",()=>switchTab("catalog"),"stream-hero-secondary"));
+ copy.append(actions);
+ const visual=node("div","stream-hero-visual");
+ if(featured){visual.append(courseArtwork(featured));visual.append(node("span","stream-hero-caption",featured.title));}
+ else{visual.append(node("div","stream-hero-emblem","✦"),node("span","stream-hero-caption","Aprender es seguir transformándote"))}
+ hero.append(copy,visual);root.append(hero);
+}
+function emptyLibrary(root){
+ const empty=node("section","stream-empty"),symbol=node("div","stream-empty-symbol","✧");
+ const text=node("div","stream-empty-content");
+ text.append(node("span","stream-eyebrow","TU BIBLIOTECA PERSONAL"),node("h2","","Tu próximo capítulo empieza aquí."),node("p","","Todavía no tienes cursos asignados. Explora los programas y descubre cuáles estarán disponibles próximamente."));
+ text.append(button("Explorar el catálogo →",()=>switchTab("catalog"),"stream-hero-primary"));
+ empty.append(symbol,text);root.append(empty);
+}
 function showMine(){
- const root=mount();root.append(heading("Mis cursos","Continúa tu aprendizaje y consulta tu avance."));
- const list=state.courses.filter(hasCourse);
- if(!list.length)root.append(node("div","empty","Aún no tienes cursos asignados. Puedes explorar el catálogo mientras se habilitan tus matrículas."));
- const grid=node("div","app-layout");
- for(const c of list)grid.append(card(c,"Matrícula activa",()=>openCourse(c.id)));
- root.append(grid);
+ const root=mount(),mine=state.courses.filter(hasCourse);
+ const first=mine[0];
+ const name=String(state.user.user_metadata?.full_name||"").trim().split(/\\s+/)[0];
+ streamHero(root,first?"Continúa tu camino de aprendizaje.":name?"Bienvenido, "+name+". Tu historia sigue creciendo.":"Tu historia sigue creciendo.","Un espacio para descubrir, aprender y avanzar con propósito.",first,()=>first?openCourse(first.id):switchTab("catalog"),first?"Continuar aprendiendo":"Conocer programas");
+ const stats=node("div","stream-stats");
+ const done=state.progress.filter(p=>p.student_id===state.user.id).length;
+ for(const [number,label] of [[mine.length,"Mis programas"],[done,"Lecciones completadas"],[state.courses.filter(c=>c.status==="published").length,"Programas disponibles"]]){
+  const tile=node("div","stream-stat");tile.append(node("strong","",String(number)),node("span","",label));stats.append(tile);
+ }
+ root.append(stats);
+ if(mine.length)streamRow(root,"Continúa aprendiendo","Tus programas y contenidos asignados.",mine,c=>openCourse(c.id),"Abrir programa →");
+ else emptyLibrary(root);
+ const discover=state.courses.filter(c=>c.status==="published"&&!hasCourse(c));
+ if(discover.length)streamRow(root,"Descubre nuevos programas","Opciones que puedes explorar dentro de la academia.",discover,c=>switchTab("catalog"),"Conocer programa →");
+ if(state.isAdmin){
+  const draft=state.courses.filter(c=>c.status==="draft");
+  if(draft.length)streamRow(root,"En preparación","Vista privada del equipo académico. Estos cursos aún no están publicados.",draft,c=>openCourse(c.id),"Revisar borrador →");
+ }
 }
 function showCatalog(){
- const root=mount();root.append(heading("Catálogo de programas","Conoce las experiencias disponibles de Guadalupe."));
- const items=state.courses.filter(c=>c.status==="published");
- if(!items.length)root.append(node("div","empty","Aún no hay programas publicados. Guadalupe está preparando los primeros cursos."));
- const grid=node("div","app-layout");
- for(const c of items)grid.append(card(c,hasCourse(c)?"Acceso habilitado":"Matrícula requerida",
-  hasCourse(c)?()=>openCourse(c.id):()=>note("Consulta con Guadalupe las condiciones de inscripción y solicita tu matrícula.",true),
-  hasCourse(c)?"Entrar al curso":"Solicitar acceso"));
- root.append(grid);
+ const root=mount(),live=state.courses.filter(c=>c.status==="published"),draft=state.isAdmin?state.courses.filter(c=>c.status==="draft"):[];
+ streamHero(root,"Encuentra tu próxima inspiración.","Explora contenidos de desarrollo humano, comunicación y liderazgo creados para aprender a tu propio ritmo.",null,()=>document.querySelector("#streamCatalogList")?.scrollIntoView({behavior:"smooth"}),"Ver colección");
+ const area=node("div");area.id="streamCatalogList";root.append(area);
+ if(live.length)streamRow(area,"Explorar la colección","Programas disponibles en la academia.",live,c=>hasCourse(c)?openCourse(c.id):note("Consulta con Guadalupe las condiciones de inscripción para este programa.",true),"Ver programa →");
+ else{const notice=node("div","stream-catalog-notice");notice.append(node("strong","","Nuevos programas en camino"),node("p","","Guadalupe está preparando el catálogo. Los contenidos se habilitarán cuando estén revisados y publicados."));area.append(notice)}
+ if(draft.length)streamRow(area,"Próximos estrenos · administración","Solo el equipo autorizado puede ver los programas que todavía están en borrador.",draft,c=>openCourse(c.id),"Editar programa →");
 }
+function switchTab(tab){if(tab==="admin"&&!state.isAdmin)return;state.chosen=null;state.lesson=null;state.screen=tab;document.querySelectorAll("[data-view]").forEach(el=>{el.classList.toggle("selected",el.dataset.view===tab);el.setAttribute("aria-selected",String(el.dataset.view===tab))});render()}
 function field(text,name,initial="",options){
  const label=node("label","",text);
  let e;
