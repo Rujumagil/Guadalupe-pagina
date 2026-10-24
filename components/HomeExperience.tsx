@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AppointmentCalendar } from "@/components/AppointmentCalendar";
 import { TrackedLink } from "@/components/TrackedLink";
 import { commercialLinks, coachingProcess, personalTopics, businessChallenges } from "@/content/comercial";
 import { siteConfig } from "@/config/site";
@@ -153,6 +154,8 @@ export function HomeExperience() {
           </div>
         </div>
       </section>
+
+      <AppointmentCalendar />
 
       <section className="g-section g-section-purple">
         <div className="shell g-final">
