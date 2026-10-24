@@ -141,8 +141,8 @@ export function HomeExperience() {
             <p>Un espacio de aprendizaje creado para acompañarte en tu crecimiento personal y profesional.</p>
             <p>Descubre cursos, talleres y programas de formación que te ayudarán a conocerte mejor, fortalecer tus habilidades y transformar lo aprendido en acciones que generen cambios significativos en tu vida.</p>
             <div className="g-academy-links">
-              <Link className="btn btn-primary" href="/academia-guadalupe/">Conoce la Academia →</Link>
-              <Link className="btn g-btn-line" href="/academia-guadalupe/">Explorar programas</Link>
+              <Link className="btn btn-primary" href="/academia/">Conoce la Academia →</Link>
+              <Link className="btn g-btn-line" href="/academia/">Explorar programas</Link>
             </div>
           </div>
           <div className="g-contact-panel">
