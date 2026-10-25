@@ -7,7 +7,6 @@ export const siteConfig = {
   email: "guadalupe@somoseterni.com",
   whatsappDisplay: "+52 55 5507 2350",
   whatsappNumber: "525555072350",
-  academyUrl: "https://academia.somos-eterni.com/",
   metaPixelId: "1824252865598003",
 } as const;
 
