@@ -34,7 +34,7 @@ test("business WhatsApp form gives a fallback and does not falsely claim a sent 
 });
 test("responsive nav has an accessible button and fits tablet breakpoints",()=>{
  const header=file("components/Header.tsx");
- const css=file("styles/globals.css");
+ const css=["styles/globals.css","styles/home-experiences.css","styles/service-landings.css","styles/academy-legacy.css"].map(file).join("\n");
  assert.match(header,/aria-controls="guadalupe-navigation"/);
  assert.match(header,/id="guadalupe-navigation"/);
  assert.match(header,/event.key === "Escape"/);
