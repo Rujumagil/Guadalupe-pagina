@@ -58,5 +58,8 @@ jobs:
       - name: Adaptar enlaces literales para subruta
         run: node scripts/prepare-github-pages.mjs
 
+      - name: Verificar enlaces y recursos de la exportación
+        run: node --test tests/exported-site-integrity.test.mjs
+
       - name: Verificar hidratación de Andy y rutas de Next
         run: node --test tests/github-pages-hydration.test.mjs
