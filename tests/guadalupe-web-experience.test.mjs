@@ -41,17 +41,17 @@ test("responsive nav has an accessible button and fits tablet breakpoints",()=>{
  assert.match(css,/min-width:901px/);
  assert.match(css,/max-width:1250px/);
 });
-test("Guadalupe educational site and ETERNI remain separate",()=>{
+test("Guadalupe promotes only Academia Nicté Ha; legacy academy path is an alias",()=>{
  const footer=file("components/Footer.tsx");
- const bridge=file("app/academia-eterni/page.tsx");
- assert.match(footer,/<Link href="\/academia\/">Conocer Academia Nicté Ha<\/Link>/);
- assert.match(footer,/<a href="\/academia-guadalupe\/">Acceso de alumnos<\/a>/);
- const publicAcademy=file("app/academia/page.tsx");
- assert.match(publicAcademy,/Academia Nicté Ha/);
- assert.match(publicAcademy,/Entrar a mi academia/);
- assert.doesNotMatch(footer,/href="\/academia-eterni"/);
- assert.match(bridge,/dos academias|Dos academias/i);
- assert.match(bridge,/credenciales no se comparten/i);
+ const legacy=file("app/academia-eterni/page.tsx");
+ const site=file("config/site.ts");
+ assert.ok(footer.includes('href="/academia/"'));
+ assert.ok(footer.includes('href="/academia-guadalupe/"'));
+ assert.ok(file("app/academia/page.tsx").includes("Academia Nicté Ha"));
+ assert.ok(legacy.includes('export { default, metadata } from "../academia/page"'));
+ assert.ok(!legacy.includes("Visitar ETERNI"));
+ assert.ok(!footer.includes('href="/academia-eterni"'));
+ assert.ok(!site.includes('academyUrl:'));
 });
 test("all academy private pages excluded from crawler access",()=>{
  const robots=file("app/robots.ts");
