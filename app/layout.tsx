@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@/styles/globals.css";
+import "@/styles/home-experiences.css";
+import "@/styles/service-landings.css";
+import "@/styles/academy-legacy.css";
 import "@/styles/comercial.css";
 import "@/styles/contact-bubbles.css";
 import { CloudflareWebAnalytics } from "@/components/CloudflareWebAnalytics";

@@ -43,6 +43,9 @@ jobs:
       - name: Verificar burbujas Fly Sales y WhatsApp
         run: node --test tests/contact-bubbles.test.mjs
 
+      - name: Verificar estructura visual responsive
+        run: node --test tests/visual-structure.test.mjs
+
       - name: Verificar experiencia pública de Guadalupe
         run: node --test tests/guadalupe-web-experience.test.mjs
 
@@ -54,6 +57,9 @@ jobs:
 
       - name: Adaptar enlaces literales para subruta
         run: node scripts/prepare-github-pages.mjs
+
+      - name: Verificar enlaces y recursos de la exportación
+        run: node --test tests/exported-site-integrity.test.mjs
 
       - name: Verificar hidratación de Andy y rutas de Next
         run: node --test tests/github-pages-hydration.test.mjs

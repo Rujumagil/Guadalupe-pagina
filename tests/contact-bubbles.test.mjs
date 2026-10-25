@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 
 const read = path => readFileSync(path, "utf8");
 const widget = read("components/ContactBubbles.tsx");
+const transport = read("lib/andy-chat.ts");
 const css = read("styles/contact-bubbles.css");
 
 test("site renders only one contact dock, keeping direct WhatsApp",()=>{
@@ -41,10 +42,10 @@ test("Andy starts in a conversation; no name, email or phone form gates",()=>{
 });
 
 test("uses real Compas One API, sales route, public key and authenticated session token",()=>{
-  assert.match(widget,/app\.proyectocompas\.app/);
-  assert.match(widget,/wc_[0-9a-f]{36}/);
-  assert.match(widget,/\/api\/public\/web-chat\//);
-  assert.match(widget,/section: "config" \| "messages"/);
+  assert.match(transport,/app\.proyectocompas\.app/);
+  assert.match(transport,/wc_[0-9a-f]{36}/);
+  assert.match(transport,/\/api\/public\/web-chat\//);
+  assert.match(transport,/section: "config" \| "messages"/);
   assert.match(widget,/serviceRoute: "sales"/);
   assert.match(widget,/clientMessageId: messageId/);
   assert.match(widget,/name: "Visitante"/);
