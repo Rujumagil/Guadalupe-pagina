@@ -1,0 +1,20 @@
+{
+  "id": "/panel/",
+  "name": "CRM Guadalupe | Centro de gestión",
+  "short_name": "CRM Guadalupe",
+  "description": "Panel privado de clientes, agenda, mensajes y gestión de Guadalupe Gómez Pezuela.",
+  "start_url": "/panel/",
+  "scope": "/panel/",
+  "display": "standalone",
+  "background_color": "#f6f7f7",
+  "theme_color": "#19372e",
+  "lang": "es-MX",
+  "icons": [
+    {
+      "src": "/panel/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
