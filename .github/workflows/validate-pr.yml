@@ -43,6 +43,9 @@ jobs:
       - name: Verificar burbujas Fly Sales y WhatsApp
         run: node --test tests/contact-bubbles.test.mjs
 
+      - name: Verificar estructura visual responsive
+        run: node --test tests/visual-structure.test.mjs
+
       - name: Verificar experiencia pública de Guadalupe
         run: node --test tests/guadalupe-web-experience.test.mjs
 
