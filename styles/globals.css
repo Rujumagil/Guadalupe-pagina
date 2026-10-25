@@ -4,9 +4,13 @@
    ========================================================= */
 
 :root {
-  --purple: #315f59;
-  --purple-2: #41736a;
-  --aqua: #6a9d92;
+  /* Tokens semánticos de marca; los aliases heredados se conservan para compatibilidad. */
+  --color-primary: #315f59;
+  --color-primary-soft: #41736a;
+  --color-accent: #6a9d92;
+  --purple: var(--color-primary);
+  --purple-2: var(--color-primary-soft);
+  --aqua: var(--color-accent);
   --aqua-soft: #f4f7f5;
   --gold: #b79a63;
   --cream: #faf9f6;
