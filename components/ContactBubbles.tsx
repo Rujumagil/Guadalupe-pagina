@@ -4,10 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { buildWhatsAppUrl } from "@/config/site";
 import { TrackedLink } from "./TrackedLink";
+import { PUBLIC_KEY, SESSION_KEY, endpoint, publicError } from "@/lib/andy-chat";
 
-const API = "https://app.proyectocompas.app";
-const PUBLIC_KEY = "wc_1defe173698ae845c7f66d5d28674564022e";
-const SESSION_KEY = "guadalupe:andy:session:v1";
 const WHATSAPP_URL = buildWhatsAppUrl(
   "Hola Guadalupe, vi tu página y quiero hablar directamente contigo sobre tus servicios."
 );
@@ -34,19 +32,6 @@ const TOPICS = [
   { label: "Coaching empresarial", message: "Hola Andy, quiero información sobre coaching empresarial." },
   { label: "Academia Nicté Ha", message: "Hola Andy, quiero saber cómo funciona la Academia Nicté Ha." },
 ] as const;
-
-function endpoint(section: "config" | "messages"): string {
-  return API + "/api/public/web-chat/" + section + "?key=" + encodeURIComponent(PUBLIC_KEY);
-}
-
-function publicError(response: Response, result: { error?: string }) {
-  if (response.status === 429) return "Hay muchos mensajes por el momento. Inténtalo de nuevo en un minuto.";
-  if (response.status === 403) return "No se pudo autorizar la conexión con Andy. Puedes utilizar WhatsApp.";
-  if (response.status >= 500) return "Andy no pudo iniciar la conversación. Tu mensaje no se envió; puedes reintentarlo o usar WhatsApp.";
-  return typeof result.error === "string" && result.error.length < 180
-    ? result.error
-    : "No fue posible contactar a Andy. Intenta nuevamente o utiliza WhatsApp.";
-}
 
 /** Chat conversacional real, sin formulario de registro.
  * El primer mensaje requiere consentimiento; el motor permite sesiones anónimas,
