@@ -89,6 +89,9 @@ export default {
     }
     if (!configReady(env)) return response({ error: "configuration_pending" }, 503, allowed);
     if (!(await isAuthorized(request, env))) return response({ error: "unauthorized" }, 401, allowed);
+    if (request.method === "GET" && url.pathname === "/admin/check") {
+      return response({ authorized: true }, 200, allowed);
+    }
     if (request.method === "POST" && url.pathname === "/videos") {
       const body = await request.json().catch(() => null);
       const title = String(body?.title || "").trim();
