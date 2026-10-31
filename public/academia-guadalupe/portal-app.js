@@ -339,8 +339,8 @@ const pendingLegacySlots=[
  {key:"mujer-faro-audio-centro",label:"La Mujer del Faro · Audio Volver al centro",kind:"audio",group:"Taller La Mujer del Faro"},
  {key:"mujer-faro-video-centro",label:"La Mujer del Faro · Video Volver al centro",kind:"video",group:"Taller La Mujer del Faro"}
 ];
-const allowedLegacyTypes={audio:["audio/mpeg","audio/mp4","audio/wav","audio/x-wav","audio/ogg"],video:["video/mp4","video/webm"],pdf:["application/pdf"],image:["image/webp","image/png","image/jpeg"]};
-const legacyAccept={audio:".mp3,.m4a,.wav,.ogg",video:".mp4,.webm",pdf:".pdf",image:".webp,.png,.jpg,.jpeg"};
+const allowedLegacyTypes={audio:["audio/mpeg","audio/mp4","video/mp4","audio/wav","audio/x-wav","audio/ogg"],video:["video/mp4","video/webm"],pdf:["application/pdf"],image:["image/webp","image/png","image/jpeg"]};
+const legacyAccept={audio:".mp3,.m4a,.mp4,.wav,.ogg",video:".mp4,.webm",pdf:".pdf",image:".webp,.png,.jpg,.jpeg"};
 async function uploadLegacyFile(slot,file){
  if(!ctx.isAdmin)throw Error("Acceso reservado a administración.");
  if(!file||!allowedLegacyTypes[slot.kind].includes(file.type))throw Error("Selecciona un archivo válido para este espacio.");
