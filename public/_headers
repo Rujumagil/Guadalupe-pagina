@@ -52,6 +52,13 @@
   Referrer-Policy: no-referrer
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://qwxydjotwhniahaovrff.supabase.co; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'
 
+
+/academia-guadalupe/video-admin-prueba.html
+  Cache-Control: no-store, private
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://ylvwfmcbbfaaeyadndhn.supabase.co https://guadalupe-video-api.proyectocompas-info.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'
+
 /academia-guadalupe/*
   Cache-Control: no-store, private
   X-Robots-Tag: noindex, nofollow, noarchive
