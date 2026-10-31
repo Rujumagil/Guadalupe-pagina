@@ -4,6 +4,34 @@ const SUPABASE_KEY="sb_publishable_HIHNWZnB_oe2Fgp6qfwzJw_X_uio7sL";
 const WORKER="https://guadalupe-video-api.proyectocompas-info.workers.dev";
 const $=x=>document.querySelector(x);
 let session=null;
+
+let lastBlockedHost="";
+window.addEventListener("securitypolicyviolation", event => {
+  if (String(event.violatedDirective).includes("connect-src")) {
+    lastBlockedHost=event.blockedURI || "servicio externo";
+    message("Bloqueo de seguridad CSP: " + lastBlockedHost);
+  }
+});
+async function probe(label, url) {
+  try {
+    const res=await fetch(url,{method:"GET",cache:"no-store"});
+    return label+": accesible (HTTP "+res.status+")";
+  } catch {
+    return label+": SIN CONEXIÓN (red, CORS o CSP)";
+  }
+}
+document.querySelector("#diagnoseButton")?.addEventListener("click",async e=>{
+  e.currentTarget.disabled=true;
+  try{
+    const results=await Promise.all([
+      probe("Supabase Eterni",SUPABASE_URL+"/auth/v1/settings"),
+      probe("Cloudflare Worker",WORKER+"/health")
+    ]);
+    message(results.join("\n")+"\nNo se enviaron credenciales."+
+      (lastBlockedHost?"\nOrigen bloqueado: "+lastBlockedHost:""));
+  }finally{e.currentTarget.disabled=false}
+});
+
 function message(value){$("#status").textContent=value;}
 async function api(url,opts={}) {
  const res=await fetch(url,{...opts,cache:"no-store"});
@@ -19,18 +47,20 @@ $("#loginForm").addEventListener("submit",async e=>{
  e.preventDefault();const button=$("#loginButton");button.disabled=true;
  try{
   const data=new FormData(e.target);
+  message("Conectando con Supabase Eterni...");
   session=await api(SUPABASE_URL+"/auth/v1/token?grant_type=password",{
    method:"POST",headers:{apikey:SUPABASE_KEY,"Content-Type":"application/json"},
    body:JSON.stringify({email:String(data.get("email")).trim(),password:String(data.get("password"))})
   });
   // Validación explícita del administrador en Worker.
+  message("Sesión recibida. Validando administrador en Cloudflare...");
   await worker("/admin/check");
   $("#loginPanel").hidden=true;
   $("#videoPanel").hidden=false;
   e.target.reset();
   message("Cuenta administradora validada. Selecciona un video de prueba.");
  }catch(error){
-  session=null;message("Acceso no verificado: "+error.message);
+  session=null;message("Acceso no verificado: "+error.message+"\nPrueba el botón Diagnosticar conexión.");
  }finally{button.disabled=false;}
 });
 $("#videoForm").addEventListener("submit",async e=>{
