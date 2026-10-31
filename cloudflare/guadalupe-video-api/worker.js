@@ -11,7 +11,7 @@
  */
 const SUPABASE_URL = "https://ylvwfmcbbfaaeyadndhn.supabase.co";
 const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const MAX_UPLOAD = 90 * 1024 * 1024;
+const MAX_UPLOAD = 60 * 1024 * 1024;
 function response(body, status = 200, origin = "") {
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
@@ -107,16 +107,22 @@ export default {
     if (!match || !GUID.test(match[1])) return response({ error: "not_found" }, 404, allowed);
     const videoId = match[1];
     if (request.method === "PUT" && match[2] === "upload") {
-      const size = Number(request.headers.get("Content-Length"));
+      const announcedSize = request.headers.get("Content-Length");
       const type = (request.headers.get("Content-Type") || "").split(";")[0].trim();
-      if (!request.body || !Number.isSafeInteger(size) || size < 1 || size > MAX_UPLOAD) {
-        return response({ error: "invalid_upload_size", maxBytes: MAX_UPLOAD }, 413, allowed);
+      if (!request.body) return response({ error: "empty_upload" }, 400, allowed);
+      if (announcedSize && Number(announcedSize) > MAX_UPLOAD) {
+        return response({ error: "upload_too_large", maxBytes: MAX_UPLOAD }, 413, allowed);
       }
       if (!["video/mp4", "video/webm"].includes(type)) return response({ error: "unsupported_format" }, 415, allowed);
+      // Browser fetch cannot set Content-Length; enforce on actual bytes too.
+      const bytes = await request.arrayBuffer();
+      if (!bytes.byteLength || bytes.byteLength > MAX_UPLOAD) {
+        return response({ error: "invalid_upload_size", maxBytes: MAX_UPLOAD }, 413, allowed);
+      }
       const result = await bunny(env, "/" + videoId, {
         method: "PUT",
         headers: { "Content-Type": "application/octet-stream" },
-        body: request.body,
+        body: bytes,
       });
       if (!result.ok) return response({ error: "video_upload_failed" }, 502, allowed);
       return response({ videoId, status: "processing" }, 200, allowed);
