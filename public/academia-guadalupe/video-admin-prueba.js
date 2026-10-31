@@ -21,7 +21,8 @@ async function probe(label, url) {
   }
 }
 document.querySelector("#diagnoseButton")?.addEventListener("click",async e=>{
-  e.currentTarget.disabled=true;
+  const button=e.currentTarget;
+  button.disabled=true;
   try{
     const results=await Promise.all([
       probe("Supabase Eterni",SUPABASE_URL+"/auth/v1/settings"),
@@ -29,7 +30,7 @@ document.querySelector("#diagnoseButton")?.addEventListener("click",async e=>{
     ]);
     message(results.join("\n")+"\nNo se enviaron credenciales."+
       (lastBlockedHost?"\nOrigen bloqueado: "+lastBlockedHost:""));
-  }finally{e.currentTarget.disabled=false}
+  }finally{button.disabled=false}
 });
 
 function message(value){$("#status").textContent=value;}
