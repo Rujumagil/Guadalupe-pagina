@@ -37,7 +37,14 @@ function message(value){$("#status").textContent=value;}
 async function api(url,opts={}) {
  const res=await fetch(url,{...opts,cache:"no-store"});
  const payload=await res.json().catch(()=>null);
- if(!res.ok)throw Error(payload?.error_description||payload?.message||payload?.error||"Error HTTP "+res.status);
+ if(!res.ok){
+  // Supabase Auth puede devolver "msg", "error_description" o "error_code".
+  // Mostrar solo el mensaje de error, nunca tokens ni respuesta completa.
+  const reason=String(payload?.error_description||payload?.msg||payload?.message||
+    payload?.error||payload?.error_code||("Error HTTP "+res.status)).slice(0,260);
+  const service=url.startsWith(SUPABASE_URL)?"Supabase Eterni":"Cloudflare Video API";
+  throw Error(service+" (HTTP "+res.status+"): "+reason);
+ }
  return payload;
 }
 async function worker(path,options={}) {
@@ -61,7 +68,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   e.target.reset();
   message("Cuenta administradora validada. Selecciona un video de prueba.");
  }catch(error){
-  session=null;message("Acceso no verificado: "+error.message+"\nPrueba el botón Diagnosticar conexión.");
+  session=null;message("Acceso no verificado: "+error.message+"\nUsa la cuenta de Authentication > Users del proyecto Eterni. No compartas contraseñas.");
  }finally{button.disabled=false;}
 });
 $("#videoForm").addEventListener("submit",async e=>{
