@@ -331,6 +331,69 @@ async function uploadBook(book,file){
  await patch("ggp_academy_books",book.id,{media_path:path});
 }
 
+// Espacios de carga para completar el catálogo histórico sin sobrescribir archivos originales.
+const pendingLegacySlots=[
+ ...[2,3,4,16,17,21,22,23,24,25].map(n=>({key:"audiolibro-track-"+String(n).padStart(2,"0"),label:"Cuentos para Sanar · Pista "+String(n).padStart(2,"0"),kind:"audio",group:"Audiolibro Cuentos para Sanar"})),
+ ...Array.from({length:52},(_,i)=>i+68).map(n=>({key:"mujer-faro-page-"+String(n).padStart(3,"0"),label:"La Mujer del Faro · Página "+n,kind:"image",group:"Libro La Mujer del Faro"})),
+ {key:"cuentos-sanar-pdf",label:"Cuentos para Sanar · Libro PDF",kind:"pdf",group:"Libros digitales"},
+ {key:"mujer-faro-audio-centro",label:"La Mujer del Faro · Audio Volver al centro",kind:"audio",group:"Taller La Mujer del Faro"},
+ {key:"mujer-faro-video-centro",label:"La Mujer del Faro · Video Volver al centro",kind:"video",group:"Taller La Mujer del Faro"}
+];
+const allowedLegacyTypes={audio:["audio/mpeg","audio/mp4","audio/wav","audio/x-wav","audio/ogg"],video:["video/mp4","video/webm"],pdf:["application/pdf"],image:["image/webp","image/png","image/jpeg"]};
+const legacyAccept={audio:".mp3,.m4a,.wav,.ogg",video:".mp4,.webm",pdf:".pdf",image:".webp,.png,.jpg,.jpeg"};
+async function uploadLegacyFile(slot,file){
+ if(!ctx.isAdmin)throw Error("Acceso reservado a administración.");
+ if(!file||!allowedLegacyTypes[slot.kind].includes(file.type))throw Error("Selecciona un archivo válido para este espacio.");
+ if(file.size>80*1024*1024)throw Error("Límite de 80 MB por archivo. Los videos grandes necesitarán streaming.");
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase();
+ if(!/^[a-z0-9]{2,5}$/.test(ext))throw Error("Extensión no válida.");
+ const filePath=ctx.user.id+"/"+crypto.randomUUID()+"/archivo."+ext;
+ const encoded=filePath.split("/").map(encodeURIComponent).join("/");
+ const res=await fetch(API_URL+"/storage/v1/object/ggp-academy-private/"+encoded,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),
+   "Content-Type":file.type,"x-upsert":"false"},body:file,cache:"no-store"
+ });
+ const result=await res.json().catch(()=>({}));
+ if(!res.ok)throw Error(result.message||result.error||"No se pudo subir el archivo.");
+ await add("ggp_academy_legacy_uploads",{slot_key:slot.key,display_name:slot.label,media_kind:slot.kind,file_path:filePath,original_filename:file.name});
+}
+async function legacyUploadPanel(){
+ const section=el("section","panel glass");
+ section.append(el("span","kicker","CONTENIDO RECUPERADO DE ETERNI"),
+  el("h2","","Espacios para completar materiales"),
+  el("p","muted","Estos espacios no alteran Eterni ni publican material al alumno. Los archivos se guardan privados en Nicté Ha para revisión y vinculación posterior."));
+ const status=el("p","muted","Consultando archivos subidos…");section.append(status);root.append(section);
+ let uploaded=[];
+ try{uploaded=await get("ggp_academy_legacy_uploads","id,slot_key,original_filename,uploaded_at",{limit:"200"});}
+ catch(err){status.textContent="No fue posible consultar los espacios: "+err.message;return;}
+ const done=new Set(uploaded.map(x=>x.slot_key));
+ status.textContent=done.size+" de "+pendingLegacySlots.length+" espacios completados · el resto queda disponible para subir.";
+ for(const group of [...new Set(pendingLegacySlots.map(x=>x.group))]){
+  const panel=el("details",""),head=el("summary","",""+group+" · "+pendingLegacySlots.filter(x=>x.group===group&&!done.has(x.key)).length+" pendientes");
+  head.style.cssText="cursor:pointer;font-weight:650;padding:12px 0";
+  panel.append(head);
+  for(const slot of pendingLegacySlots.filter(x=>x.group===group)){
+   const row=el("div","list-row"),desc=el("div");
+   desc.append(el("strong","",slot.label));
+   const uploadedFile=uploaded.find(x=>x.slot_key===slot.key);
+   desc.append(el("small","",uploadedFile?" · Archivo recibido: "+uploadedFile.original_filename:" · Pendiente de subir"));
+   row.append(desc);
+   if(!uploadedFile){
+    const input=el("input");input.type="file";input.accept=legacyAccept[slot.kind];input.setAttribute("aria-label","Seleccionar archivo para "+slot.label);input.style.maxWidth="165px";
+    const btn=el("button","btn small","Subir archivo");btn.type="button";
+    btn.addEventListener("click",async()=>{
+     btn.disabled=true;
+     try{await uploadLegacyFile(slot,input.files?.[0]);note("Archivo recibido y guardado en privado.","success");await refresh();}
+     catch(err){note(err.message,"error");btn.disabled=false;}
+    });
+    const actions=el("div","hero-actions");actions.append(input,btn);row.append(actions);
+   }
+   panel.append(row);
+  }
+  section.append(panel);
+ }
+}
+
 async function admin(){
  if(!ctx.isAdmin){location.replace("./inicio.html");return}
  title("Administración de academia","Gestiona la formación, los alumnos, los libros y tu comunidad.");
@@ -341,6 +404,7 @@ async function admin(){
  d.append(el("span","kicker","CONTENIDO Y COMUNIDAD"),el("h2","","Libros y publicaciones"),
   el("p","","Agrega libros a tu catálogo y comparte mensajes con tu comunidad desde este panel."));
  access.append(c,d);root.append(access);
+ await legacyUploadPanel();
  const books=el("section","panel glass"),form=el("form","form-grid");
  form.append(el("h3","","Añadir libro al catálogo"));
  form.append(label("Título","title"),label("Descripción","description",true));
