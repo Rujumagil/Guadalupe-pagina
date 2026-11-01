@@ -124,7 +124,7 @@ function originalCollections(){
  ];
  for(const [name,description,url] of sections){
   const panel=el("article","media-card glass"),body=el("div","media-copy");
-  body.append(el("span","kicker","COLECCIÓN NIC TÉ HA".replace("NIC TÉ","NICTÉ")),
+  body.append(el("span","kicker","COLECCIÓN NICTÉ HA"),
    el("strong","",name),el("p","",description),
    el("p","muted","Los materiales históricos se habilitarán aquí al completar la conexión segura con el catálogo original."));
   const actions=el("div","media-actions");
