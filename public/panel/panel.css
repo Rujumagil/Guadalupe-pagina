@@ -31,3 +31,6 @@
   border-radius:0;background:transparent;filter:none;
 }
 .sidebar-logo {margin-bottom:16px}
+
+/* Seis accesos rápidos: incluye la bandeja de leads de la landing. */
+@media(max-width:820px){.mobile-nav{grid-template-columns:repeat(6,minmax(0,1fr))}.mobile-nav button{font-size:10px}}
