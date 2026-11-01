@@ -127,7 +127,7 @@ async function load() {
   const qs = [
     ["contacts", "contacts", workspaceQuery("id,display_name,email,phone,company_name,stage,status,created_at", "order=created_at.desc&limit=200")],
     ["conversations", "conversations", workspaceQuery("id,contact_id,channel,status,unread_count,last_message_preview,last_message_at,subject", "order=last_message_at.desc.nullslast&limit=100")],
-    ["appointments", "appointments", workspaceQuery("id,contact_id,title,status,start_at,end_at,requested_time_text,created_at", "order=created_at.desc&limit=200")],
+    ["appointments", "appointments", workspaceQuery("id,contact_id,title,status,source,start_at,end_at,requested_time_text,created_at", "order=created_at.desc&limit=200")],
     ["traffic", "workspace_cloudflare_daily_metrics", workspaceQuery("metric_date,visits,pageviews", "order=metric_date.asc&limit=60")],
     ["sources", "workspace_cloudflare_dimension_metrics", workspaceQuery("dimension_value,visits", "dimension=eq.referrer&order=visits.desc&limit=5")],
     ["devices", "workspace_cloudflare_dimension_metrics", workspaceQuery("dimension_value,visits", "dimension=eq.device&order=visits.desc&limit=5")],
@@ -189,6 +189,33 @@ function contactsPage() {
     panel("Contactos registrados",'<div class="row-tools"><input type="search" id="crmSearch" placeholder="Buscar por nombre, correo o teléfono" value="'+html(state.search)+'"><span class="text-muted">'+visible.length+' registros</span></div>'+
     (rows?'<div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Etapa</th><th>Registro</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">No hay contactos que coincidan con tu búsqueda.</div>'));
 }
+function landingPage() {
+  // Esta vista utiliza las solicitudes del CRM que ya existen, sin crear una base paralela.
+  // La atribución exacta a campañas requiere que el endpoint público registre source explícitamente.
+  const matches = state.appointments.filter(a =>
+    /landing[_-]?coaching[_-]?personal/i.test(a.source || "") ||
+    (/coaching personal|sesión personal|sesion personal/i.test(a.title || "") && a.source !== "manual")
+  );
+  const contacts = new Map(state.contacts.map(c => [c.id,c]));
+  const pending = matches.filter(a => a.status === "requested").length;
+  const confirmed = matches.filter(a => a.status === "confirmed").length;
+  const rows = matches.map(a => {
+    const c = contacts.get(a.contact_id);
+    const stage = c?.stage || "lead";
+    return '<tr><td><strong>'+html(c?.display_name || "Contacto no disponible")+'</strong><br><small>'+html(c?.email || "Sin correo")+'</small><br><small>'+html(c?.phone || "Sin teléfono")+'</small></td>'+
+      '<td>'+html(a.title || "Coaching personal")+'<br><small>'+html(a.source || "Origen no identificado")+'</small></td>'+
+      '<td><span class="pill">'+html(bookingStatus[a.status] || a.status)+'</span><br><small>'+html(stages.find(s => s[0] === stage)?.[1] || stage)+'</small></td>'+
+      '<td>'+html(niceDate(a.created_at))+'<br><small>'+html(a.requested_time_text || "")+'</small></td>'+
+      '<td><button class="btn light" type="button" data-action="goto" data-target="reservas">Ver reserva</button></td></tr>';
+  }).join("");
+  return heading("Leads · Coaching personal","Solicitudes de coaching personal recibidas mediante el sistema de citas de Guadalupe.",
+    '<a class="btn outline" href="/coaching-personal/" target="_blank" rel="noopener noreferrer">Ver landing ↗</a>')+
+    '<section class="stat-grid">'+stat("Solicitudes relacionadas",matches.length,"Coaching personal")+stat("Por confirmar",pending,"Seguimiento pendiente")+stat("Confirmadas",confirmed,"Sesiones agendadas")+stat("Contactos identificados",new Set(matches.map(a=>a.contact_id).filter(id=>contacts.has(id))).size,"Cruce con CRM")+'</section>'+
+    '<div class="notice">Esta vista identifica solicitudes de coaching personal registradas en Reservas. Para distinguir con certeza los contactos captados exclusivamente por la landing, la API pública debe guardar un origen específico. Las solicitudes sin cita aún no se capturan por este formulario.</div>'+
+    panel("Prospectos y solicitudes", rows
+      ? '<div class="table-wrap"><table><thead><tr><th>Prospecto</th><th>Servicio / origen</th><th>Estado</th><th>Recibido</th><th>Acción</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      : '<div class="empty">Aún no hay solicitudes de coaching personal identificables. Comprueba la publicación de la landing y su conexión con el CRM.</div>');
+}
 function messagesPage() {
   const left=state.conversations.map(c=>'<button type="button" class="message-item'+(state.selectedConversation===c.id?' selected':'')+'" data-conversation="'+html(c.id)+'"><strong>'+html(c.subject||"Conversación "+c.channel)+'</strong><small>'+html((c.last_message_preview||"Sin vista previa").slice(0,85))+'</small><small>'+html(niceDate(c.last_message_at))+' · '+html(c.unread_count||0)+' sin leer</small></button>').join("");
   const right=state.selectedConversation
@@ -240,7 +267,7 @@ function agentsPage(){
     '<p class="small" style="margin-top:20px">La configuración de agentes, mensajes salientes e integraciones se realiza en la plataforma central para mantener permisos, límites y trazabilidad.</p>';
 }
 function render(){
-  const pages={inicio:summary,clientes:contactsPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage};
+  const pages={inicio:summary,clientes:contactsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage};
   $("#view").innerHTML=(pages[state.page]||summary)();
   $("#syncState").textContent=state.warnings.length?"Conexión parcial":"Conectado";
 }
