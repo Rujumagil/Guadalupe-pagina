@@ -62,6 +62,20 @@ async function bunny(env, path, init = {}) {
     }
   );
 }
+// Bunny TUS signature: SHA256(libraryId + apiKey + expiration + videoId).
+async function signTus(env, videoId) {
+  const expires = Math.floor(Date.now() / 1000) + 6 * 60 * 60;
+  const payload = String(env.BUNNY_STREAM_LIBRARY_ID) +
+    String(env.BUNNY_STREAM_API_KEY) + String(expires) + videoId;
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(payload));
+  const signature = [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
+  return {
+    endpoint: "https://video.bunnycdn.com/tusupload",
+    libraryId: String(env.BUNNY_STREAM_LIBRARY_ID),
+    expires,
+    signature
+  };
+}
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -91,6 +105,33 @@ export default {
     if (!(await isAuthorized(request, env))) return response({ error: "unauthorized" }, 401, allowed);
     if (request.method === "GET" && url.pathname === "/admin/check") {
       return response({ authorized: true }, 200, allowed);
+    }
+    // TUS: create video and temporary upload signature, never expose API key.
+    if (request.method === "POST" && url.pathname === "/videos/tus") {
+      const body = await request.json().catch(() => null);
+      const title = String(body?.title || "").trim();
+      const size = Number(body?.size);
+      if (title.length < 3 || title.length > 160 ||
+          !Number.isSafeInteger(size) || size <= 0 || size > 2 * 1024 ** 3) {
+        return response({ error: "invalid_upload_parameters", maxBytes: 2 * 1024 ** 3 }, 400, allowed);
+      }
+      const created = await bunny(env, "", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
+      if (!created.ok) return response({ error: "bunny_video_creation_failed" }, 502, allowed);
+      const record = await created.json().catch(() => null);
+      if (!GUID.test(record?.guid || "")) return response({ error: "invalid_bunny_response" }, 502, allowed);
+      const ticket = await signTus(env, record.guid);
+      return response({ ...ticket, videoId: record.guid, maxBytes: 2 * 1024 ** 3 }, 201, allowed);
+    }
+    // Fresh signature allows resuming without storing upload secrets in the browser.
+    const ticketRoute = url.pathname.match(/^\\/videos\\/([a-f0-9-]{36})\\/tus-ticket$/i);
+    if (request.method === "POST" && ticketRoute && GUID.test(ticketRoute[1])) {
+      const record = await bunny(env, "/" + ticketRoute[1]);
+      if (!record.ok) return response({ error: "video_not_found" }, 404, allowed);
+      return response({ ...(await signTus(env, ticketRoute[1])), videoId: ticketRoute[1] }, 200, allowed);
     }
     if (request.method === "POST" && url.pathname === "/videos") {
       const body = await request.json().catch(() => null);
