@@ -103,6 +103,7 @@ async function home(){
  block("Descubre otros programas",recommended.length?mediaGrid(recommended):
   empty("Nuevas experiencias en preparación","Por ahora no hay otros programas publicados para explorar."),
   "./cursos.html","Explorar catálogo →");
+ block("Explora el universo de Guadalupe",originalCollections());
  const panels=el("div","split"),b=el("div","panel glass"),community=el("div","panel glass");
  b.append(el("span","kicker","MI BIBLIOTECA"),el("h2","","Historias para acompañar tu proceso"),
   el("p","","Accede a los libros digitales que Guadalupe te haya asignado."),
@@ -111,6 +112,26 @@ async function home(){
   el("p","","Un espacio para reflexionar, conversar y conectar con otros participantes."),
   a("Entrar a la comunidad →","./comunidad.html","btn"));
  panels.append(b,community);root.append(panels);
+}
+// Secciones de la academia histórica: navegación explícita sin publicar contenido privado.
+function originalCollections(){
+ const wrapper=el("div","media-row");
+ const sections=[
+  ["Programa Legado","Tu historia y tu legado personal.","./cursos.html"],
+  ["La Mujer del Faro","Talleres y experiencias de transformación.","./cursos.html"],
+  ["Libros de Guadalupe","Cuentos para Sanar y La Mujer del Faro.","./libros.html"],
+  ["Comunidad IXCHEL","Un espacio de acompañamiento y comunidad.","./comunidad.html"]
+ ];
+ for(const [name,description,url] of sections){
+  const panel=el("article","media-card glass"),body=el("div","media-copy");
+  body.append(el("span","kicker","COLECCIÓN NIC TÉ HA".replace("NIC TÉ","NICTÉ")),
+   el("strong","",name),el("p","",description),
+   el("p","muted","Los materiales históricos se habilitarán aquí al completar la conexión segura con el catálogo original."));
+  const actions=el("div","media-actions");
+  actions.append(a("Explorar sección →",url,"btn small"));
+  body.append(actions);panel.append(body);wrapper.append(panel);
+ }
+ return wrapper;
 }
 function courses(){
  title("Explora tus próximos cursos","Programas publicados, contenido disponible y acceso según tu matrícula.");
@@ -341,6 +362,9 @@ async function admin(){
  d.append(el("span","kicker","CONTENIDO Y COMUNIDAD"),el("h2","","Libros y publicaciones"),
   el("p","","Agrega libros a tu catálogo y comparte mensajes con tu comunidad desde este panel."));
  access.append(c,d);root.append(access);
+ const legacyNotice=el("section","panel glass");
+ legacyNotice.append(el("span","kicker","INTEGRACIÓN DE CONTENIDO ORIGINAL"),el("h2","","Colecciones históricas de Guadalupe"),el("p","","Legado, La Mujer del Faro, libros, audiolibros e IXCHEL siguen registrados en el proyecto académico original. Esta administración todavía usa el catálogo nuevo; no vuelvas a crear estos materiales para evitar duplicados. La conexión segura y la verificación de permisos están pendientes."));
+ root.append(legacyNotice);
  const books=el("section","panel glass"),form=el("form","form-grid");
  form.append(el("h3","","Añadir libro al catálogo"));
  form.append(label("Título","title"),label("Descripción","description",true));
