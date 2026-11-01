@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/config/seo";
 import Link from "next/link";
+import { AppointmentCalendar } from "@/components/AppointmentCalendar";
 import { TrackedLink } from "@/components/TrackedLink";
 import { commercialLinks, coachingProcess, personalFaq, personalTopics } from "@/content/comercial";
 
@@ -23,7 +24,7 @@ export default function CoachingPersonalPage() {
             conversación pendiente, no necesitas respuestas prefabricadas. Trabajamos
             para comprender tu situación, ampliar tu mirada y construir pasos concretos.</p>
             <div className="g-actions">
-              <TrackedLink className="btn btn-primary" href="/coaching-personal/landing#agendar-cita">Solicitar una conversación</TrackedLink>
+              <TrackedLink className="btn btn-primary" href="#agendar-cita">Solicitar una conversación</TrackedLink>
               <a className="btn g-btn-line" href="#como-trabajamos">Cómo es el proceso</a>
             </div>
           </div>
@@ -95,6 +96,8 @@ export default function CoachingPersonalPage() {
           </div>
         </div>
       </section>
+
+      <AppointmentCalendar />
 
       <section className="g-section g-section-purple" id="reservar">
         <div className="shell g-final">
