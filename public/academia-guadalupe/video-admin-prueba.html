@@ -32,11 +32,11 @@ button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:#eaf0ec;colo
 </form></section>
 <section class="panel" id="videoPanel" hidden>
 <h2>Subir video de prueba</h2>
-<p class="notice">Esta prueba crea un video privado en Bunny, pero todavía NO lo vincula ni lo publica en una lección. Usa un MP4 o WebM menor de 60 MB.</p>
+<p class="notice">Esta prueba crea un video privado en Bunny, pero todavía NO lo vincula ni lo publica en una lección. Puedes subir archivos MP4 o WebM de hasta 2 GB directamente a Bunny, con reintentos y reanudación. La publicación en una lección sigue pendiente.</p>
 <form id="videoForm">
 <label>Nombre del video<input name="title" type="text" minlength="3" maxlength="160" placeholder="Ejemplo: Prueba de video Guadalupe" required></label>
 <label>Archivo de video<input name="video" type="file" accept=".mp4,.webm,video/mp4,video/webm" required></label>
-<button id="uploadButton" type="submit">Crear y subir a Bunny</button>
+<progress id="uploadProgress" max="100" value="0" hidden style="width:100%;height:18px;margin-top:16px" aria-label="Progreso de carga"></progress>\n<button id="uploadButton" type="submit">Subir video grande a Bunny</button>
 </form>
 <button class="secondary" id="logoutButton" type="button">Cerrar sesión</button>
 </section>
