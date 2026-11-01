@@ -127,7 +127,7 @@ export default {
       return response({ ...ticket, videoId: record.guid, maxBytes: 2 * 1024 ** 3 }, 201, allowed);
     }
     // Fresh signature allows resuming without storing upload secrets in the browser.
-    const ticketRoute = url.pathname.match(/^\\/videos\\/([a-f0-9-]{36})\\/tus-ticket$/i);
+    const ticketRoute = url.pathname.match(/^\/videos\/([a-f0-9-]{36})\/tus-ticket$/i);
     if (request.method === "POST" && ticketRoute && GUID.test(ticketRoute[1])) {
       const record = await bunny(env, "/" + ticketRoute[1]);
       if (!record.ok) return response({ error: "video_not_found" }, 404, allowed);
