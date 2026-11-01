@@ -23,7 +23,7 @@ export default function CoachingPersonalPage() {
             conversación pendiente, no necesitas respuestas prefabricadas. Trabajamos
             para comprender tu situación, ampliar tu mirada y construir pasos concretos.</p>
             <div className="g-actions">
-              <TrackedLink className="btn btn-primary" href={commercialLinks.personalWhatsApp} target="_blank" rel="noopener noreferrer">Quiero conocer las sesiones</TrackedLink>
+              <TrackedLink className="btn btn-primary" href="/coaching-personal/landing#agendar-cita">Solicitar una conversación</TrackedLink>
               <a className="btn g-btn-line" href="#como-trabajamos">Cómo es el proceso</a>
             </div>
           </div>
