@@ -1,3 +1,4 @@
+import {uploadLargeVideo} from "./video-tus.js";
 
 const SUPABASE_URL="https://ylvwfmcbbfaaeyadndhn.supabase.co";
 const SUPABASE_KEY="sb_publishable_HIHNWZnB_oe2Fgp6qfwzJw_X_uio7sL";
@@ -75,21 +76,21 @@ $("#videoForm").addEventListener("submit",async e=>{
  e.preventDefault();const button=$("#uploadButton");button.disabled=true;
  try{
   const data=new FormData(e.target),file=data.get("video"),title=String(data.get("title")).trim();
-  if(!(file instanceof File)||!file.size)throw Error("Selecciona un archivo.");
-  if(file.size>60*1024*1024)throw Error("El archivo supera los 60 MB.");
-  if(!["video/mp4","video/webm"].includes(file.type))throw Error("Usa MP4 o WebM.");
-  message("Creando registro del video en Bunny…");
-  const created=await worker("/videos",{method:"POST",
-   headers:{"Content-Type":"application/json"},body:JSON.stringify({title})});
-  message("Video creado. Subiendo archivo…");
-  await worker("/videos/"+encodeURIComponent(created.videoId)+"/upload",{
-   method:"PUT",headers:{"Content-Type":file.type},body:file
+  if(!(file instanceof File)||!file.size)throw Error("Selecciona un video.");
+  message("Preparando la carga reanudable...");
+  const result=await uploadLargeVideo({
+   file,title,worker,
+   onProgress:(percent,id,detail)=>{
+    const progress=$("#uploadProgress");
+    if(progress){progress.hidden=false;progress.value=percent}
+    message(detail+" "+percent+"%\nVideo ID: "+id);
+   }
   });
-  const result=await worker("/videos/"+encodeURIComponent(created.videoId)+"/status");
-  message("Carga enviada. Video ID: "+created.videoId+"\nEstado Bunny: "+String(result.status)+
-   "\nAún no está publicado ni asociado a una lección.");
+  const resultStatus=await worker("/videos/"+encodeURIComponent(result.videoId)+"/status");
+  message("Video recibido por Bunny. ID: "+result.videoId+"\nEstado de procesamiento: "+
+   String(resultStatus.status)+"\nNo está publicado en ninguna lección.");
   e.target.reset();
- }catch(error){message("No se completó la carga: "+error.message+"\nSi Bunny ya creó un video, puede haber quedado pendiente en la biblioteca.");}
+ }catch(error){message("La carga no se completó: "+error.message+"\nSi hubo una interrupción, selecciona el MISMO archivo y título para reanudar.");}
  finally{button.disabled=false;}
 });
 $("#logoutButton").addEventListener("click",()=>{
