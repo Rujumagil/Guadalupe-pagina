@@ -12,6 +12,7 @@
 const SUPABASE_URL = "https://ylvwfmcbbfaaeyadndhn.supabase.co";
 const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_UPLOAD = 60 * 1024 * 1024;
+const adminUserId = env => String(env.SUPABASE_ADMIN_USER_ID ?? "").trim();
 function response(body, status = 200, origin = "") {
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
@@ -30,7 +31,7 @@ function configReady(env) {
     /^\d+$/.test(String(env.BUNNY_STREAM_LIBRARY_ID || "")) &&
     env.BUNNY_STREAM_CDN_HOSTNAME &&
     env.SUPABASE_PUBLISHABLE_KEY &&
-    GUID.test(String(env.SUPABASE_ADMIN_USER_ID || "")) &&
+    GUID.test(adminUserId(env)) &&
     /^https:\/\//.test(String(env.ALLOWED_ORIGIN || ""))
   );
 }
@@ -46,7 +47,7 @@ async function isAuthorized(request, env) {
   });
   if (!validation.ok) return false;
   const user = await validation.json().catch(() => null);
-  return user?.id === env.SUPABASE_ADMIN_USER_ID;
+  return user?.id === adminUserId(env);
 }
 async function bunny(env, path, init = {}) {
   return fetch(
@@ -96,10 +97,27 @@ export default {
       });
     }
     if (request.method === "GET" && url.pathname === "/health") {
+      const id = String(env.SUPABASE_ADMIN_USER_ID ?? "");
+      const checks = {
+        bunnyApiKey: Boolean(env.BUNNY_STREAM_API_KEY),
+        bunnyLibraryId: /^[0-9]+$/.test(String(env.BUNNY_STREAM_LIBRARY_ID || "")),
+        bunnyCdn: Boolean(env.BUNNY_STREAM_CDN_HOSTNAME),
+        supabaseKey: Boolean(env.SUPABASE_PUBLISHABLE_KEY),
+        adminId: GUID.test(adminUserId(env)),
+        allowedOrigin: String(env.ALLOWED_ORIGIN || "").startsWith("https://")
+      };
+      const ready = Object.values(checks).every(Boolean);
       return response({
         service: "Academia Nicte Ha Video API",
-        status: configReady(env) ? "configured" : "configuration_pending",
-      }, configReady(env) ? 200 : 503, allowed);
+        status: ready ? "configured" : "configuration_pending",
+        checks,
+        ...(!checks.adminId ? {
+          adminIdDiagnostic: {
+            receivedLength: id.length,
+            trimmedLength: id.trim().length
+          }
+        } : {})
+      }, ready ? 200 : 503, allowed);
     }
     if (!configReady(env)) return response({ error: "configuration_pending" }, 503, allowed);
     if (!(await isAuthorized(request, env))) return response({ error: "unauthorized" }, 401, allowed);
