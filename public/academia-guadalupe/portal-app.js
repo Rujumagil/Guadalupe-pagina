@@ -117,15 +117,16 @@ async function home(){
 function originalCollections(){
  const wrapper=el("div","media-row nh-collection-grid");
  const sections=[
-  {name:"Programa Legado",description:"Un espacio para reconocer tu historia y construir aquello que deseas trascender.",url:"./cursos.html",image:"../images/guadalupe-trayectoria.webp",alt:"Reflexión y trayectoria personal",cta:"Conocer el programa →",state:"En preparación"},
-  {name:"La Mujer del Faro",description:"Cuatro sesiones para explorar tu esencia, tu historia y tu propio camino.",url:"./cursos.html",image:"../images/servicio-coaching-ejecutivo.webp",alt:"Acompañamiento y transformación personal",cta:"Conocer el taller →",state:"En preparación"},
-  {name:"Libros de Guadalupe",description:"Cuentos para Sanar y La Mujer del Faro: lecturas para acompañarte.",url:"./libros.html",image:"../images/guadalupe-hero.webp",alt:"Guadalupe Gómez Pezuela, autora",cta:"Descubrir libros →",state:"Acceso según asignación"},
-  {name:"Comunidad IXCHEL",description:"Encuentros y conversaciones para compartir aprendizajes y crecer juntas.",url:"./comunidad.html",image:"../images/servicio-capacitacion-equipos.webp",alt:"Personas compartiendo una sesión de formación",cta:"Explorar comunidad →",state:"Acceso según membresía"}
+  {name:"Programa Legado",description:"Un espacio para reconocer tu historia y construir aquello que deseas trascender.",url:"./cursos.html",image:"../images/nicteha-programa-legado.webp",fallback:"../images/guadalupe-trayectoria.webp",alt:"Reflexión y trayectoria personal",cta:"Conocer el programa →",state:"En preparación"},
+  {name:"La Mujer del Faro",description:"Cuatro sesiones para explorar tu esencia, tu historia y tu propio camino.",url:"./cursos.html",image:"../images/nicteha-mujer-del-faro.webp",fallback:"../images/servicio-coaching-ejecutivo.webp",alt:"Acompañamiento y transformación personal",cta:"Conocer el taller →",state:"En preparación"},
+  {name:"Libros de Guadalupe",description:"Cuentos para Sanar y La Mujer del Faro: lecturas para acompañarte.",url:"./libros.html",image:"../images/nicteha-libros-guadalupe.webp",fallback:"../images/guadalupe-hero.webp",alt:"Guadalupe Gómez Pezuela, autora",cta:"Descubrir libros →",state:"Acceso según asignación"},
+  {name:"Comunidad IXCHEL",description:"Encuentros y conversaciones para compartir aprendizajes y crecer juntas.",url:"./comunidad.html",image:"../images/nicteha-comunidad-ixchel.webp",fallback:"../images/servicio-capacitacion-equipos.webp",alt:"Personas compartiendo una sesión de formación",cta:"Explorar comunidad →",state:"Acceso según membresía"}
  ];
  for(const section of sections){
   const panel=el("article","media-card glass nh-collection-card"),body=el("div","media-copy nh-collection-copy");
   const image=el("img","nh-collection-image");
   image.src=section.image;image.alt=section.alt;image.loading="lazy";image.decoding="async";
+  image.addEventListener("error",()=>{if(image.dataset.backupLoaded)return;image.dataset.backupLoaded="1";image.src=section.fallback;},{once:true});
   const media=el("div","nh-collection-media");
   media.append(image);body.append(el("span","kicker","COLECCIÓN NICTÉ HA"),
    el("strong","",section.name),el("p","",section.description));
