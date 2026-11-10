@@ -55,6 +55,21 @@ function lessonSection(content,heading){
  const next=lines.slice(start+1).findIndex(line=>line.length>0);
  return next<0?"":lines[start+1+next];
 }
+function manualActivityPrompts(content){
+ if(!String(content||"").startsWith("MANUAL DE ACTIVIDADES"))return [];
+ const lines=String(content).split(/\r?\n/).map(line=>line.trim());
+ const numbered=lines.filter(line=>/^\d+[.)]\s+/.test(line)).map(line=>line.replace(/^\d+[.)]\s+/,""));
+ if(numbered.length)return numbered;
+ const start=lines.findIndex(line=>/^(Completa cada apartado|Reflexiona|Preguntas|Mi acuerdo personal):?$/i.test(line));
+ if(start<0)return [];
+ const prompts=[];
+ for(const line of lines.slice(start+1)){
+  if(!line){if(prompts.length)break;continue}
+  if(!/^[•-]\s+/.test(line))break;
+  prompts.push(line.replace(/^[•-]\s+/,""));
+ }
+ return prompts;
+}
 function card(c,own=false){
  const box=el("article","media-card glass"),art=el("div","media-art");
  if(c.slug==="la-mujer-del-faro"){
@@ -625,18 +640,25 @@ async function lesson(){
  const done=store.progress.some(p=>p.lesson_id===current.id&&p.student_id===ctx.user.id);
  if(canUseWorkbook){
   const workbook=el("section","workbook-panel"),header=el("div","workbook-heading"),field=el("textarea","workbook-answer"),status=el("p","workbook-status","Cargando tu cuaderno privado…"),controls=el("div","workbook-actions");
-  header.append(el("span","kicker","CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
+  header.append(el("span","kicker",c.slug==="la-mujer-del-faro"?"CUADERNO DIGITAL · LA MUJER DEL FARO":"CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
   const practical=lessonSection(current.content,"ACTIVIDAD PRÁCTICA"),reflection=lessonSection(current.content,"PARA REFLEXIONAR"),result=lessonSection(current.content,"RESULTADO QUE CONSERVARÁS");
-  if(practical||reflection||result){
+  const manualPrompts=c.slug==="la-mujer-del-faro"?manualActivityPrompts(current.content):[];
+  if(practical||reflection||result||manualPrompts.length){
    const guide=el("div","workbook-guide");guide.append(el("h4","","Guía para desarrollar esta actividad"));
-   for(const [heading,copy] of [["1. Actividad",practical],["2. Reflexiona",reflection],["3. Resultado esperado",result]]){
-    if(copy){const item=el("div","workbook-guide-item");item.append(el("strong","",heading),el("p","",copy));guide.append(item)}
+   if(manualPrompts.length){
+    for(const [index,prompt] of manualPrompts.entries()){
+     const item=el("div","workbook-guide-item");item.append(el("strong","","Pregunta "+(index+1)),el("p","",prompt));guide.append(item);
+    }
+   }else{
+    for(const [heading,copy] of [["1. Actividad",practical],["2. Reflexiona",reflection],["3. Resultado esperado",result]]){
+     if(copy){const item=el("div","workbook-guide-item");item.append(el("strong","",heading),el("p","",copy));guide.append(item)}
+    }
+    if(c.slug==="la-mujer-del-faro")guide.append(el("p","workbook-guide-note","Guía orientativa pendiente de validación con el manual definitivo del programa."));
    }
-   if(c.slug==="la-mujer-del-faro")guide.append(el("p","workbook-guide-note","Guía orientativa pendiente de validación con el manual definitivo del programa."));
    const template=el("button","btn","Preparar respuestas en mi cuaderno");template.type="button";template.disabled=true;
    template.addEventListener("click",()=>{
     if(field.value.trim()){note("Tu cuaderno ya contiene texto. Para proteger tus respuestas, la plantilla solo se inserta cuando está vacío.","info");return}
-    const sections=[["ACTIVIDAD",practical],["REFLEXIÓN",reflection],["RESULTADO",result]].filter(x=>x[1]);
+    const sections=manualPrompts.length?manualPrompts.map((prompt,index)=>["PREGUNTA "+(index+1),prompt]):[["ACTIVIDAD",practical],["REFLEXIÓN",reflection],["RESULTADO",result]].filter(x=>x[1]);
     field.value=sections.map(([heading,prompt])=>heading+"\n"+prompt+"\n\nMi respuesta:\n").join("\n\n");
     field.dispatchEvent(new Event("input",{bubbles:true}));field.focus();
    });
