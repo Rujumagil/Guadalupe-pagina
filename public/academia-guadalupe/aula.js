@@ -1,4 +1,5 @@
 import { API_URL,PUBLISHABLE_KEY,WORKSPACE_ID } from "./config.js";
+import { officialCurricula } from "./official-curricula.js";
 
 const $=s=>document.querySelector(s), STORE="ggp_academy_v2";
 const state={session:null,user:null,isAdmin:false,canManageStaff:false,staff:[],screen:"myCourses",chosen:null,lesson:null,mode:"login",
@@ -157,8 +158,55 @@ function form(title,fields,saveFn,txt="Guardar"){
  });
  box.append(node("h3","",title),f);return box;
 }
+async function importOfficialCurricula(){
+ if(!state.isAdmin)throw Error("Solo un administrador puede importar cursos.");
+ const report=[];
+ for(const curriculum of officialCurricula){
+  let course=state.courses.find(c=>c.slug===curriculum.slug);
+  if(!course){
+   const created=await write("ggp_academy_courses","POST",{
+    workspace_id:WORKSPACE_ID,slug:curriculum.slug,title:curriculum.title,
+    category:curriculum.category,summary:curriculum.summary,status:"draft"
+   });
+   course=created[0];
+  }
+  if(!course?.id)throw Error("No se pudo localizar el curso: "+curriculum.title);
+  const existingModules=await read("ggp_academy_modules","id,title,position,course_id",{course_id:"eq."+course.id,order:"position.asc"});
+  const existingLessons=await read("ggp_academy_lessons","id,module_id,title,position,course_id",{course_id:"eq."+course.id,order:"position.asc"});
+  let added=0;
+  for(const [moduleIndex,template] of curriculum.modules.entries()){
+   let module=existingModules.find(m=>m.title.trim().toLocaleLowerCase("es")===template.title.toLocaleLowerCase("es"));
+   if(!module){
+    const position=1+Math.max(0,...existingModules.map(m=>m.position));
+    const created=await write("ggp_academy_modules","POST",{workspace_id:WORKSPACE_ID,course_id:course.id,title:template.title,position});
+    module=created[0];existingModules.push(module);
+   }
+   if(!module?.id)throw Error("No se pudo registrar el módulo "+(moduleIndex+1));
+   for(const title of template.lessons){
+    if(existingLessons.some(l=>l.module_id===module.id&&l.title.trim().toLocaleLowerCase("es")===title.toLocaleLowerCase("es")))continue;
+    const position=1+Math.max(0,...existingLessons.filter(l=>l.module_id===module.id).map(l=>l.position));
+    const created=await write("ggp_academy_lessons","POST",{
+     workspace_id:WORKSPACE_ID,course_id:course.id,module_id:module.id,title,position,
+     lesson_type:"text",content:"Contenido y materiales de esta clase pendientes de validación y carga por el equipo académico."
+    });
+    existingLessons.push(created[0]);added++;
+   }
+  }
+  report.push(curriculum.title+": "+added+" lecciones añadidas");
+ }
+ await load();render();note("Importación terminada. "+report.join(" · "));
+}
 function admin(){
  const root=mount();root.append(heading("Administración de academia","Programa cursos, alumnos, lecciones y accesos sin afectar ETERNI."));
+ const importer=node("section","app-card");
+ importer.append(node("h3","","Preparar los dos cursos oficiales"),node("p","small","Crea o completa La Mujer del Faro y El Legado que Trasciende. Conserva módulos y lecciones existentes, no duplica títulos y deja los cursos nuevos como borradores. Los videos se cargan después."));
+ const importButton=button("Importar temarios oficiales",async()=>{
+  if(!confirm("¿Registrar los temarios de ambos cursos en el aula? Se conservarán los registros existentes y los nuevos cursos quedarán en borrador."))return;
+  importButton.disabled=true;
+  try{await importOfficialCurricula()}catch(error){note("La carga se detuvo: "+error.message+". Puedes reintentar sin duplicar los títulos ya creados.",true)}
+  finally{importButton.disabled=false}
+ },"primary-btn");
+ importer.append(importButton);root.append(importer);
  const boxes=node("div","app-layout");
  boxes.append(form("Crear programa en borrador",[
   field("Nombre del programa","title"),field("Categoría","category","",[
@@ -296,7 +344,7 @@ function renderCourse(){
  root.append(tools);
  const controls=node("div","grid-tools");controls.append(node("span","app-pill",c.status==="draft"?"Borrador":"Publicado"));
  controls.append(button(c.status==="published"?"Retirar del catálogo":"Publicar programa",async()=>{
-  if(c.status!=="published"&&!state.lessons.some(l=>l.content.trim().length>10)){note("Primero agrega una lección completa.",true);return}
+  if(c.status!=="published"&&!state.lessons.some(l=>l.content.trim().length>10&&!l.content.includes("pendientes de validación y carga"))){note("Primero completa y valida el contenido de al menos una lección. Los temarios importados no son clases listas para publicar.",true);return}
   if(!confirm("¿Actualizar la publicación del programa?"))return;
   try{await write("ggp_academy_courses","PATCH",{status:c.status==="published"?"draft":"published",published_at:new Date().toISOString()},{id:"eq."+c.id});
    await load();await openCourse(c.id);note("Publicación actualizada.");
