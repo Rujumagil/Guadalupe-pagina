@@ -48,6 +48,13 @@ function learnerProgress(course){
  return {all:lessons.length,done,pct:lessons.length?Math.round(done*100/lessons.length):0};
 }
 function lessonLink(courseId,lessonId){return "./leccion.html?course="+encodeURIComponent(courseId)+(lessonId?"&lesson="+encodeURIComponent(lessonId):"")}
+function lessonSection(content,heading){
+ const lines=String(content||"").split(/\r?\n/).map(x=>x.trim());
+ const start=lines.indexOf(heading);
+ if(start<0)return "";
+ const next=lines.slice(start+1).findIndex(line=>line.length>0);
+ return next<0?"":lines[start+1+next];
+}
 function card(c,own=false){
  const box=el("article","media-card glass"),art=el("div","media-art");
  if(c.slug==="la-mujer-del-faro"){
@@ -403,6 +410,23 @@ async function lesson(){
  if(canUseWorkbook){
   const workbook=el("section","workbook-panel"),header=el("div","workbook-heading"),field=el("textarea","workbook-answer"),status=el("p","workbook-status","Cargando tu cuaderno privado…"),controls=el("div","workbook-actions");
   header.append(el("span","kicker","CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
+  const practical=lessonSection(current.content,"ACTIVIDAD PRÁCTICA"),reflection=lessonSection(current.content,"PARA REFLEXIONAR"),result=lessonSection(current.content,"RESULTADO QUE CONSERVARÁS");
+  if(practical||reflection||result){
+   const guide=el("div","workbook-guide");guide.append(el("h4","","Guía para desarrollar esta actividad"));
+   for(const [heading,copy] of [["1. Actividad",practical],["2. Reflexiona",reflection],["3. Resultado esperado",result]]){
+    if(copy){const item=el("div","workbook-guide-item");item.append(el("strong","",heading),el("p","",copy));guide.append(item)}
+   }
+   if(c.slug==="la-mujer-del-faro")guide.append(el("p","workbook-guide-note","Guía orientativa pendiente de validación con el manual definitivo del programa."));
+   const template=el("button","btn","Preparar respuestas en mi cuaderno");template.type="button";template.disabled=true;
+   template.addEventListener("click",()=>{
+    if(field.value.trim()){note("Tu cuaderno ya contiene texto. Para proteger tus respuestas, la plantilla solo se inserta cuando está vacío.","info");return}
+    const sections=[["ACTIVIDAD",practical],["REFLEXIÓN",reflection],["RESULTADO",result]].filter(x=>x[1]);
+    field.value=sections.map(([heading,prompt])=>heading+"\n"+prompt+"\n\nMi respuesta:\n").join("\n\n");
+    field.dispatchEvent(new Event("input",{bubbles:true}));field.focus();
+   });
+   guide.append(template);
+   header.append(guide);
+  }
   field.placeholder="¿Qué descubriste en esta lección? ¿Qué deseas escribir o conservar?";
   field.rows=9;field.maxLength=20000;field.disabled=true;
   const save=el("button","btn primary","Guardar borrador"),complete=el("button","btn","Guardar actividad terminada");
@@ -428,6 +452,7 @@ async function lesson(){
   controls.append(save,complete);workbook.append(header,field,status,controls);content.append(workbook);
   try{
    entry=entryFor(current.id)||null;field.value=entry?.response||"";loaded=true;
+   const template=workbook.querySelector(".workbook-guide button");if(template)template.disabled=false;
    status.textContent=entry?"Último guardado: "+shortDate(entry.updated_at)+(entry.status==="completed"?" · Actividad terminada":" · Borrador"):"Tu cuaderno está listo. Aún no has guardado una respuesta.";
    buttonsDisabled(false);
   }catch(e){status.textContent="El cuaderno aún no está disponible. Tus respuestas no se guardarán hasta que se habilite.";note(e.message,"error")}
