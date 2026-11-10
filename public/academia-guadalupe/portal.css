@@ -304,3 +304,31 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 .workbook-guide-item strong{font-size:13px;color:#315f59}
 .workbook-guide-item p{font-size:14px;line-height:1.65;color:#597168;margin:6px 0 0}
 .workbook-guide .workbook-guide-note{font-size:11px;color:#98723d;background:#faf6eb;border-radius:9px;padding:10px;margin:12px 0 0}
+
+/* Revisión privada del manuscrito, sin exponer el texto en rutas públicas. */
+.review-controls{padding:22px;margin-bottom:22px;background:#fff;border:1px solid #e3e8dd;border-radius:20px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;color:#315f59}
+.review-controls>label:first-child{font-size:13px;font-weight:700;width:min(100%,600px)}
+.review-controls select{display:block;width:100%;margin-top:8px;padding:12px;border:1px solid #d6e1d8;background:#f8faf7;border-radius:12px;color:#315f59}
+.review-toggle{display:flex;align-items:center;gap:9px;font-size:13px;line-height:1.4}
+.review-toggle input{width:17px;height:17px}
+.review-controls .review-caution{max-width:720px;font-size:12px;line-height:1.6;color:#7d6d53}
+.review-preview{color:#315f59}.review-preview>h2{font:700 29px Georgia,serif;margin:15px 0}
+.review-module{margin:20px 0 30px}.review-module>h3{font:700 23px Georgia,serif;margin:0 0 13px}
+.review-writing{background:#fff;border:1px solid #e3e9e1;border-radius:16px;padding:23px;margin-bottom:13px}
+.review-writing h4{font:700 19px Georgia,serif;color:#315f59;margin:0 0 11px}
+.review-response{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:14px;color:#38584e;margin:14px 0}
+.manuscript-print{display:none}
+@media print{
+ @page{size:A4;margin:20mm 18mm}
+ body{background:#fff!important;color:#222!important}
+ .sidebar,.topbar,.mobile-nav,.heading,.review-controls,.review-preview,#notice,#loading{display:none!important}
+ .shell,.workarea,.main-content{display:block!important;max-width:none!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;box-shadow:none!important}
+ .manuscript-print{display:block!important;color:#222;font:11pt/1.6 Georgia,serif}
+ .manuscript-print>h1{font-size:28pt;margin:12mm 0 5mm;color:#244c42}
+ .manuscript-print>.kicker{letter-spacing:.1em;font-size:9pt;color:#806537}
+ .manuscript-module{break-before:page}
+ .manuscript-module h2{font-size:20pt;color:#244c42;border-bottom:1px solid #ddd;padding-bottom:5mm}
+ .manuscript-writing{break-inside:avoid;margin-bottom:9mm}
+ .manuscript-writing h3{font-size:14pt;margin:6mm 0 3mm}
+ .manuscript-response{white-space:pre-wrap;overflow-wrap:anywhere}
+}

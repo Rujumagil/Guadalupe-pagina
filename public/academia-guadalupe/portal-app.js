@@ -223,6 +223,51 @@ function myCourses(){
  block("Programas en los que estás inscrito",mine.length?mediaGrid(mine):
   empty("Sin matrículas todavía","Tu cuenta está lista. Cuando se confirme la inscripción aparecerán aquí tus programas.",a("Ver catálogo →","./cursos.html","btn primary")));
  if(mine.length){const panels=el("div","resume-grid");for(const c of mine)panels.append(resumePanel(c));block("Continuar mis actividades",panels)}
+ if(mine.length)root.append(a("Revisar mi libro de legado →","./cuaderno.html","btn"));
+}
+async function workbookReview(){
+ const courses=ownedCourses();
+ title("Mi libro de legado","Reúne tus escritos por módulo, revísalos y prepara una copia privada. Esta vista no publica tus memorias.",a("← Mis cursos","./mi-curso.html","btn"));
+ if(!courses.length){root.append(empty("Sin cursos asignados","Necesitas una matrícula activa para consultar tus escritos."));return}
+ const controls=el("section","review-controls glass"),courseLabel=el("label","","Programa"),courseSelect=el("select"),includeDraft=el("label","review-toggle"),check=el("input"),preview=el("div","review-preview"),print=el("button","btn primary","Imprimir o guardar como PDF"),printDoc=el("section","manuscript-print");
+ for(const course of courses){const opt=el("option","",course.title);opt.value=course.id;courseSelect.append(opt)}
+ courseLabel.append(courseSelect);check.type="checkbox";includeDraft.append(check,el("span","","Incluir también mis borradores (sin terminar)"));
+ print.type="button";print.disabled=true;print.addEventListener("click",()=>window.print());
+ controls.append(courseLabel,includeDraft,el("p","review-caution","Este documento contiene datos personales. Si lo guardas en un dispositivo compartido, protégelo y evita enviarlo sin revisarlo."),print);
+ root.append(controls,preview,printDoc);
+ let detail,entries,course;
+ function paint(){
+  preview.replaceChildren();printDoc.replaceChildren();
+  const byLesson=new Map(entries.map(entry=>[entry.lesson_id,entry]));
+  const selected=detail.lessons.filter(lesson=>{
+   const entry=byLesson.get(lesson.id);return entry?.response?.trim()&&(entry.status==="completed"||check.checked)
+  });
+  print.disabled=!selected.length;
+  preview.append(el("h2","",selected.length+" escritos seleccionados"));
+  if(!selected.length){preview.append(empty("Aún no hay escritos para reunir",check.checked?"Guarda respuestas en tus lecciones para verlas aquí.":"Termina una actividad de tu cuaderno o activa la opción para incluir borradores."));return}
+  printDoc.append(el("p","kicker","ACADEMIA NICTÉ HA · DOCUMENTO PRIVADO"),el("h1","",course.title),el("p","","Recopilación personal de actividades · Documento de trabajo, pendiente de revisión editorial."));
+  for(const module of detail.modules){
+   const lessons=selected.filter(l=>l.module_id===module.id);if(!lessons.length)continue;
+   const group=el("section","review-module"),printedGroup=el("section","manuscript-module");
+   group.append(el("h3","",module.title));printedGroup.append(el("h2","",module.title));
+   for(const lesson of lessons){
+    const entry=byLesson.get(lesson.id),item=el("article","review-writing"),printed=el("article","manuscript-writing");
+    item.append(el("h4","",lesson.title),pill(entry.status==="completed"?"Actividad terminada":"Borrador",entry.status==="completed"?"active":""),el("p","review-response",entry.response),a("Editar en lección →",lessonLink(course.id,lesson.id),"text-link"));
+    printed.append(el("h3","",lesson.title),el("p","manuscript-response",entry.response));
+    group.append(item);printedGroup.append(printed);
+   }
+   preview.append(group);printDoc.append(printedGroup);
+  }
+ }
+ async function load(){
+  course=courses.find(c=>c.id===courseSelect.value);
+  preview.replaceChildren(el("p","","Cargando tus actividades privadas…"));print.disabled=true;
+  try{
+   [detail,entries]=await Promise.all([courseDetail(course.id),get("ggp_academy_workbook_entries","lesson_id,response,status,updated_at",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1000"})]);
+   paint();
+  }catch(error){preview.replaceChildren(empty("No se pudo consultar el cuaderno",error.message));note(error.message,"error")}
+ }
+ courseSelect.addEventListener("change",load);check.addEventListener("change",()=>{if(detail&&entries)paint()});await load();
 }
 function externalConsult(){
  const link=a("Consultar información ↗",WHATSAPP,"btn primary");link.target="_blank";link.rel="noopener noreferrer";return link;
@@ -340,7 +385,7 @@ async function lesson(){
   title("No tienes acceso a este curso","Solicita una matrícula válida para consultar sus lecciones.");
   root.append(empty("Curso protegido","Puedes revisar tus programas asignados desde Mis cursos.",a("Mis cursos →","./mi-curso.html","btn")));return;
  }
- title(c.title,c.summary,a("← Mis cursos","./mi-curso.html","btn"));
+ title(c.title,c.summary,a("Revisar mi libro →","./cuaderno.html","btn"));
  const d=await courseDetail(c.id);
  if(!d.lessons.length){root.append(empty("Curso en preparación","Todavía no hay lecciones para consultar."));return}
  const qs=new URLSearchParams(location.search),lessonId=qs.get("lesson");
@@ -624,7 +669,7 @@ async function start(){
   }
   root.replaceChildren();
   const warning=el("p","message");warning.id="notice";warning.setAttribute("role","status");root.append(warning);
-  const handlers={"inicio":home,"cursos":courses,"mi-curso":myCourses,"libros":books,
+  const handlers={"inicio":home,"cursos":courses,"mi-curso":myCourses,"cuaderno":workbookReview,"libros":books,
    "comunidad":community,"progreso":progress,"perfil":profile,"administracion":admin,"leccion":lesson};
   await (handlers[page]||home)();
   document.getElementById("loading").hidden=true;document.getElementById("privatePortal").hidden=false;
