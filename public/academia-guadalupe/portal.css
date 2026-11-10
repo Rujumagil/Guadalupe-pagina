@@ -311,6 +311,17 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 .mujer-certificate-panel p{font-size:14px;line-height:1.65;max-width:730px}
 .mujer-certificate-count{font-weight:700;color:#688173}
 .mujer-certificate-panel button:disabled{opacity:.55;cursor:not-allowed}
+.mujer-interactive-questions{display:grid;gap:16px;margin:20px 0}
+.mujer-interactive-questions h4{font:700 24px Georgia,serif;color:#315f59;margin:0}
+.mujer-interactive-questions>p{font-size:13px;line-height:1.6;color:#647b70;margin:0 0 4px}
+.mujer-question-card{background:#fff;border:1px solid #dce7de;border-radius:16px;padding:20px;display:grid;gap:13px}
+.mujer-question-card label{color:#315f59;font-weight:700;font-size:15px;line-height:1.5}
+.mujer-question-answer,.mujer-legacy-answer{box-sizing:border-box;width:100%;min-height:110px;padding:15px;border:1px solid #cfded3;border-radius:12px;background:#fbfcfa;color:#26483f;font:inherit;font-size:15px;line-height:1.7;resize:vertical}
+.mujer-question-answer:focus,.mujer-legacy-answer:focus{outline:3px solid #bbd8c8;outline-offset:1px}
+.mujer-legacy-box{padding:17px;border:1px dashed #c8cfc8;border-radius:13px;background:#f5f6f1}
+.mujer-legacy-box h5{margin:0 0 7px;font-size:14px;color:#315f59}
+.mujer-legacy-box p{font-size:12px;color:#698073;line-height:1.6}
+.mujer-legacy-box[hidden],.workbook-answer[hidden]{display:none!important}
 .mujer-print-certificate{display:none}
 @media print{
  body.printing-mujer-certificate>*:not(.mujer-print-certificate){display:none!important}

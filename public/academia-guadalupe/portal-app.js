@@ -76,7 +76,7 @@ const MUJER_FINAL_QUESTIONS=[
  "¿Qué acciones concretas sostendré durante los próximos 30 días?",
  "¿Qué significa para mí reconocer y cuidar mi propia luz?"
 ];
-function renderManualLesson(content){
+function renderManualLesson(content,hideResponsePrompts=false){
  const body=el("div","manual-lesson-body");
  const blocks=String(content||"").split(/\n\s*\n/).map(block=>block.trim()).filter(Boolean);
  for(const block of blocks){
@@ -85,6 +85,7 @@ function renderManualLesson(content){
   }
   const lines=block.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
   const heading=lines.length>1&&lines[0].endsWith(":")?lines.shift():"";
+  if(hideResponsePrompts&&(lines.every(line=>/^\d+[.)]\s+/.test(line))||/^(Mi acuerdo personal|Completa cada apartado|Reflexiona|Preguntas):?$/i.test(heading)))continue;
   const section=el("section",heading?"manual-section":"manual-paragraph");
   if(heading)section.append(el("h3","",heading.slice(0,-1)));
   const list=lines.every(line=>/^(?:\d+[.)]|[•-])\s+/.test(line));
@@ -688,7 +689,7 @@ async function lesson(){
   content.append(intro);
  }
  content.append(el("span","kicker","ACTIVIDAD "+(currentIndex+1)+" DE "+d.lessons.length),el("h2","",current.title));
- content.append(isMujerManual?renderManualLesson(current.content):el("p","lesson-body",current.content||"Contenido en preparación."));
+ content.append(isMujerManual?renderManualLesson(current.content,manualActivityPrompts(current.content).length>0):el("p","lesson-body",current.content||"Contenido en preparación."));
  if(isMujerManual)content.append(el("div","mujer-media-pending","Los videos y audios de esta sesión se incorporarán cuando estén listos. Puedes comenzar ahora con la lectura y las actividades del manual."));
  if(current.media_path){
   const open=el("button","btn","Abrir material privado ↗");
@@ -707,7 +708,24 @@ async function lesson(){
   header.append(el("span","kicker",c.slug==="la-mujer-del-faro"?"CUADERNO DIGITAL · LA MUJER DEL FARO":"CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
   const practical=lessonSection(current.content,"ACTIVIDAD PRÁCTICA"),reflection=lessonSection(current.content,"PARA REFLEXIONAR"),result=lessonSection(current.content,"RESULTADO QUE CONSERVARÁS");
   const manualPrompts=c.slug==="la-mujer-del-faro"?manualActivityPrompts(current.content):[];
-  if(practical||reflection||result||manualPrompts.length||isMujerFinal){
+  const interactivePrompts=isMujerFinal?MUJER_FINAL_QUESTIONS:isMujerManual?manualPrompts:[];
+  const answerInputs=[];
+  let legacyField=null;
+  if(interactivePrompts.length){
+   const guide=el("div","mujer-interactive-questions");
+   guide.append(el("h4","","Responde a tu ritmo"),el("p","","Cada pregunta tiene su espacio. Puedes guardar un borrador y regresar más adelante."));
+   for(const [index,prompt] of interactivePrompts.entries()){
+    const item=el("div","mujer-question-card"),label=el("label","","Pregunta "+(index+1)+" · "+prompt),input=el("textarea","mujer-question-answer");
+    input.rows=4;input.maxLength=18000;input.placeholder="Escribe tu respuesta personal…";input.disabled=true;
+    label.htmlFor="mujer-answer-"+index;input.id="mujer-answer-"+index;
+    item.append(label,input);guide.append(item);answerInputs.push(input);
+   }
+   legacyField=el("textarea","mujer-legacy-answer");legacyField.rows=5;legacyField.disabled=true;
+   const legacyBox=el("div","mujer-legacy-box");legacyBox.append(el("h5","","Mis respuestas anteriores"),el("p","","Conservamos aquí cualquier texto que hubieras guardado antes de esta actualización."),legacyField);
+   legacyBox.hidden=true;guide.append(legacyBox);
+   legacyField.dataset.container="legacy";
+   header.append(guide);
+  }else if(practical||reflection||result||manualPrompts.length||isMujerFinal){
    const guide=el("div","workbook-guide");guide.append(el("h4","","Guía para desarrollar esta actividad"));
    if(isMujerFinal){
     guide.append(el("p","workbook-guide-note","Evaluación final de reflexión personal, sin calificación numérica."));
@@ -736,29 +754,46 @@ async function lesson(){
   }
   field.placeholder="¿Qué descubriste en esta lección? ¿Qué deseas escribir o conservar?";
   field.rows=9;field.maxLength=20000;field.disabled=true;
-  const save=el("button","btn primary","Guardar borrador"),complete=el("button","btn","Guardar actividad terminada");
+  if(interactivePrompts.length)field.hidden=true;
+  const save=el("button","btn","Guardar borrador"),complete=el("button","btn primary",interactivePrompts.length?"Guardar y continuar":"Guardar actividad terminada");
   save.type="button";complete.type="button";save.disabled=true;complete.disabled=true;
   let entry=null,loaded=false,dirty=false;
-  field.addEventListener("input",()=>{dirty=true;status.textContent="Cambios sin guardar · "+field.value.length+"/20000 caracteres"});
-  const buttonsDisabled=value=>{save.disabled=value;complete.disabled=value;field.disabled=value};
+  const onEdit=()=>{dirty=true;status.textContent="Cambios sin guardar · Recuerda guardar antes de salir."};
+  field.addEventListener("input",onEdit);
+  for(const input of answerInputs)input.addEventListener("input",onEdit);
+  if(legacyField)legacyField.addEventListener("input",onEdit);
+  const buttonsDisabled=value=>{save.disabled=value;complete.disabled=value;field.disabled=value;for(const input of answerInputs)input.disabled=value;if(legacyField)legacyField.disabled=value};
   async function saveWorkbook(nextStatus){
-   if(!loaded)return;
+   if(!loaded)return false;
+   const response=interactivePrompts.length?JSON.stringify({type:"mujer_respuestas_v1",answers:answerInputs.map(input=>input.value),legacy:legacyField?.value||""}):field.value;
+   if(response.length>20000){note("Las respuestas superan el límite de 20,000 caracteres. Resume parte del contenido antes de guardar.","error");return false}
+   if(nextStatus==="completed"&&interactivePrompts.length&&!answerInputs.some(input=>input.value.trim())&&!legacyField?.value.trim()){
+    note("Escribe al menos una reflexión antes de terminar esta actividad.","info");return false;
+   }
    buttonsDisabled(true);status.textContent="Guardando en tu cuaderno privado…";
    try{
-    const record={response:field.value,status:nextStatus,updated_at:new Date().toISOString()};
+    const record={response,status:nextStatus,updated_at:new Date().toISOString()};
     const rows=entry?await patch("ggp_academy_workbook_entries",entry.id,record):await add("ggp_academy_workbook_entries",{...record,course_id:c.id,lesson_id:current.id,student_id:ctx.user.id});
     entry=rows?.[0]||entry;dirty=false;
     if(entry){workbookEntries=workbookEntries.filter(x=>x.lesson_id!==current.id).concat([{...entry,lesson_id:current.id,status:nextStatus}]);paintTracking();renderCertificatePanel()}
     status.textContent=nextStatus==="completed"?"✓ Actividad guardada como terminada":"✓ Borrador guardado. Puedes volver después y continuar.";
     note("Tu cuaderno se guardó correctamente.","success");
-   }catch(e){status.textContent="No se guardaron los cambios. Inténtalo nuevamente.";note(e.message,"error")}
+    return true;
+   }catch(e){status.textContent="No se guardaron los cambios. Inténtalo nuevamente.";note(e.message,"error");return false}
    finally{buttonsDisabled(false)}
   }
   save.addEventListener("click",()=>saveWorkbook("draft"));
-  complete.addEventListener("click",()=>saveWorkbook("completed"));
+  complete.addEventListener("click",async()=>{const saved=await saveWorkbook("completed");if(saved&&interactivePrompts.length&&currentIndex<d.lessons.length-1)location.href=lessonLink(c.id,d.lessons[currentIndex+1].id)});
   controls.append(save,complete);workbook.append(header,field,status,controls);content.append(workbook);
   try{
    entry=entryFor(current.id)||null;field.value=entry?.response||"";loaded=true;
+   if(interactivePrompts.length){
+    let parsed=null;
+    try{const value=JSON.parse(field.value);if(value?.type==="mujer_respuestas_v1"&&Array.isArray(value.answers))parsed=value}catch{ /* contenido previo en texto libre */ }
+    if(parsed){for(const [index,input] of answerInputs.entries())input.value=String(parsed.answers[index]||"");legacyField.value=String(parsed.legacy||"")}
+    else legacyField.value=field.value;
+    legacyField.parentElement.hidden=!legacyField.value.trim();
+   }
    const template=workbook.querySelector(".workbook-guide button");if(template)template.disabled=false;
    status.textContent=entry?"Último guardado: "+shortDate(entry.updated_at)+(entry.status==="completed"?" · Actividad terminada":" · Borrador"):"Tu cuaderno está listo. Aún no has guardado una respuesta.";
    buttonsDisabled(false);
