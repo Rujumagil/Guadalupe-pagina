@@ -175,18 +175,18 @@ async function importOfficialCurricula(){
   const existingLessons=await read("ggp_academy_lessons","id,module_id,title,position,course_id",{course_id:"eq."+course.id,order:"position.asc"});
   let added=0;
   for(const [moduleIndex,template] of curriculum.modules.entries()){
-   let module=existingModules.find(m=>m.title.trim().toLocaleLowerCase("es")===template.title.toLocaleLowerCase("es"));
-   if(!module){
+   let courseModule=existingModules.find(m=>m.title.trim().toLocaleLowerCase("es")===template.title.toLocaleLowerCase("es"));
+   if(!courseModule){
     const position=1+Math.max(0,...existingModules.map(m=>m.position));
     const created=await write("ggp_academy_modules","POST",{workspace_id:WORKSPACE_ID,course_id:course.id,title:template.title,position});
-    module=created[0];existingModules.push(module);
+    courseModule=created[0];existingModules.push(courseModule);
    }
-   if(!module?.id)throw Error("No se pudo registrar el módulo "+(moduleIndex+1));
+   if(!courseModule?.id)throw Error("No se pudo registrar el módulo "+(moduleIndex+1));
    for(const title of template.lessons){
-    if(existingLessons.some(l=>l.module_id===module.id&&l.title.trim().toLocaleLowerCase("es")===title.toLocaleLowerCase("es")))continue;
-    const position=1+Math.max(0,...existingLessons.filter(l=>l.module_id===module.id).map(l=>l.position));
+    if(existingLessons.some(l=>l.module_id===courseModule.id&&l.title.trim().toLocaleLowerCase("es")===title.toLocaleLowerCase("es")))continue;
+    const position=1+Math.max(0,...existingLessons.filter(l=>l.module_id===courseModule.id).map(l=>l.position));
     const created=await write("ggp_academy_lessons","POST",{
-     workspace_id:WORKSPACE_ID,course_id:course.id,module_id:module.id,title,position,
+     workspace_id:WORKSPACE_ID,course_id:course.id,module_id:courseModule.id,title,position,
      lesson_type:"text",content:"Contenido y materiales de esta clase pendientes de validación y carga por el equipo académico."
     });
     existingLessons.push(created[0]);added++;
@@ -197,7 +197,7 @@ async function importOfficialCurricula(){
  await load();render();note("Importación terminada. "+report.join(" · "));
 }
 function admin(){
- const root=mount();root.append(heading("Administración de academia","Programa cursos, alumnos, lecciones y accesos sin afectar ETERNI."));
+ const root=mount();root.append(heading("Administración de academia","Organiza los cursos, alumnos, lecciones y accesos de Academia Nicté Ha."));
  const importer=node("section","app-card");
  importer.append(node("h3","","Preparar los dos cursos oficiales"),node("p","small","Crea o completa La Mujer del Faro y El Legado que Trasciende. Conserva módulos y lecciones existentes, no duplica títulos y deja los cursos nuevos como borradores. Los videos se cargan después."));
  const importButton=button("Importar temarios oficiales",async()=>{
