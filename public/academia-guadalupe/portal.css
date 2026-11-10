@@ -190,3 +190,24 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
  .hero-feature h2{font-size:clamp(2rem,7vw,2.7rem)}
  .hero-feature .hero-actions{position:relative;z-index:2}
 }
+
+/* Corrección de nitidez: imagen de formación profesional de alta resolución (2026-11-10).
+   Se reemplaza el recurso miniatura comprimido anterior para evitar pixelación. */
+.hero-feature.glass{
+  background-image:linear-gradient(90deg,#faf8f1 0%,#faf8f1 35%,rgba(250,248,241,.94) 48%,rgba(250,248,241,.28) 72%,rgba(250,248,241,.02) 100%),url('../images/servicio-capacitacion-equipos.webp');
+  background-size:100% 100%,62% 100%;
+  background-position:center,right center;
+}
+@media(max-width:900px){
+  .hero-feature.glass{
+    background-image:linear-gradient(90deg,#faf8f1 0%,rgba(250,248,241,.97) 40%,rgba(250,248,241,.73) 69%,rgba(250,248,241,.32) 100%),url('../images/servicio-capacitacion-equipos.webp');
+    background-size:100% 100%,76% 100%;
+  }
+}
+@media(max-width:600px){
+  .hero-feature.glass{
+    background-image:linear-gradient(180deg,#faf8f1 0%,rgba(250,248,241,.96) 44%,rgba(250,248,241,.47) 82%,rgba(250,248,241,.12) 100%),url('../images/servicio-capacitacion-equipos.webp');
+    background-size:100% 100%,100% 68%;
+    background-position:center,right bottom;
+  }
+}
