@@ -70,6 +70,27 @@ function manualActivityPrompts(content){
  }
  return prompts;
 }
+function renderManualLesson(content){
+ const body=el("div","manual-lesson-body");
+ const blocks=String(content||"").split(/\n\s*\n/).map(block=>block.trim()).filter(Boolean);
+ for(const block of blocks){
+  if(/^MANUAL DE ACTIVIDADES/i.test(block)){
+   body.append(el("span","manual-source",block));continue;
+  }
+  const lines=block.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  const heading=lines.length>1&&lines[0].endsWith(":")?lines.shift():"";
+  const section=el("section",heading?"manual-section":"manual-paragraph");
+  if(heading)section.append(el("h3","",heading.slice(0,-1)));
+  const list=lines.every(line=>/^(?:\d+[.)]|[•-])\s+/.test(line));
+  if(list){
+   const items=el("ol","manual-prompt-list");
+   for(const line of lines)items.append(el("li","",line.replace(/^(?:\d+[.)]|[•-])\s+/,"")));
+   section.append(items);
+  }else for(const line of lines)section.append(el("p","",line));
+  body.append(section);
+ }
+ return body;
+}
 function card(c,own=false){
  const box=el("article","media-card glass"),art=el("div","media-art");
  if(c.slug==="la-mujer-del-faro"){
@@ -576,6 +597,9 @@ async function lesson(){
  if(!d.lessons.length){root.append(empty("Curso en preparación","Todavía no hay lecciones para consultar."));return}
  const qs=new URLSearchParams(location.search),lessonId=qs.get("lesson");
  const current=d.lessons.find(l=>l.id===lessonId)||d.lessons[0];
+ const isMujerManual=c.slug==="la-mujer-del-faro"&&String(current.content||"").startsWith("MANUAL DE ACTIVIDADES");
+ const currentModule=d.modules.find(m=>m.id===current.module_id);
+ const currentIndex=d.lessons.findIndex(l=>l.id===current.id);
  const canUseWorkbook=!ctx.isAdmin||enrolled(ctx,store,c);
  let workbookEntries=[];
  if(canUseWorkbook){
@@ -615,8 +639,8 @@ async function lesson(){
  if(canUseWorkbook){paintTracking();root.append(tracking)}
  const columns=el("div","lesson-layout"),sidebar=el("aside","lesson-outline glass"),content=el("section","lesson-content glass");
  sidebar.append(el("h3","","Contenido del programa"));
- for(const m of d.modules){
-  sidebar.append(el("div","kicker",m.title));
+ for(const [moduleIndex,m] of d.modules.entries()){
+  sidebar.append(el("div","kicker",c.slug==="la-mujer-del-faro"?"SESIÓN "+(moduleIndex+1)+" · "+m.title:m.title));
   for(const l of d.lessons.filter(l=>l.module_id===m.id)){
    const entry=entryFor(l.id);
    const mark=entry?.status==="completed"?" ✓":entry?.status==="draft"?" · Borrador":"";
@@ -625,7 +649,19 @@ async function lesson(){
    sidebar.append(b);
   }
  }
- content.append(el("span","kicker","TU LECCIÓN"),el("h2","",current.title),el("p","lesson-body",current.content||"Contenido en preparación."));
+ if(c.slug==="la-mujer-del-faro"){
+  const moduleIndex=d.modules.findIndex(m=>m.id===current.module_id);
+  const intro=el("div","mujer-session-intro");
+  intro.append(el("span","kicker","LA MUJER DEL FARO · SESIÓN "+(moduleIndex+1)+" DE "+d.modules.length),el("h3","",currentModule?.title||"Mi proceso personal"),el("p","","Un espacio para escucharte, reflexionar y avanzar a tu propio ritmo."));
+  const meter=el("div","mujer-session-meter"),track=el("div","progress-track"),fill=el("div","progress-fill");
+  const sessionLessons=d.lessons.filter(l=>l.module_id===current.module_id);
+  fill.style.width=(sessionLessons.length?Math.round(sessionLessons.filter(l=>entryFor(l.id)?.status==="completed").length/sessionLessons.length*100):0)+"%";
+  track.append(fill);meter.append(el("span","",sessionLessons.filter(l=>entryFor(l.id)?.status==="completed").length+" de "+sessionLessons.length+" actividades terminadas"),track);intro.append(meter);
+  content.append(intro);
+ }
+ content.append(el("span","kicker","ACTIVIDAD "+(currentIndex+1)+" DE "+d.lessons.length),el("h2","",current.title));
+ content.append(isMujerManual?renderManualLesson(current.content):el("p","lesson-body",current.content||"Contenido en preparación."));
+ if(isMujerManual)content.append(el("div","mujer-media-pending","Los videos y audios de esta sesión se incorporarán cuando estén listos. Puedes comenzar ahora con la lectura y las actividades del manual."));
  if(current.media_path){
   const open=el("button","btn","Abrir material privado ↗");
   open.addEventListener("click",async()=>{
@@ -709,6 +745,12 @@ async function lesson(){
   }
  }
  columns.append(sidebar,content);root.append(columns);
+ if(c.slug==="la-mujer-del-faro"){
+  const navigation=el("nav","mujer-lesson-navigation");navigation.setAttribute("aria-label","Navegación entre actividades");
+  if(currentIndex>0)navigation.append(a("← Actividad anterior",lessonLink(c.id,d.lessons[currentIndex-1].id),"btn"));
+  if(currentIndex<d.lessons.length-1)navigation.append(a("Siguiente actividad →",lessonLink(c.id,d.lessons[currentIndex+1].id),"btn primary"));
+  content.append(navigation);
+ }
 }
 function profile(){
  title("Mi perfil","Gestiona tu información y la seguridad de tu cuenta.");
