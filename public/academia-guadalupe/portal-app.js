@@ -58,6 +58,14 @@ function card(c,own=false){
   cover.decoding="async";
   art.append(cover);
  }
+ if(c.slug==="el-legado-que-trasciende"){
+  art.classList.add("nh-course-cover-art");
+  const cover=el("img","nh-course-cover-image");
+  cover.src="../images/nicteha-legado-trasciende.webp";
+  cover.alt="Portada oficial de El Legado que Trasciende";
+  cover.loading="lazy";
+  art.append(cover);
+ }
  art.append(pill(c.category||"Aprendizaje"));
  const body=el("div","media-copy");
  body.append(el("strong","",c.title),el("p","",c.summary||"Un programa de aprendizaje y desarrollo."));
@@ -126,8 +134,8 @@ async function home(){
 function originalCollections(){
  const wrapper=el("div","media-row nh-collection-grid");
  const sections=[
-  {name:"Programa Legado",description:"Un espacio para reconocer tu historia y construir aquello que deseas trascender.",url:"./cursos.html",image:"../images/nicteha-programa-legado.webp",fallback:"../images/guadalupe-trayectoria.webp",alt:"Reflexión y trayectoria personal",cta:"Conocer el programa →",state:"En preparación"},
-  {name:"La Mujer del Faro",description:"Cuatro sesiones para explorar tu esencia, tu historia y tu propio camino.",url:"./cursos.html",image:"../images/nicteha-mujer-del-faro.png",fallback:"../images/servicio-coaching-ejecutivo.webp",alt:"Acompañamiento y transformación personal",cta:"Conocer el taller →",state:"En preparación"},
+  {name:"El Legado que Trasciende",description:"Escribe tu historia y prepara tu libro de legado. Plan oficial de 6 módulos y 36 clases.",url:"/academia/programas/el-legado-que-trasciende/",image:"../images/nicteha-legado-trasciende.webp",fallback:"../images/guadalupe-trayectoria.webp",alt:"Portada oficial de El Legado que Trasciende",cta:"Conocer el temario →",state:"Inscripciones por confirmar"},
+  {name:"La Mujer del Faro",description:"Cuatro sesiones para explorar tu esencia, tu historia y tu propio camino.",url:"/academia/programas/la-mujer-del-faro/",image:"../images/nicteha-mujer-del-faro.png",fallback:"../images/servicio-coaching-ejecutivo.webp",alt:"Acompañamiento y transformación personal",cta:"Ver objetivos y temario →",state:"Temario público"},
   {name:"Libros de Guadalupe",description:"Cuentos para Sanar y La Mujer del Faro: lecturas para acompañarte.",url:"./libros.html",image:"../images/nicteha-libros-guadalupe.webp",fallback:"../images/guadalupe-hero.webp",alt:"Guadalupe Gómez Pezuela, autora",cta:"Descubrir libros →",state:"Acceso según asignación"},
   {name:"Comunidad IXCHEL",description:"Encuentros y conversaciones para compartir aprendizajes y crecer juntas.",url:"./comunidad.html",image:"../images/nicteha-comunidad-ixchel.webp",fallback:"../images/servicio-capacitacion-equipos.webp",alt:"Personas compartiendo una sesión de formación",cta:"Explorar comunidad →",state:"Acceso según membresía"}
  ];
@@ -150,6 +158,17 @@ function originalCollections(){
 }
 function courses(){
  title("Explora tus próximos cursos","Programas publicados, contenido disponible y acceso según tu matrícula.");
+ const featured=[
+  {slug:"la-mujer-del-faro",title:"La Mujer del Faro",summary:"Conoce los objetivos y los temas de sus cuatro sesiones.",url:"/academia/programas/la-mujer-del-faro/"},
+  {slug:"el-legado-que-trasciende",title:"El Legado que Trasciende",summary:"Explora los seis módulos y las 36 clases del programa curricular.",url:"/academia/programas/el-legado-que-trasciende/"}
+ ];
+ const links=el("div","split");
+ for(const item of featured){
+  const info=el("article","panel glass");
+  info.append(el("span","kicker","TEMARIO Y OBJETIVOS PÚBLICOS"),el("h2","",item.title),el("p","",item.summary),a("Conocer el programa →",item.url,"btn primary"));
+  links.append(info);
+ }
+ block("Conoce nuestros dos programas",links);
  const list=visibleCourses();
  const active=list.filter(c=>enrolled(ctx,store,c)),locked=list.filter(c=>!enrolled(ctx,store,c));
  block("Disponibles para ti",active.length?mediaGrid(active):

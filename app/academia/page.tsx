@@ -74,8 +74,24 @@ export default function AcademiaPage() {
       <div className="shell">
         <div className="nh-section-head">
           <div><span className="nh-kicker">Nuestros caminos de aprendizaje</span><h2>Formación para cada etapa de tu vida.</h2></div>
-          <p>Conoce los cuatro programas en desarrollo. Consulta sus fichas informativas; las inscripciones abrirán cuando Guadalupe confirme sus detalles.</p>
+          <p>Explora los objetivos, temas y actividades de La Mujer del Faro y El Legado que Trasciende. También puedes conocer nuestras líneas de formación en desarrollo.</p>
         </div>
+        <article className="nh-legado-feature">
+          <img src="/images/nicteha-legado-trasciende.webp" alt="Portada de El Legado que Trasciende" loading="lazy" />
+          <div><span className="nh-kicker">Nuevo programa · Plan curricular oficial</span><h3>El Legado que Trasciende</h3>
+            <p>Escribe tu historia. Deja tu legado. Un recorrido por la memoria, la escritura y la creación de tu libro personal.</p>
+            <div className="nh-topics"><span>6 módulos</span><span>36 clases planificadas</span><span>Inscripciones por confirmar</span></div>
+            <Link className="nh-program-link" href="/academia/programas/el-legado-que-trasciende/">Conocer el programa completo ↗</Link>
+          </div>
+        </article>
+        <article className="nh-legado-feature">
+          <img src="/images/nicteha-mujer-del-faro.png" alt="Portada de La Mujer del Faro" loading="lazy" />
+          <div><span className="nh-kicker">Taller de desarrollo personal</span><h3>La Mujer del Faro</h3>
+            <p>Un recorrido para reconocer tu esencia, explorar tu historia y encontrar una dirección propia para seguir creciendo.</p>
+            <div className="nh-topics"><span>4 sesiones</span><span>Autoconocimiento</span><span>Ejercicios guiados</span></div>
+            <Link className="nh-program-link" href="/academia/programas/la-mujer-del-faro/">Ver objetivos y contenido ↗</Link>
+          </div>
+        </article>
         <div className="nh-program-grid">{academyDrafts.map((item,i)=><article className="nh-program" key={item.slug}>
           <div className="nh-program-top"><span>{String(i+1).padStart(2,"0")}</span><small>{item.category}</small></div>
           <div className="nh-program-status">Programa en preparación</div>
@@ -83,7 +99,7 @@ export default function AcademiaPage() {
           <div className="nh-topics"><span>{item.level}</span><span>Duración por confirmar</span></div>
           <Link className="nh-program-link" href={`/academia/programas/${item.slug}/`}>Conocer el programa <span aria-hidden="true">↗</span></Link>
         </article>)}</div>
-        <p className="nh-catalog-note">Los programas aún son borradores. Sus fichas son informativas: no hay temarios definitivos, precios ni fechas de inscripción anunciadas.</p>
+        <p className="nh-catalog-note">Puedes consultar públicamente el contenido y los objetivos de los dos programas destacados. Los videos, cuadernos de actividades y espacios de alumnos requieren acceso autorizado. No se anuncian precios ni fechas de inscripción sin confirmar.</p>
       </div>
     </section>
 

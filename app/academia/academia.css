@@ -52,3 +52,26 @@ body:has(.nh-page) .site-header {display:none}
 .nh-detail-themes li{border:1px solid #e0eae2;border-radius:12px;padding:13px 16px;background:#fbfcfa;color:#345d50}
 .nh-detail-themes li:before{content:"✦";color:#ac955b;margin-right:11px}
 @media(max-width:800px){.nh-program-grid,.nh-detail-grid,.nh-detail-content{grid-template-columns:1fr}.nh-detail-hero{padding:55px 0}.nh-detail-content{padding-top:65px;padding-bottom:65px}.nh-detail-back{margin-bottom:25px}}
+.nh-legado-feature{display:grid;grid-template-columns:minmax(220px,.9fr) 1.1fr;gap:28px;background:#fff;border:1px solid #e1e8e2;border-radius:22px;overflow:hidden;margin-bottom:25px;align-items:center}
+.nh-legado-feature>img{width:100%;height:100%;max-height:330px;object-fit:cover}
+.nh-legado-feature>div{padding:27px 32px 27px 0}
+.nh-legado-feature h3{font-size:clamp(2rem,3vw,3.3rem);margin:12px 0}
+.nh-legado-feature .nh-program-link{display:inline-block}
+.nh-legado-hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(30px,5vw,80px)}
+.nh-legado-hero .nh-detail-back{display:block}.nh-legado-hero h1{font-size:clamp(3rem,5vw,5rem);margin:17px 0}
+.nh-legado-cover{display:block;width:100%;border-radius:20px;box-shadow:0 30px 70px rgba(40,64,45,.14)}
+.nh-legado-intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,100px);padding-top:85px;padding-bottom:90px}
+.nh-legado-intro p{color:#61786e}.nh-legado-curriculum{background:#f6f8f6;padding:85px 0 105px;scroll-margin-top:25px}
+.nh-legado-curriculum>.shell>p{max-width:850px;color:#60786e}
+.nh-legado-modules{display:grid;gap:12px;margin-top:35px;max-width:980px}
+.nh-legado-module{background:white;border:1px solid #dfe9e1;border-radius:15px;overflow:hidden}
+.nh-legado-module summary{display:flex;align-items:center;gap:18px;padding:19px 25px;cursor:pointer;list-style:none}
+.nh-legado-module summary::-webkit-details-marker{display:none}
+.nh-legado-module summary>span:last-child{margin-left:auto;color:#ad9155;font-size:1.4rem}
+.nh-legado-module-number{font:1.7rem Georgia,serif;color:#aa9161}
+.nh-legado-module summary strong{display:block;font-size:1.12rem;color:#2a5044}
+.nh-legado-module summary small{display:block;font-size:.78rem;color:#72877b;margin-top:4px}
+.nh-legado-module-body{border-top:1px solid #e7ede6;padding:20px 32px 26px;color:#3c6155}
+.nh-legado-module-body h3{font-size:1.35rem;margin:16px 0 4px}
+.nh-legado-module-body li{padding:5px 0;line-height:1.5}
+@media(max-width:800px){.nh-legado-feature,.nh-legado-hero,.nh-legado-intro{grid-template-columns:1fr}.nh-legado-feature>img{height:auto;max-height:none}.nh-legado-feature>div{padding:0 25px 28px}.nh-legado-cover{max-width:650px}.nh-legado-intro{padding-top:60px;padding-bottom:65px}}
