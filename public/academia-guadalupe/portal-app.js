@@ -47,6 +47,7 @@ function learnerProgress(course){
  const done=lessons.filter(id=>store.progress.some(p=>p.lesson_id===id&&p.student_id===ctx.user.id)).length;
  return {all:lessons.length,done,pct:lessons.length?Math.round(done*100/lessons.length):0};
 }
+function lessonLink(courseId,lessonId){return "./leccion.html?course="+encodeURIComponent(courseId)+(lessonId?"&lesson="+encodeURIComponent(lessonId):"")}
 function card(c,own=false){
  const box=el("article","media-card glass"),art=el("div","media-art");
  if(c.slug==="la-mujer-del-faro"){
@@ -72,7 +73,8 @@ function card(c,own=false){
  const actions=el("div","media-actions");
  if(own){
   const p=learnerProgress(c);
-  actions.append(pill(p.all?p.pct+"% completado":"Por comenzar","active"),a("Continuar →","./leccion.html?course="+encodeURIComponent(c.id),""));
+  const resume=store.studyResume?.[c.id];
+  actions.append(pill(p.all?p.pct+"% completado":"Por comenzar","active"),a(resume?.next?"Retomar actividad →":"Abrir curso →",lessonLink(c.id,resume?.next?.id),""));
  }else if(!isPublished(c)&&ctx.isAdmin){
   actions.append(pill("Borrador","locked"),a("Editar →","./aula.html?course="+encodeURIComponent(c.id),""));
  }else {
@@ -92,6 +94,32 @@ async function loadLessonCounts(){
   try{const detail=await courseDetail(c.id);store.lessonCounts[c.id]=detail.lessons.map(x=>x.id)}
   catch{store.lessonCounts[c.id]=[]}
  }));
+}
+async function loadStudyResume(){
+ store.studyResume={};
+ await Promise.all(ownedCourses().slice(0,50).map(async course=>{
+  try{
+   const [detail,entries]=await Promise.all([
+    courseDetail(course.id),
+    get("ggp_academy_workbook_entries","lesson_id,status,updated_at",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1000"})
+   ]);
+   const byLesson=new Map(entries.map(entry=>[entry.lesson_id,entry]));
+   const latestDraft=entries.filter(e=>e.status==="draft").sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
+   const next=detail.lessons.find(l=>l.id===latestDraft?.lesson_id)||detail.lessons.find(l=>byLesson.get(l.id)?.status!=="completed");
+   store.studyResume[course.id]={next,completed:detail.lessons.filter(l=>byLesson.get(l.id)?.status==="completed").length,drafts:detail.lessons.filter(l=>byLesson.get(l.id)?.status==="draft").length,total:detail.lessons.length};
+  }catch{store.studyResume[course.id]=null}
+ }));
+}
+function resumePanel(c){
+ const data=store.studyResume?.[c.id],panel=el("article","resume-card glass");
+ panel.append(el("span","kicker","CONTINUAR APRENDIENDO"),el("h3","",c.title));
+ if(!data){panel.append(el("p","","Consulta tus actividades desde el curso."),a("Abrir curso →",lessonLink(c.id),"btn primary"));return panel}
+ if(data.total===data.completed){panel.append(el("p","","¡Terminaste todas las actividades de tu cuaderno!"),a("Repasar lecciones →",lessonLink(c.id),"btn"));return panel}
+ panel.append(el("p","",data.next?.title||"Primera lección disponible"));
+ const details=el("p","resume-detail",data.completed+" de "+data.total+" actividades terminadas · "+data.drafts+" borradores");
+ const progress=el("div","progress-track"),fill=el("div","progress-fill");fill.style.width=(data.total?Math.round(data.completed/data.total*100):0)+"%";progress.append(fill);
+ panel.append(details,progress,a(data.drafts?"Continuar mi borrador →":"Comenzar actividad →",lessonLink(c.id,data.next?.id),"btn primary"));
+ return panel;
 }
 async function home(){
  const mine=ownedCourses(),published=visibleCourses();
@@ -113,6 +141,7 @@ async function home(){
   ["Progreso general",pct+"%","Promedio de lecciones","◉"],
   ["Cursos disponibles",published.length,"Catálogo publicado","✧"],
  ]));
+ if(mine.length){const panels=el("div","resume-grid");for(const c of mine.slice(0,3))panels.append(resumePanel(c));block("Retoma tu última actividad",panels)}
  block("Continuar aprendiendo",mine.length?mediaGrid(mine.slice(0,3)):
   empty("Tu camino comienza aquí","Todavía no tienes cursos asignados. Puedes revisar el catálogo y consultar cómo inscribirte.",a("Explorar catálogo →","./cursos.html","btn primary")),
   "./mi-curso.html","Ver mis cursos →");
@@ -186,6 +215,7 @@ function myCourses(){
  const mine=ownedCourses();
  block("Programas en los que estás inscrito",mine.length?mediaGrid(mine):
   empty("Sin matrículas todavía","Tu cuenta está lista. Cuando se confirme la inscripción aparecerán aquí tus programas.",a("Ver catálogo →","./cursos.html","btn primary")));
+ if(mine.length){const panels=el("div","resume-grid");for(const c of mine)panels.append(resumePanel(c));block("Continuar mis actividades",panels)}
 }
 function externalConsult(){
  const link=a("Consultar información ↗",WHATSAPP,"btn primary");link.target="_blank";link.rel="noopener noreferrer";return link;
@@ -560,6 +590,7 @@ async function start(){
   await accessToken();ctx=await identity();store=await loadData(ctx);
   if(page==="administracion"&&!ctx.isAdmin){location.replace("./inicio.html");return}
   if(["inicio","cursos","progreso","mi-curso"].includes(page))await loadLessonCounts();
+  if(["inicio","mi-curso"].includes(page))await loadStudyResume();
   document.getElementById("topGreeting").textContent="Hola, "+ctx.name;
   document.getElementById("initialAvatar").textContent=ctx.name[0]?.toUpperCase()||"G";
   if(ctx.isAdmin){
