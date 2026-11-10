@@ -241,6 +241,11 @@ async function workbookReview(){
   field.name=key;field.maxLength=max;if(multiline)field.rows=key==="introduction"?6:4;
   fields[key]=field;label.append(field);form.append(label);
  }
+ const design=el("section","editorial-design"),designInputs=el("div","editorial-design-inputs"),coverLabel=el("label","","Estilo de portada"),coverChoice=el("select"),fontLabel=el("label","","Tipografía del libro"),fontChoice=el("select"),coverPreview=el("div","editorial-cover-preview");
+ for(const [value,label] of [["classic","Clásica · crema y verde"],["botanical","Botánica · salvia y dorado"],["modern","Contemporánea · azul noche"]]){const option=el("option","",label);option.value=value;coverChoice.append(option)}
+ for(const [value,label] of [["serif","Editorial · con serifas"],["sans","Moderna · sin serifas"]]){const option=el("option","",label);option.value=value;fontChoice.append(option)}
+ coverLabel.append(coverChoice);fontLabel.append(fontChoice);designInputs.append(coverLabel,fontLabel);
+ design.append(el("h3","","Diseño de portada y lectura"),designInputs,coverPreview);form.append(design);
  const saveEditorial=el("button","btn primary","Guardar ficha y capítulos"),editorialStatus=el("p","editorial-status","Los cambios se guardan únicamente al pulsar el botón.");
  saveEditorial.type="submit";saveEditorial.disabled=true;form.append(saveEditorial,editorialStatus);editorial.append(form);
  const outline=el("section","chapter-planner glass");
@@ -250,7 +255,7 @@ async function workbookReview(){
  form.addEventListener("submit",async event=>{
   event.preventDefault();if(!course)return;saveEditorial.disabled=true;editorialStatus.textContent="Guardando tu ficha privada…";
   try{
-   const values={...editorialValues(),chapter_layout:layout,updated_at:new Date().toISOString()};
+   const values={...editorialValues(),cover_style:coverChoice.value,body_font:fontChoice.value,chapter_layout:layout,updated_at:new Date().toISOString()};
    const result=metadata?await patch("ggp_academy_manuscripts",metadata.id,values):await add("ggp_academy_manuscripts",{...values,course_id:course.id,student_id:ctx.user.id});
    metadata=result?.[0]||metadata;editorialStatus.textContent="✓ Ficha editorial guardada.";note("Ficha editorial guardada.","success");paint();
   }catch(error){editorialStatus.textContent="No se guardaron los cambios: "+error.message;note(error.message,"error")}
@@ -258,6 +263,8 @@ async function workbookReview(){
  });
  function paint(){
   preview.replaceChildren();printDoc.replaceChildren();outline.replaceChildren();
+  coverPreview.replaceChildren();coverPreview.className="editorial-cover-preview cover-"+coverChoice.value;
+  coverPreview.append(el("span","","ACADEMIA NICTÉ HA"),el("strong","",fields.title.value.trim()||course.title),el("small","",fields.subtitle.value.trim()||"Mi historia, mi legado"),el("span","",fields.author_name.value.trim()||ctx.name));
   const byLesson=new Map(entries.map(entry=>[entry.lesson_id,entry]));
   const available=detail.lessons.filter(lesson=>{const entry=byLesson.get(lesson.id);return entry?.response?.trim()&&(entry.status==="completed"||check.checked)});
   const availableIds=new Set(available.map(lesson=>lesson.id));
@@ -293,7 +300,8 @@ async function workbookReview(){
   preview.append(el("h2","",selected.length+" escritos seleccionados"));
   if(!selected.length){preview.append(empty("Aún no hay escritos para reunir",check.checked?"Guarda respuestas en tus lecciones para verlas aquí.":"Termina una actividad de tu cuaderno o activa la opción para incluir borradores."));return}
   const info=editorialValues(),bookTitle=info.title||course.title;
-  const cover=el("section","manuscript-cover");
+  printDoc.className="manuscript-print font-"+fontChoice.value;
+  const cover=el("section","manuscript-cover cover-"+coverChoice.value);
   cover.append(el("p","kicker","ACADEMIA NICTÉ HA · MI LIBRO DE LEGADO"),el("h1","",bookTitle));
   if(info.subtitle)cover.append(el("h2","",info.subtitle));
   cover.append(el("p","manuscript-author",info.author_name||ctx.name),el("p","","Documento personal de trabajo · No es una edición final."));
@@ -330,11 +338,14 @@ async function workbookReview(){
    if(saved&&Object.keys(saved).length){layout=Object.fromEntries(Object.entries(saved).filter(([,ids])=>Array.isArray(ids)).map(([id,ids])=>[id,ids.filter(value=>typeof value==="string")]))}
    else{const savedIds=new Set(entries.filter(entry=>entry.response?.trim()).map(entry=>entry.lesson_id));layout=Object.fromEntries(detail.modules.map(group=>[group.id,detail.lessons.filter(lesson=>lesson.module_id===group.id&&savedIds.has(lesson.id)).map(lesson=>lesson.id)]))}
    for(const [key,field] of Object.entries(fields))field.value=metadata?.[key]||"";
+   coverChoice.value=metadata?.cover_style||"classic";fontChoice.value=metadata?.body_font||"serif";
    saveEditorial.disabled=false;editorialStatus.textContent=metadata?"Ficha recuperada. Guarda tus cambios antes de imprimir.":"Completa la ficha y pulsa Guardar ficha editorial.";
    paint();
   }catch(error){preview.replaceChildren(empty("No se pudo consultar el cuaderno",error.message));note(error.message,"error")}
  }
- courseSelect.addEventListener("change",load);check.addEventListener("change",()=>{if(detail&&entries)paint()});await load();
+ courseSelect.addEventListener("change",load);check.addEventListener("change",()=>{if(detail&&entries)paint()});
+ for(const field of [...Object.values(fields),coverChoice,fontChoice])field.addEventListener("input",()=>{if(detail&&entries){paint();editorialStatus.textContent="Cambios de diseño sin guardar."}});
+ await load();
 }
 function externalConsult(){
  const link=a("Consultar información ↗",WHATSAPP,"btn primary");link.target="_blank";link.rel="noopener noreferrer";return link;
