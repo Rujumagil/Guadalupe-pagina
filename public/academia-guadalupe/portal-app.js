@@ -241,26 +241,54 @@ async function workbookReview(){
   field.name=key;field.maxLength=max;if(multiline)field.rows=key==="introduction"?6:4;
   fields[key]=field;label.append(field);form.append(label);
  }
- const saveEditorial=el("button","btn primary","Guardar ficha editorial"),editorialStatus=el("p","editorial-status","Los cambios se guardan únicamente al pulsar el botón.");
+ const saveEditorial=el("button","btn primary","Guardar ficha y capítulos"),editorialStatus=el("p","editorial-status","Los cambios se guardan únicamente al pulsar el botón.");
  saveEditorial.type="submit";saveEditorial.disabled=true;form.append(saveEditorial,editorialStatus);editorial.append(form);
- root.append(controls,editorial,preview,printDoc);
- let detail,entries,course,metadata=null;
+ const outline=el("section","chapter-planner glass");
+ root.append(controls,editorial,outline,preview,printDoc);
+ let detail,entries,course,metadata=null,layout={};
  function editorialValues(){return Object.fromEntries(Object.entries(fields).map(([key,field])=>[key,field.value.trim()]))}
  form.addEventListener("submit",async event=>{
   event.preventDefault();if(!course)return;saveEditorial.disabled=true;editorialStatus.textContent="Guardando tu ficha privada…";
   try{
-   const values={...editorialValues(),updated_at:new Date().toISOString()};
+   const values={...editorialValues(),chapter_layout:layout,updated_at:new Date().toISOString()};
    const result=metadata?await patch("ggp_academy_manuscripts",metadata.id,values):await add("ggp_academy_manuscripts",{...values,course_id:course.id,student_id:ctx.user.id});
    metadata=result?.[0]||metadata;editorialStatus.textContent="✓ Ficha editorial guardada.";note("Ficha editorial guardada.","success");paint();
   }catch(error){editorialStatus.textContent="No se guardaron los cambios: "+error.message;note(error.message,"error")}
   finally{saveEditorial.disabled=false}
  });
  function paint(){
-  preview.replaceChildren();printDoc.replaceChildren();
+  preview.replaceChildren();printDoc.replaceChildren();outline.replaceChildren();
   const byLesson=new Map(entries.map(entry=>[entry.lesson_id,entry]));
-  const selected=detail.lessons.filter(lesson=>{
-   const entry=byLesson.get(lesson.id);return entry?.response?.trim()&&(entry.status==="completed"||check.checked)
-  });
+  const available=detail.lessons.filter(lesson=>{const entry=byLesson.get(lesson.id);return entry?.response?.trim()&&(entry.status==="completed"||check.checked)});
+  const availableIds=new Set(available.map(lesson=>lesson.id));
+  const selected=detail.modules.flatMap(group=>(layout[group.id]||[]).filter(id=>availableIds.has(id)).map(id=>available.find(lesson=>lesson.id===id)).filter(Boolean));
+  outline.append(el("span","kicker","ORGANIZACIÓN EDITORIAL"),el("h2","","Selecciona y ordena tus escritos"),el("p","","Elige qué actividades formarán parte del libro. Puedes moverlas dentro de su módulo. Guarda la ficha editorial para conservar los cambios."));
+  for(const group of detail.modules){
+   const options=available.filter(lesson=>lesson.module_id===group.id);
+   if(!options.length)continue;
+   const section=el("div","chapter-planner-group"),selectedIds=layout[group.id]||[];
+   section.append(el("h3","",group.title));
+   const ordered=[...selectedIds.filter(id=>options.some(lesson=>lesson.id===id)),...options.map(lesson=>lesson.id).filter(id=>!selectedIds.includes(id))];
+   for(const id of ordered){
+    const lesson=options.find(item=>item.id===id),included=selectedIds.includes(id),row=el("div","chapter-planner-row"),label=el("label"),toggle=el("input"),buttons=el("div","chapter-planner-buttons");
+    toggle.type="checkbox";toggle.checked=included;label.append(toggle,el("span","",lesson.title));
+    toggle.addEventListener("change",()=>{
+     layout[group.id]=toggle.checked?[...selectedIds,id]:selectedIds.filter(item=>item!==id);
+     editorialStatus.textContent="Cambios de capítulos sin guardar.";paint();
+    });
+    for(const [symbol,delta] of [["↑",-1],["↓",1]]){
+     const move=el("button","btn small",symbol);move.type="button";move.title=delta<0?"Subir escrito":"Bajar escrito";
+     const pos=selectedIds.indexOf(id);move.disabled=!included||pos+delta<0||pos+delta>=selectedIds.length;
+     move.addEventListener("click",()=>{
+      const order=[...selectedIds],index=order.indexOf(id);if(index<0||index+delta<0||index+delta>=order.length)return;
+      [order[index],order[index+delta]]=[order[index+delta],order[index]];layout[group.id]=order;
+      editorialStatus.textContent="Cambios de capítulos sin guardar.";paint();
+     });buttons.append(move);
+    }
+    row.append(label,buttons);section.append(row);
+   }
+   outline.append(section);
+  }
   print.disabled=!selected.length;
   preview.append(el("h2","",selected.length+" escritos seleccionados"));
   if(!selected.length){preview.append(empty("Aún no hay escritos para reunir",check.checked?"Guarda respuestas en tus lecciones para verlas aquí.":"Termina una actividad de tu cuaderno o activa la opción para incluir borradores."));return}
@@ -298,6 +326,9 @@ async function workbookReview(){
     get("ggp_academy_manuscripts","*",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1"})
    ]);
    detail=courseDetailResult;entries=entryRows;metadata=manuscriptRows[0]||null;
+   const saved=metadata?.chapter_layout;
+   if(saved&&Object.keys(saved).length){layout=Object.fromEntries(Object.entries(saved).filter(([,ids])=>Array.isArray(ids)).map(([id,ids])=>[id,ids.filter(value=>typeof value==="string")]))}
+   else{const savedIds=new Set(entries.filter(entry=>entry.response?.trim()).map(entry=>entry.lesson_id));layout=Object.fromEntries(detail.modules.map(group=>[group.id,detail.lessons.filter(lesson=>lesson.module_id===group.id&&savedIds.has(lesson.id)).map(lesson=>lesson.id)]))}
    for(const [key,field] of Object.entries(fields))field.value=metadata?.[key]||"";
    saveEditorial.disabled=false;editorialStatus.textContent=metadata?"Ficha recuperada. Guarda tus cambios antes de imprimir.":"Completa la ficha y pulsa Guardar ficha editorial.";
    paint();
