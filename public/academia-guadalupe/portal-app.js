@@ -1,6 +1,6 @@
 import {
  make as el, note, shortDate, accessToken, hasSession, captureLink, identity, logOut,
- get,add,patch,updatePassword,data as loadData,enrolled,hasBook,hasCommunity,courseDetail,secureMedia
+ get,add,patch,updatePassword,data as loadData,enrolled,hasBook,hasCommunity,courseDetail,secureMedia,uploadLegadoPhoto,signedLegadoPhoto
 } from "./portal-core.js";
 import { WHATSAPP,API_URL,PUBLISHABLE_KEY } from "./config.js";
 
@@ -232,7 +232,7 @@ async function workbookReview(){
  const controls=el("section","review-controls glass"),courseLabel=el("label","","Programa"),courseSelect=el("select"),includeDraft=el("label","review-toggle"),check=el("input"),preview=el("div","review-preview"),print=el("button","btn primary","Imprimir o guardar como PDF"),printDoc=el("section","manuscript-print");
  for(const course of courses){const opt=el("option","",course.title);opt.value=course.id;courseSelect.append(opt)}
  courseLabel.append(courseSelect);check.type="checkbox";includeDraft.append(check,el("span","","Incluir también mis borradores (sin terminar)"));
- print.type="button";print.disabled=true;print.addEventListener("click",()=>window.print());
+ print.type="button";print.disabled=true;
  controls.append(courseLabel,includeDraft,el("p","review-caution","Este documento contiene datos personales. Si lo guardas en un dispositivo compartido, protégelo y evita enviarlo sin revisarlo."),print);
  const editorial=el("section","editorial-panel glass"),form=el("form","editorial-form"),fields={};
  editorial.append(el("span","kicker","ETAPA EDITORIAL"),el("h2","","Ficha de mi libro"),el("p","","Personaliza la portada, dedicatoria e introducción. Los capítulos provienen de tus actividades guardadas."));
@@ -248,9 +248,57 @@ async function workbookReview(){
  design.append(el("h3","","Diseño de portada y lectura"),designInputs,coverPreview);form.append(design);
  const saveEditorial=el("button","btn primary","Guardar ficha y capítulos"),editorialStatus=el("p","editorial-status","Los cambios se guardan únicamente al pulsar el botón.");
  saveEditorial.type="submit";saveEditorial.disabled=true;form.append(saveEditorial,editorialStatus);editorial.append(form);
+ const photoPanel=el("section","photo-editor glass"),photoForm=el("form","photo-upload"),fileInput=el("input"),captionInput=el("input"),uploadButton=el("button","btn primary","Subir fotografía privada"),photoGallery=el("div","photo-gallery"),photoMessage=el("p","editorial-status","Formatos JPG, PNG o WebP. Máximo 8 MB por fotografía.");
+ fileInput.type="file";fileInput.accept="image/jpeg,image/png,image/webp";fileInput.required=true;captionInput.placeholder="Descripción o recuerdo de la fotografía";captionInput.maxLength=400;
+ uploadButton.type="submit";uploadButton.disabled=true;
+ photoForm.append(fileInput,captionInput,uploadButton);photoPanel.append(el("span","kicker","MEMORIA VISUAL"),el("h2","","Mis fotografías"),el("p","","Tus imágenes se guardan de manera privada. Elige cuáles incluir en la versión imprimible de tu libro."),photoForm,photoMessage,photoGallery);
  const outline=el("section","chapter-planner glass");
- root.append(controls,editorial,outline,preview,printDoc);
- let detail,entries,course,metadata=null,layout={};
+ root.append(controls,editorial,photoPanel,outline,preview,printDoc);
+ let detail,entries,course,metadata=null,layout={},photos=[];
+ let photoUrls=new Map();
+ async function refreshPhotoUrls(){
+  const pairs=await Promise.all(photos.filter(p=>p.include_in_book).map(async p=>[p.id,await signedLegadoPhoto(p.storage_path)]));
+  photoUrls=new Map(pairs);
+ }
+ print.addEventListener("click",async()=>{
+  print.disabled=true;
+  try{await refreshPhotoUrls();paint();window.print()}
+  catch(error){note("No se pudieron recuperar las fotografías para imprimir: "+error.message,"error")}
+  finally{print.disabled=false}
+ });
+ async function paintPhotos(){
+  photoGallery.replaceChildren();
+  if(!photos.length){photoGallery.append(el("p","","Todavía no tienes fotografías en este curso."));return}
+  for(const photo of photos){
+   const item=el("article","photo-item"),image=el("img"),description=el("input"),toggle=el("input"),toggleLabel=el("label","review-toggle"),save=el("button","btn small","Guardar cambios");
+   image.alt=photo.caption||"Fotografía personal de legado";image.loading="lazy";
+   try{image.src=photoUrls.get(photo.id)||await signedLegadoPhoto(photo.storage_path)}catch{image.alt="No se pudo cargar la fotografía"}
+   description.value=photo.caption;description.maxLength=400;description.placeholder="Leyenda de la imagen";
+   toggle.type="checkbox";toggle.checked=photo.include_in_book;toggleLabel.append(toggle,el("span","","Incluir en mi libro"));
+   save.type="button";save.addEventListener("click",async()=>{
+    save.disabled=true;try{
+     const values={caption:description.value.trim(),include_in_book:toggle.checked};
+     await patch("ggp_academy_manuscript_photos",photo.id,values);Object.assign(photo,values);
+     note("Fotografía actualizada.","success");await refreshPhotoUrls();paint();
+    }catch(error){note(error.message,"error")}finally{save.disabled=false}
+   });item.append(image,description,toggleLabel,save);photoGallery.append(item);
+  }
+ }
+ photoForm.addEventListener("submit",async event=>{
+  event.preventDefault();const file=fileInput.files?.[0];if(!file||!course)return;
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>8388608){note("Selecciona una imagen JPG, PNG o WebP de hasta 8 MB.","error");return}
+  if(photos.length>=12){note("Por ahora puedes agregar un máximo de 12 fotografías por libro.","error");return}
+  const extension={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
+  const path=ctx.user.id+"/"+course.id+"/"+crypto.randomUUID()+"."+extension;
+  uploadButton.disabled=true;photoMessage.textContent="Subiendo fotografía de manera privada…";
+  try{
+   await uploadLegadoPhoto(path,file);
+   const created=await add("ggp_academy_manuscript_photos",{course_id:course.id,student_id:ctx.user.id,storage_path:path,caption:captionInput.value.trim(),include_in_book:true});
+   photos.push(created[0]);fileInput.value="";captionInput.value="";
+   await refreshPhotoUrls();await paintPhotos();paint();photoMessage.textContent="✓ Fotografía guardada de forma privada.";
+  }catch(error){photoMessage.textContent="No se pudo completar la carga: "+error.message;note(error.message,"error")}
+  finally{uploadButton.disabled=false}
+ });
  function editorialValues(){return Object.fromEntries(Object.entries(fields).map(([key,field])=>[key,field.value.trim()]))}
  form.addEventListener("submit",async event=>{
   event.preventDefault();if(!course)return;saveEditorial.disabled=true;editorialStatus.textContent="Guardando tu ficha privada…";
@@ -308,6 +356,15 @@ async function workbookReview(){
   printDoc.append(cover);
   if(info.dedication){const dedication=el("section","manuscript-frontmatter");dedication.append(el("h2","","Dedicatoria"),el("p","manuscript-response",info.dedication));printDoc.append(dedication)}
   if(info.introduction){const introduction=el("section","manuscript-frontmatter");introduction.append(el("h2","","Introducción"),el("p","manuscript-response",info.introduction));printDoc.append(introduction)}
+  if(photos.some(photo=>photo.include_in_book)){
+   const album=el("section","manuscript-photo-section");album.append(el("h2","","Álbum de recuerdos"));
+   for(const photo of photos.filter(item=>item.include_in_book)){
+    const url=photoUrls.get(photo.id);if(!url)continue;
+    const figure=el("figure","manuscript-photo"),image=el("img"),caption=el("figcaption","",photo.caption||"Recuerdo personal");
+    image.src=url;image.alt=photo.caption||"Fotografía de legado";figure.append(image,caption);album.append(figure);
+   }
+   printDoc.append(album);
+  }
   const index=el("section","manuscript-index");index.append(el("h2","","Índice provisional"));
   for(const chapterGroup of detail.modules){const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(lessons.length){index.append(el("h3","",chapterGroup.title));for(const lesson of lessons)index.append(el("p","",lesson.title))}}
   printDoc.append(index);
@@ -328,12 +385,14 @@ async function workbookReview(){
   course=courses.find(c=>c.id===courseSelect.value);
   preview.replaceChildren(el("p","","Cargando tus actividades privadas…"));print.disabled=true;
   try{
-   const [courseDetailResult,entryRows,manuscriptRows]=await Promise.all([
+   const [courseDetailResult,entryRows,manuscriptRows,photoRows]=await Promise.all([
     courseDetail(course.id),
     get("ggp_academy_workbook_entries","lesson_id,response,status,updated_at",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1000"}),
-    get("ggp_academy_manuscripts","*",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1"})
+    get("ggp_academy_manuscripts","*",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1"}),
+    get("ggp_academy_manuscript_photos","id,storage_path,caption,include_in_book",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,order:"created_at.asc",limit:"100"})
    ]);
-   detail=courseDetailResult;entries=entryRows;metadata=manuscriptRows[0]||null;
+   detail=courseDetailResult;entries=entryRows;metadata=manuscriptRows[0]||null;photos=photoRows;photoUrls=new Map();
+   await refreshPhotoUrls();await paintPhotos();uploadButton.disabled=false;
    const saved=metadata?.chapter_layout;
    if(saved&&Object.keys(saved).length){layout=Object.fromEntries(Object.entries(saved).filter(([,ids])=>Array.isArray(ids)).map(([id,ids])=>[id,ids.filter(value=>typeof value==="string")]))}
    else{const savedIds=new Set(entries.filter(entry=>entry.response?.trim()).map(entry=>entry.lesson_id));layout=Object.fromEntries(detail.modules.map(group=>[group.id,detail.lessons.filter(lesson=>lesson.module_id===group.id&&savedIds.has(lesson.id)).map(lesson=>lesson.id)]))}

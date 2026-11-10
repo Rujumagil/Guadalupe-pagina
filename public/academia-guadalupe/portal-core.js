@@ -143,3 +143,22 @@ export async function secureMedia(path){
  const u=content.signedURL||content.signedUrl;
  return new URL(u.startsWith("http")?u:u.startsWith("/storage/v1")?u:"/storage/v1"+(u.startsWith("/")?"":"/")+u,API_URL).href;
 }
+export async function uploadLegadoPhoto(path,file){
+ const location=path.split("/").map(encodeURIComponent).join("/");
+ const res=await fetch(API_URL+"/storage/v1/object/ggp-legado-photos/"+location,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),"Content-Type":file.type,"x-upsert":"false"},body:file,cache:"no-store"
+ });
+ const data=await res.json().catch(()=>({}));
+ if(!res.ok)throw Error(data.message||data.error||"No se pudo subir la fotografía privada.");
+ return data;
+}
+export async function signedLegadoPhoto(path){
+ const location=path.split("/").map(encodeURIComponent).join("/");
+ const res=await fetch(API_URL+"/storage/v1/object/sign/ggp-legado-photos/"+location,{
+  method:"POST",headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+await accessToken(),"Content-Type":"application/json"},body:JSON.stringify({expiresIn:900}),cache:"no-store"
+ });
+ const data=await res.json().catch(()=>({}));
+ if(!res.ok||!(data.signedURL||data.signedUrl))throw Error(data.message||"No se pudo abrir la fotografía.");
+ const url=data.signedURL||data.signedUrl;
+ return new URL(url.startsWith("http")?url:url.startsWith("/storage/v1")?url:"/storage/v1"+(url.startsWith("/")?"":"/")+url,API_URL).href;
+}
