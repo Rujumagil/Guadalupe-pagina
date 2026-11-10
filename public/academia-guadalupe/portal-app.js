@@ -273,12 +273,12 @@ async function workbookReview(){
   if(info.dedication){const dedication=el("section","manuscript-frontmatter");dedication.append(el("h2","","Dedicatoria"),el("p","manuscript-response",info.dedication));printDoc.append(dedication)}
   if(info.introduction){const introduction=el("section","manuscript-frontmatter");introduction.append(el("h2","","Introducción"),el("p","manuscript-response",info.introduction));printDoc.append(introduction)}
   const index=el("section","manuscript-index");index.append(el("h2","","Índice provisional"));
-  for(const module of detail.modules){const lessons=selected.filter(l=>l.module_id===module.id);if(lessons.length){index.append(el("h3","",module.title));for(const lesson of lessons)index.append(el("p","",lesson.title))}}
+  for(const chapterGroup of detail.modules){const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(lessons.length){index.append(el("h3","",chapterGroup.title));for(const lesson of lessons)index.append(el("p","",lesson.title))}}
   printDoc.append(index);
-  for(const module of detail.modules){
-   const lessons=selected.filter(l=>l.module_id===module.id);if(!lessons.length)continue;
+  for(const chapterGroup of detail.modules){
+   const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(!lessons.length)continue;
    const group=el("section","review-module"),printedGroup=el("section","manuscript-module");
-   group.append(el("h3","",module.title));printedGroup.append(el("h2","",module.title));
+   group.append(el("h3","",chapterGroup.title));printedGroup.append(el("h2","",chapterGroup.title));
    for(const lesson of lessons){
     const entry=byLesson.get(lesson.id),item=el("article","review-writing"),printed=el("article","manuscript-writing");
     item.append(el("h4","",lesson.title),pill(entry.status==="completed"?"Actividad terminada":"Borrador",entry.status==="completed"?"active":""),el("p","review-response",entry.response),a("Editar en lección →",lessonLink(course.id,lesson.id),"text-link"));
