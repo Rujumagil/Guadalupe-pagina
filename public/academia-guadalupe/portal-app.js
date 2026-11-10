@@ -70,6 +70,12 @@ function manualActivityPrompts(content){
  }
  return prompts;
 }
+const MUJER_FINAL_QUESTIONS=[
+ "¿Qué descubrí sobre mí a lo largo de estas cuatro sesiones?",
+ "¿Qué creencia, hábito o carga estoy lista para transformar?",
+ "¿Qué acciones concretas sostendré durante los próximos 30 días?",
+ "¿Qué significa para mí reconocer y cuidar mi propia luz?"
+];
 function renderManualLesson(content){
  const body=el("div","manual-lesson-body");
  const blocks=String(content||"").split(/\n\s*\n/).map(block=>block.trim()).filter(Boolean);
@@ -600,6 +606,7 @@ async function lesson(){
  const isMujerManual=c.slug==="la-mujer-del-faro"&&String(current.content||"").startsWith("MANUAL DE ACTIVIDADES");
  const currentModule=d.modules.find(m=>m.id===current.module_id);
  const currentIndex=d.lessons.findIndex(l=>l.id===current.id);
+ const isMujerFinal=c.slug==="la-mujer-del-faro"&&currentIndex===d.lessons.length-1;
  const canUseWorkbook=!ctx.isAdmin||enrolled(ctx,store,c);
  let workbookEntries=[];
  if(canUseWorkbook){
@@ -607,6 +614,27 @@ async function lesson(){
   catch(e){note("No fue posible consultar el seguimiento: "+e.message,"error")}
  }
  const entryFor=lessonId=>workbookEntries.find(x=>x.lesson_id===lessonId);
+ const certificatePanel=el("section","mujer-certificate-panel");
+ function renderCertificatePanel(){
+  if(c.slug!=="la-mujer-del-faro"||!canUseWorkbook)return;
+  certificatePanel.replaceChildren();
+  const completed=d.lessons.filter(l=>entryFor(l.id)?.status==="completed").length;
+  const finalEntry=entryFor(d.lessons[d.lessons.length-1].id);
+  const hasFinalReflection=Boolean(finalEntry?.response?.trim().length>=100);
+  const eligible=completed===d.lessons.length&&hasFinalReflection;
+  certificatePanel.append(el("span","kicker","CIERRE DEL PROGRAMA"),el("h3","","Mi constancia de participación"),el("p","",eligible?"Completaste las cuatro sesiones y tu reflexión final. Puedes imprimir tu constancia de participación.":"Disponible al terminar las 15 actividades y escribir una reflexión final de al menos 100 caracteres en la última actividad."));
+  certificatePanel.append(el("p","mujer-certificate-count",completed+" de "+d.lessons.length+" actividades terminadas"+(hasFinalReflection?" · Reflexión final registrada":" · Reflexión final pendiente")));
+  const print=el("button","btn primary",eligible?"Descargar o imprimir constancia":"Constancia pendiente");print.type="button";print.disabled=!eligible;
+  print.addEventListener("click",()=>{
+   const page=el("div","mujer-print-certificate"),inner=el("div","mujer-print-inner");
+   const date=new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"long",year:"numeric"}).format(new Date());
+   inner.append(el("span","mujer-print-label","ACADEMIA NICTÉ HA"),el("h1","","Constancia de participación"),el("p","","Se hace constar que"),el("h2","",ctx.name||ctx.user.email),el("p","","participó y completó las cuatro sesiones y las actividades de reflexión del taller"),el("h3","","La Mujer del Faro"),el("p","","Facilitado por Guadalupe Gómez Pezuela"),el("span","mujer-print-date","Fecha de emisión: "+date),el("small","","Documento de participación emitido por Academia Nicté Ha. No equivale a certificación profesional ni acredita competencias reguladas."));
+   page.append(inner);document.body.append(page);document.body.classList.add("printing-mujer-certificate");
+   const cleanup=()=>{document.body.classList.remove("printing-mujer-certificate");page.remove()};
+   window.addEventListener("afterprint",cleanup,{once:true});window.print();
+  });
+  certificatePanel.append(print);
+ }
  const tracking=el("section","academic-tracking glass");
  function paintTracking(){
   if(!canUseWorkbook)return;
@@ -679,9 +707,14 @@ async function lesson(){
   header.append(el("span","kicker",c.slug==="la-mujer-del-faro"?"CUADERNO DIGITAL · LA MUJER DEL FARO":"CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
   const practical=lessonSection(current.content,"ACTIVIDAD PRÁCTICA"),reflection=lessonSection(current.content,"PARA REFLEXIONAR"),result=lessonSection(current.content,"RESULTADO QUE CONSERVARÁS");
   const manualPrompts=c.slug==="la-mujer-del-faro"?manualActivityPrompts(current.content):[];
-  if(practical||reflection||result||manualPrompts.length){
+  if(practical||reflection||result||manualPrompts.length||isMujerFinal){
    const guide=el("div","workbook-guide");guide.append(el("h4","","Guía para desarrollar esta actividad"));
-   if(manualPrompts.length){
+   if(isMujerFinal){
+    guide.append(el("p","workbook-guide-note","Evaluación final de reflexión personal, sin calificación numérica."));
+    for(const [index,prompt] of MUJER_FINAL_QUESTIONS.entries()){
+     const item=el("div","workbook-guide-item");item.append(el("strong","","Reflexión "+(index+1)),el("p","",prompt));guide.append(item);
+    }
+   }else if(manualPrompts.length){
     for(const [index,prompt] of manualPrompts.entries()){
      const item=el("div","workbook-guide-item");item.append(el("strong","","Pregunta "+(index+1)),el("p","",prompt));guide.append(item);
     }
@@ -694,7 +727,7 @@ async function lesson(){
    const template=el("button","btn","Preparar respuestas en mi cuaderno");template.type="button";template.disabled=true;
    template.addEventListener("click",()=>{
     if(field.value.trim()){note("Tu cuaderno ya contiene texto. Para proteger tus respuestas, la plantilla solo se inserta cuando está vacío.","info");return}
-    const sections=manualPrompts.length?manualPrompts.map((prompt,index)=>["PREGUNTA "+(index+1),prompt]):[["ACTIVIDAD",practical],["REFLEXIÓN",reflection],["RESULTADO",result]].filter(x=>x[1]);
+    const sections=isMujerFinal?MUJER_FINAL_QUESTIONS.map((prompt,index)=>["REFLEXIÓN "+(index+1),prompt]):manualPrompts.length?manualPrompts.map((prompt,index)=>["PREGUNTA "+(index+1),prompt]):[["ACTIVIDAD",practical],["REFLEXIÓN",reflection],["RESULTADO",result]].filter(x=>x[1]);
     field.value=sections.map(([heading,prompt])=>heading+"\n"+prompt+"\n\nMi respuesta:\n").join("\n\n");
     field.dispatchEvent(new Event("input",{bubbles:true}));field.focus();
    });
@@ -715,7 +748,7 @@ async function lesson(){
     const record={response:field.value,status:nextStatus,updated_at:new Date().toISOString()};
     const rows=entry?await patch("ggp_academy_workbook_entries",entry.id,record):await add("ggp_academy_workbook_entries",{...record,course_id:c.id,lesson_id:current.id,student_id:ctx.user.id});
     entry=rows?.[0]||entry;dirty=false;
-    if(entry){workbookEntries=workbookEntries.filter(x=>x.lesson_id!==current.id).concat([{...entry,lesson_id:current.id,status:nextStatus}]);paintTracking()}
+    if(entry){workbookEntries=workbookEntries.filter(x=>x.lesson_id!==current.id).concat([{...entry,lesson_id:current.id,status:nextStatus}]);paintTracking();renderCertificatePanel()}
     status.textContent=nextStatus==="completed"?"✓ Actividad guardada como terminada":"✓ Borrador guardado. Puedes volver después y continuar.";
     note("Tu cuaderno se guardó correctamente.","success");
    }catch(e){status.textContent="No se guardaron los cambios. Inténtalo nuevamente.";note(e.message,"error")}
@@ -750,6 +783,7 @@ async function lesson(){
   if(currentIndex>0)navigation.append(a("← Actividad anterior",lessonLink(c.id,d.lessons[currentIndex-1].id),"btn"));
   if(currentIndex<d.lessons.length-1)navigation.append(a("Siguiente actividad →",lessonLink(c.id,d.lessons[currentIndex+1].id),"btn primary"));
   content.append(navigation);
+  if(canUseWorkbook){renderCertificatePanel();content.append(certificatePanel)}
  }
 }
 function profile(){

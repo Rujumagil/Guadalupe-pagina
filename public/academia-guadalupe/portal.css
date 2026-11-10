@@ -306,6 +306,26 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 .mujer-media-pending{background:#f9f7f1;border:1px dashed #d5c7a7;color:#776a4c;padding:15px 19px;border-radius:14px;font-size:13px;line-height:1.6}
 .mujer-lesson-navigation{margin-top:25px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media(max-width:600px){.mujer-session-meter{align-items:stretch;flex-direction:column}.mujer-lesson-navigation a{flex:1;text-align:center}.manual-section,.manual-paragraph{padding:17px}}
+.mujer-certificate-panel{margin-top:28px;border:1px solid #d7e5d9;background:linear-gradient(135deg,#f2f7f0,#fffaf1);border-radius:18px;padding:clamp(20px,3vw,31px);color:#315f59}
+.mujer-certificate-panel h3{font:700 clamp(23px,2.3vw,30px) Georgia,serif;margin:9px 0 12px}
+.mujer-certificate-panel p{font-size:14px;line-height:1.65;max-width:730px}
+.mujer-certificate-count{font-weight:700;color:#688173}
+.mujer-certificate-panel button:disabled{opacity:.55;cursor:not-allowed}
+.mujer-print-certificate{display:none}
+@media print{
+ body.printing-mujer-certificate>*:not(.mujer-print-certificate){display:none!important}
+ body.printing-mujer-certificate{background:#fff!important;margin:0!important;padding:0!important}
+ body.printing-mujer-certificate .mujer-print-certificate{display:flex!important;position:relative;align-items:center;justify-content:center;min-height:95vh;box-sizing:border-box;padding:18mm;color:#254d44;background:#fff}
+ .mujer-print-inner{box-sizing:border-box;width:100%;min-height:170mm;border:3px double #b79c64;padding:23mm 15mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px}
+ .mujer-print-label{font-size:16px;letter-spacing:.3em;font-weight:700;color:#9b7d46}
+ .mujer-print-inner h1{font:700 36px Georgia,serif;margin:10px 0}
+ .mujer-print-inner h2{font:700 34px Georgia,serif;margin:8px 0;border-bottom:1px solid #b79c64;padding-bottom:12px}
+ .mujer-print-inner h3{font:700 29px Georgia,serif;margin:7px 0}
+ .mujer-print-inner p{font-size:16px;line-height:1.6;max-width:510px;margin:0}
+ .mujer-print-date{font-size:14px;margin-top:20px}
+ .mujer-print-inner small{font-size:10px;max-width:470px;color:#63736b;margin-top:12px;line-height:1.5}
+ @page{size:A4 landscape;margin:8mm}
+}
 
 /* Ruta de estudio: retoma el último borrador desde Inicio o Mis cursos. */
 .resume-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,315px),1fr));gap:15px}

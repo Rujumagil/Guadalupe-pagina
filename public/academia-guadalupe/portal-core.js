@@ -136,7 +136,10 @@ export async function courseDetail(courseId){
  if(courseId==="d65ab407-60dd-48ec-a372-8f953a7a5181"){
   const officialModules=modules.filter(module=>module.position<=4);
   const officialIds=new Set(officialModules.map(module=>module.id));
-  return {modules:officialModules,lessons:lessons.filter(lesson=>officialIds.has(lesson.module_id))};
+  const modulePositions=new Map(officialModules.map(module=>[module.id,module.position]));
+  const officialLessons=lessons.filter(lesson=>officialIds.has(lesson.module_id));
+  officialLessons.sort((a,b)=>(modulePositions.get(a.module_id)-modulePositions.get(b.module_id))||(a.position-b.position));
+  return {modules:officialModules,lessons:officialLessons};
  }
  return {modules,lessons};
 }
