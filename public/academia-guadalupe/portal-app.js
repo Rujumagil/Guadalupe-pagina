@@ -331,7 +331,7 @@ async function lesson(){
   content.append(open);
  }
  const done=store.progress.some(p=>p.lesson_id===current.id&&p.student_id===ctx.user.id);
- if(!ctx.isAdmin){
+ if(!ctx.isAdmin||enrolled(ctx,store,c)){
   const workbook=el("section","workbook-panel"),header=el("div","workbook-heading"),field=el("textarea","workbook-answer"),status=el("p","workbook-status","Cargando tu cuaderno privado…"),controls=el("div","workbook-actions");
   header.append(el("span","kicker","CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
   field.placeholder="¿Qué descubriste en esta lección? ¿Qué deseas escribir o conservar?";
@@ -363,6 +363,7 @@ async function lesson(){
    buttonsDisabled(false);
   }catch(e){status.textContent="El cuaderno aún no está disponible. Tus respuestas no se guardarán hasta que se habilite.";note(e.message,"error")}
   window.addEventListener("beforeunload",event=>{if(dirty){event.preventDefault();event.returnValue=""}});
+  if(!ctx.isAdmin){
   const finish=el("button",done?"btn":"btn primary",done?"✓ Lección completada":"Marcar como completada");
   finish.disabled=done;finish.style.marginTop="22px";
   finish.addEventListener("click",async()=>{
@@ -373,6 +374,7 @@ async function lesson(){
    }catch(e){note(e.message,"error");finish.disabled=false}
   });
   content.append(finish);
+  }
  }
  columns.append(sidebar,content);root.append(columns);
 }
