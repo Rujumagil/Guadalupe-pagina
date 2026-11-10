@@ -318,14 +318,30 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 .review-writing h4{font:700 19px Georgia,serif;color:#315f59;margin:0 0 11px}
 .review-response{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:14px;color:#38584e;margin:14px 0}
 .manuscript-print{display:none}
+.editorial-panel{background:#fff;padding:clamp(20px,3vw,30px);border:1px solid #e0e8df;border-radius:20px;color:#315f59;margin-bottom:20px}
+.editorial-panel h2{font:700 30px Georgia,serif;margin:8px 0}.editorial-panel>p{font-size:13px;color:#62776c}
+.editorial-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:20px}
+.editorial-form label{display:flex;flex-direction:column;gap:7px;font-weight:700;font-size:13px}
+.editorial-form label:has(textarea){grid-column:1/-1}
+.editorial-form input,.editorial-form textarea{width:100%;box-sizing:border-box;border:1px solid #cbded0;background:#f9fbf8;border-radius:12px;padding:13px;color:#315f59;font-size:14px;line-height:1.5;font-family:inherit}
+.editorial-form textarea{font-family:inherit;line-height:1.6;resize:vertical}
+.editorial-form button{justify-self:start}.editorial-status{font-size:12px;color:#698071}
+@media(max-width:650px){.editorial-form{grid-template-columns:1fr}.editorial-form label:has(textarea){grid-column:auto}}
 @media print{
  @page{size:A4;margin:20mm 18mm}
  body{background:#fff!important;color:#222!important}
- .sidebar,.topbar,.mobile-nav,.heading,.review-controls,.review-preview,#notice,#loading{display:none!important}
+ .sidebar,.topbar,.mobile-nav,.heading,.review-controls,.editorial-panel,.review-preview,#notice,#loading{display:none!important}
  .shell,.workarea,.main-content{display:block!important;max-width:none!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;box-shadow:none!important}
  .manuscript-print{display:block!important;color:#222;font:11pt/1.6 Georgia,serif}
- .manuscript-print>h1{font-size:28pt;margin:12mm 0 5mm;color:#244c42}
+ .manuscript-cover{min-height:220mm;display:flex;flex-direction:column;justify-content:center;text-align:center;break-after:page}
+ .manuscript-cover>h1{font-size:32pt;margin:12mm 0 5mm;color:#244c42}
+ .manuscript-cover>h2{font-size:17pt;font-weight:400;color:#806537}
+ .manuscript-cover .manuscript-author{font-size:16pt;margin-top:24mm}
  .manuscript-print>.kicker{letter-spacing:.1em;font-size:9pt;color:#806537}
+ .manuscript-frontmatter,.manuscript-index{break-after:page}
+ .manuscript-frontmatter h2,.manuscript-index h2{font-size:21pt;color:#244c42}
+ .manuscript-index h3{font-size:13pt;color:#244c42;margin:7mm 0 1mm}
+ .manuscript-index p{margin:2mm 0 2mm 8mm}
  .manuscript-module{break-before:page}
  .manuscript-module h2{font-size:20pt;color:#244c42;border-bottom:1px solid #ddd;padding-bottom:5mm}
  .manuscript-writing{break-inside:avoid;margin-bottom:9mm}
