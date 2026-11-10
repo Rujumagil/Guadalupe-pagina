@@ -1,5 +1,6 @@
 import { API_URL,PUBLISHABLE_KEY,WORKSPACE_ID } from "./config.js";
 import { officialCurricula } from "./official-curricula.js";
+import { lessonInformation } from "./lesson-information.js";
 
 const $=s=>document.querySelector(s), STORE="ggp_academy_v2";
 const state={session:null,user:null,isAdmin:false,canManageStaff:false,staff:[],screen:"myCourses",chosen:null,lesson:null,mode:"login",
@@ -196,6 +197,34 @@ async function importOfficialCurricula(){
  }
  await load();render();note("Importación terminada. "+report.join(" · "));
 }
+const PENDING_LESSON_TEXT="Contenido y materiales de esta clase pendientes de validación y carga por el equipo académico.";
+async function fillOfficialLessonInformation(){
+ if(!state.isAdmin)throw Error("Solo el equipo administrador puede completar contenidos.");
+ const report=[];
+ for(const courseTemplate of officialCurricula){
+  const course=state.courses.find(c=>c.slug===courseTemplate.slug);
+  if(!course){report.push(courseTemplate.title+": curso no encontrado");continue;}
+  const [modules,lessons]=await Promise.all([
+   read("ggp_academy_modules","id,title,position,course_id",{course_id:"eq."+course.id,order:"position.asc"}),
+   read("ggp_academy_lessons","id,module_id,title,content,position,course_id",{course_id:"eq."+course.id,order:"position.asc"})
+  ]);
+  let filled=0,already=0,missing=0,offset=0;
+  for(const templateModule of courseTemplate.modules){
+   const match=modules.find(m=>m.title.trim().toLocaleLowerCase("es")===templateModule.title.toLocaleLowerCase("es"));
+   for(const [index,title] of templateModule.lessons.entries()){
+    const body=lessonInformation[courseTemplate.slug]?.[offset+index];
+    const lesson=match&&lessons.find(l=>l.module_id===match.id&&l.title.trim().toLocaleLowerCase("es")===title.toLocaleLowerCase("es"));
+    if(!body||!lesson){missing++;continue;}
+    if(lesson.content?.trim()&&lesson.content.trim()!==PENDING_LESSON_TEXT){already++;continue;}
+    await write("ggp_academy_lessons","PATCH",{content:body},{id:"eq."+lesson.id,course_id:"eq."+course.id});
+    filled++;
+   }
+   offset+=templateModule.lessons.length;
+  }
+  report.push(courseTemplate.title+": "+filled+" clases completadas, "+already+" conservadas, "+missing+" por revisar");
+ }
+ await load();render();note("Información curricular guardada. "+report.join(" · "));
+}
 function admin(){
  const root=mount();root.append(heading("Administración de academia","Organiza los cursos, alumnos, lecciones y accesos de Academia Nicté Ha."));
  const importer=node("section","app-card");
@@ -207,6 +236,14 @@ function admin(){
   finally{importButton.disabled=false}
  },"primary-btn");
  importer.append(importButton);root.append(importer);
+ const lessonEditor=node("section","app-card");lessonEditor.style.marginTop="16px";
+ lessonEditor.append(node("h3","","Completar la información escrita"),node("p","small","Carga objetivos, temas, actividades y resultados de aprendizaje en las clases que solo tienen el texto provisional. Respeta contenido editado, videos y archivos ya asignados. La Mujer del Faro utiliza guías orientativas pendientes de validación contra su manual."));
+ const fillButton=button("Agregar información a las lecciones",async()=>{
+  if(!confirm("¿Completar únicamente las clases pendientes de texto? Se conservarán las clases ya editadas y no se subirán videos."))return;
+  fillButton.disabled=true;
+  try{await fillOfficialLessonInformation()}catch(error){note("La carga de información se detuvo: "+error.message+". Puedes reintentar sin sobrescribir textos ya completados.",true)}
+  finally{fillButton.disabled=false}
+ },"primary-btn");lessonEditor.append(fillButton);root.append(lessonEditor);
  const boxes=node("div","app-layout");
  boxes.append(form("Crear programa en borrador",[
   field("Nombre del programa","title"),field("Categoría","category","",[
