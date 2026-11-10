@@ -257,3 +257,15 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 .nh-course-cover-art::after{display:none}
 .nh-course-cover-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;z-index:0}
 .nh-course-cover-art .state-pill{position:relative;z-index:1;background:rgba(255,255,255,.9);border-color:rgba(255,255,255,.7);color:#27483d;backdrop-filter:blur(3px)}
+
+/* Cuaderno personal: aspecto editorial y estado de guardado siempre visible. */
+.workbook-panel{margin-top:28px;padding:clamp(18px,3vw,30px);border:1px solid #d8e3dc;border-radius:20px;background:#f8faf7;color:#315f59}
+.workbook-heading h3{font:700 clamp(23px,2vw,30px) Georgia,serif;margin:8px 0;color:#315f59}
+.workbook-heading p{font-size:14px;line-height:1.6;color:#64786e;margin:0 0 18px}
+.workbook-answer{display:block;box-sizing:border-box;width:100%;min-height:210px;padding:17px;border:1px solid #cadbd1;border-radius:14px;background:#fff;color:#26483f;font-size:15px;line-height:1.75;font-family:inherit;resize:vertical}
+.workbook-answer:focus{outline:3px solid #a7c8b9;outline-offset:2px}
+.workbook-answer:disabled{opacity:.7}
+.workbook-status{font-size:12px;color:#65796d;margin:12px 0}
+.workbook-actions{display:flex;flex-wrap:wrap;gap:10px}
+.workbook-actions button{min-height:44px}
+@media(max-width:600px){.workbook-actions button{width:100%}}

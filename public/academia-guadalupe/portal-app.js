@@ -332,6 +332,37 @@ async function lesson(){
  }
  const done=store.progress.some(p=>p.lesson_id===current.id&&p.student_id===ctx.user.id);
  if(!ctx.isAdmin){
+  const workbook=el("section","workbook-panel"),header=el("div","workbook-heading"),field=el("textarea","workbook-answer"),status=el("p","workbook-status","Cargando tu cuaderno privado…"),controls=el("div","workbook-actions");
+  header.append(el("span","kicker","CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
+  field.placeholder="¿Qué descubriste en esta lección? ¿Qué deseas escribir o conservar?";
+  field.rows=9;field.maxLength=20000;field.disabled=true;
+  const save=el("button","btn primary","Guardar borrador"),complete=el("button","btn","Guardar actividad terminada");
+  save.type="button";complete.type="button";save.disabled=true;complete.disabled=true;
+  let entry=null,loaded=false,dirty=false;
+  field.addEventListener("input",()=>{dirty=true;status.textContent="Cambios sin guardar · "+field.value.length+"/20000 caracteres"});
+  const buttonsDisabled=value=>{save.disabled=value;complete.disabled=value;field.disabled=value};
+  async function saveWorkbook(nextStatus){
+   if(!loaded)return;
+   buttonsDisabled(true);status.textContent="Guardando en tu cuaderno privado…";
+   try{
+    const record={response:field.value,status:nextStatus,updated_at:new Date().toISOString()};
+    const rows=entry?await patch("ggp_academy_workbook_entries",entry.id,record):await add("ggp_academy_workbook_entries",{...record,course_id:c.id,lesson_id:current.id,student_id:ctx.user.id});
+    entry=rows?.[0]||entry;dirty=false;
+    status.textContent=nextStatus==="completed"?"✓ Actividad guardada como terminada":"✓ Borrador guardado. Puedes volver después y continuar.";
+    note("Tu cuaderno se guardó correctamente.","success");
+   }catch(e){status.textContent="No se guardaron los cambios. Inténtalo nuevamente.";note(e.message,"error")}
+   finally{buttonsDisabled(false)}
+  }
+  save.addEventListener("click",()=>saveWorkbook("draft"));
+  complete.addEventListener("click",()=>saveWorkbook("completed"));
+  controls.append(save,complete);workbook.append(header,field,status,controls);content.append(workbook);
+  try{
+   const rows=await get("ggp_academy_workbook_entries","id,response,status,updated_at",{student_id:"eq."+ctx.user.id,lesson_id:"eq."+current.id,limit:"1"});
+   entry=rows[0]||null;field.value=entry?.response||"";loaded=true;
+   status.textContent=entry?"Último guardado: "+shortDate(entry.updated_at)+(entry.status==="completed"?" · Actividad terminada":" · Borrador"):"Tu cuaderno está listo. Aún no has guardado una respuesta.";
+   buttonsDisabled(false);
+  }catch(e){status.textContent="El cuaderno aún no está disponible. Tus respuestas no se guardarán hasta que se habilite.";note(e.message,"error")}
+  window.addEventListener("beforeunload",event=>{if(dirty){event.preventDefault();event.returnValue=""}});
   const finish=el("button",done?"btn":"btn primary",done?"✓ Lección completada":"Marcar como completada");
   finish.disabled=done;finish.style.marginTop="22px";
   finish.addEventListener("click",async()=>{
