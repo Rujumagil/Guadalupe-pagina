@@ -162,7 +162,7 @@ function form(title,fields,saveFn,txt="Guardar"){
 async function importOfficialCurricula(){
  if(!state.isAdmin)throw Error("Solo un administrador puede importar cursos.");
  const report=[];
- for(const curriculum of officialCurricula){
+ for(const curriculum of officialCurricula.filter(c=>c.slug!=="la-mujer-del-faro")){
   let course=state.courses.find(c=>c.slug===curriculum.slug);
   if(!course){
    const created=await write("ggp_academy_courses","POST",{
@@ -201,7 +201,7 @@ const PENDING_LESSON_TEXT="Contenido y materiales de esta clase pendientes de va
 async function fillOfficialLessonInformation(){
  if(!state.isAdmin)throw Error("Solo el equipo administrador puede completar contenidos.");
  const report=[];
- for(const courseTemplate of officialCurricula){
+ for(const courseTemplate of officialCurricula.filter(c=>c.slug!=="la-mujer-del-faro")){
   const course=state.courses.find(c=>c.slug===courseTemplate.slug);
   if(!course){report.push(courseTemplate.title+": curso no encontrado");continue;}
   const [modules,lessons]=await Promise.all([
@@ -228,7 +228,7 @@ async function fillOfficialLessonInformation(){
 function admin(){
  const root=mount();root.append(heading("Administración de academia","Organiza los cursos, alumnos, lecciones y accesos de Academia Nicté Ha."));
  const importer=node("section","app-card");
- importer.append(node("h3","","Preparar los dos cursos oficiales"),node("p","small","Crea o completa La Mujer del Faro y El Legado que Trasciende. Conserva módulos y lecciones existentes, no duplica títulos y deja los cursos nuevos como borradores. Los videos se cargan después."));
+ importer.append(node("h3","","Temario de El Legado que Trasciende"),node("p","small","La Mujer del Faro ya utiliza las cuatro sesiones de su manual de actividades y no se importa nuevamente. Esta herramienta conserva los módulos de El Legado, evita duplicados y deja los videos para después."));
  const importButton=button("Importar temarios oficiales",async()=>{
   if(!confirm("¿Registrar los temarios de ambos cursos en el aula? Se conservarán los registros existentes y los nuevos cursos quedarán en borrador."))return;
   importButton.disabled=true;

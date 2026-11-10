@@ -130,6 +130,14 @@ export async function courseDetail(courseId){
   get("ggp_academy_modules","id,title,position,course_id",{course_id:"eq."+courseId,order:"position.asc"}),
   get("ggp_academy_lessons","id,module_id,title,lesson_type,content,media_path,course_id,position",{course_id:"eq."+courseId,order:"position.asc"}),
  ]);
+ // La Mujer del Faro usa como temario oficial los cuatro módulos del manual.
+ // Los módulos orientativos 5–8 se conservan en la base para revisión, pero
+ // no forman parte del recorrido del alumno ni de sus métricas de avance.
+ if(courseId==="d65ab407-60dd-48ec-a372-8f953a7a5181"){
+  const officialModules=modules.filter(module=>module.position<=4);
+  const officialIds=new Set(officialModules.map(module=>module.id));
+  return {modules:officialModules,lessons:lessons.filter(lesson=>officialIds.has(lesson.module_id))};
+ }
  return {modules,lessons};
 }
 export async function secureMedia(path){
