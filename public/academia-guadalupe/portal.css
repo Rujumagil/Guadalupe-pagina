@@ -251,3 +251,9 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
  .nh-collection-copy p{min-height:0}
 }
 @media(prefers-reduced-motion:reduce){.nh-collection-card,.nh-collection-image{transition:none}}
+
+/* Fotografía oficial La Mujer del Faro: portada de curso y tarjeta editorial. */
+.nh-course-cover-art{position:relative;overflow:hidden;background:#e9e3d7}
+.nh-course-cover-art::after{display:none}
+.nh-course-cover-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;z-index:0}
+.nh-course-cover-art .state-pill{position:relative;z-index:1;background:rgba(255,255,255,.9);border-color:rgba(255,255,255,.7);color:#27483d;backdrop-filter:blur(3px)}
