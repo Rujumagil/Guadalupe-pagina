@@ -142,3 +142,51 @@ input::placeholder,textarea::placeholder{color:#8b9a95}
 @media(max-width:540px){
   .auth-background{background:linear-gradient(rgba(255,255,255,.93),rgba(251,250,247,.95)),url('../images/guadalupe-hero.webp') center/cover no-repeat;opacity:.34}
 }
+
+
+/* Nicté Ha · Hero de crecimiento personal (2026-11-10).
+   Fotografía recortada del concepto aprobado: los botones y textos siguen
+   siendo HTML interactivo y no parte de la imagen. */
+.hero-feature.glass{
+  isolation:isolate;
+  min-height:clamp(320px,31vw,460px);
+  border-radius:28px;
+  border:1px solid rgba(42,83,72,.13);
+  background-color:#faf8f1;
+  background-image:
+    linear-gradient(90deg,#faf8f1 0%,#faf8f1 34%,rgba(250,248,241,.94) 48%,rgba(250,248,241,.36) 69%,rgba(250,248,241,.03) 100%),
+    url('../images/nicteha-hero-growth.jpg');
+  background-repeat:no-repeat;
+  background-size:100% 100%,56% 100%;
+  background-position:center,right center;
+  box-shadow:0 20px 45px rgba(39,70,61,.10);
+}
+.hero-feature.glass::after{
+  background:linear-gradient(0deg,rgba(33,62,51,.04),transparent 48%);
+}
+.hero-feature .hero-copy{max-width:min(57%,650px)}
+.hero-feature .kicker{color:#9b7c45}
+.hero-feature h2{color:#20372f;font-size:clamp(2.1rem,3.4vw,3.7rem);line-height:1.08}
+.hero-feature p{color:#526a61;font-size:clamp(14px,1.1vw,17px);max-width:550px}
+.hero-feature .btn.primary{background:#315f59;color:white;box-shadow:0 9px 24px rgba(49,95,89,.20)}
+.hero-feature .btn:not(.primary){background:rgba(255,255,255,.94);color:#315f59;border-color:#e1e9e4}
+@media(max-width:900px){
+ .hero-feature.glass{
+   background-image:linear-gradient(90deg,#faf8f1 0%,rgba(250,248,241,.98) 38%,rgba(250,248,241,.75) 68%,rgba(250,248,241,.36) 100%),url('../images/nicteha-hero-growth.jpg');
+   background-size:100% 100%,68% 100%;
+ }
+ .hero-feature .hero-copy{max-width:75%}
+}
+@media(max-width:600px){
+ .hero-feature.glass{
+  padding:clamp(23px,6vw,34px);
+  min-height:410px;
+  align-items:flex-start;
+  background-image:linear-gradient(180deg,#faf8f1 0%,rgba(250,248,241,.97) 45%,rgba(250,248,241,.53) 82%,rgba(250,248,241,.18) 100%),url('../images/nicteha-hero-growth.jpg');
+  background-size:100% 100%,100% 70%;
+  background-position:center,right bottom;
+ }
+ .hero-feature .hero-copy{max-width:100%}
+ .hero-feature h2{font-size:clamp(2rem,7vw,2.7rem)}
+ .hero-feature .hero-actions{position:relative;z-index:2}
+}
