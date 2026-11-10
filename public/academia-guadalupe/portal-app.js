@@ -308,12 +308,51 @@ async function lesson(){
  if(!d.lessons.length){root.append(empty("Curso en preparación","Todavía no hay lecciones para consultar."));return}
  const qs=new URLSearchParams(location.search),lessonId=qs.get("lesson");
  const current=d.lessons.find(l=>l.id===lessonId)||d.lessons[0];
+ const canUseWorkbook=!ctx.isAdmin||enrolled(ctx,store,c);
+ let workbookEntries=[];
+ if(canUseWorkbook){
+  try{workbookEntries=await get("ggp_academy_workbook_entries","id,lesson_id,response,status,updated_at",{course_id:"eq."+c.id,student_id:"eq."+ctx.user.id,limit:"1000"})}
+  catch(e){note("No fue posible consultar el seguimiento: "+e.message,"error")}
+ }
+ const entryFor=lessonId=>workbookEntries.find(x=>x.lesson_id===lessonId);
+ const tracking=el("section","academic-tracking glass");
+ function paintTracking(){
+  if(!canUseWorkbook)return;
+  tracking.replaceChildren();
+  const completeCount=d.lessons.filter(l=>entryFor(l.id)?.status==="completed").length;
+  const draftCount=d.lessons.filter(l=>entryFor(l.id)?.status==="draft").length;
+  const pendingCount=d.lessons.length-completeCount-draftCount;
+  const heading=el("div","academic-tracking-head");
+  heading.append(el("div","", ""),el("p","","Tus actividades se guardan de forma privada. Este avance corresponde al cuaderno, no a la reproducción de videos."));
+  heading.firstChild.append(el("span","kicker","SEGUIMIENTO ACADÉMICO"),el("h2","","Mi avance en el programa"));
+  const metrics=el("div","academic-tracking-metrics");
+  for(const [value,label] of [[completeCount,"Terminadas"],[draftCount,"En borrador"],[pendingCount,"Pendientes"]]){
+   const metric=el("div","academic-tracking-metric");metric.append(el("strong","",value),el("span","",label));metrics.append(metric);
+  }
+  const modules=el("div","academic-tracking-modules");
+  for(const m of d.modules){
+   const lessons=d.lessons.filter(l=>l.module_id===m.id);
+   if(!lessons.length)continue;
+   const doneCount=lessons.filter(l=>entryFor(l.id)?.status==="completed").length;
+   const wrap=el("div","academic-tracking-module"),top=el("div","academic-tracking-module-title");
+   top.append(el("strong","",m.title),el("span","",doneCount+" de "+lessons.length+" terminadas"));
+   const bar=el("div","progress-track"),fill=el("div","progress-fill");fill.style.width=Math.round(doneCount/lessons.length*100)+"%";bar.append(fill);
+   const next=lessons.find(l=>entryFor(l.id)?.status!=="completed");
+   wrap.append(top,bar);
+   if(next)wrap.append(a("Continuar actividad →","./leccion.html?course="+encodeURIComponent(c.id)+"&lesson="+encodeURIComponent(next.id),"academic-tracking-link"));
+   modules.append(wrap);
+  }
+  tracking.append(heading,metrics,modules);
+ }
+ if(canUseWorkbook){paintTracking();root.append(tracking)}
  const columns=el("div","lesson-layout"),sidebar=el("aside","lesson-outline glass"),content=el("section","lesson-content glass");
  sidebar.append(el("h3","","Contenido del programa"));
  for(const m of d.modules){
   sidebar.append(el("div","kicker",m.title));
   for(const l of d.lessons.filter(l=>l.module_id===m.id)){
-   const b=el("button",(l.id===current.id?"active":""),l.title);
+   const entry=entryFor(l.id);
+   const mark=entry?.status==="completed"?" ✓":entry?.status==="draft"?" · Borrador":"";
+   const b=el("button",(l.id===current.id?"active":""),l.title+mark);
    b.addEventListener("click",()=>{location.href="./leccion.html?course="+encodeURIComponent(c.id)+"&lesson="+encodeURIComponent(l.id)});
    sidebar.append(b);
   }
@@ -331,7 +370,7 @@ async function lesson(){
   content.append(open);
  }
  const done=store.progress.some(p=>p.lesson_id===current.id&&p.student_id===ctx.user.id);
- if(!ctx.isAdmin||enrolled(ctx,store,c)){
+ if(canUseWorkbook){
   const workbook=el("section","workbook-panel"),header=el("div","workbook-heading"),field=el("textarea","workbook-answer"),status=el("p","workbook-status","Cargando tu cuaderno privado…"),controls=el("div","workbook-actions");
   header.append(el("span","kicker","CUADERNO DIGITAL DE LEGADO"),el("h3","","Mi reflexión y actividad"),el("p","","Escribe aquí tus respuestas o ideas. Solo tú puedes consultar este cuaderno; guárdalo para retomarlo cuando quieras."));
   field.placeholder="¿Qué descubriste en esta lección? ¿Qué deseas escribir o conservar?";
@@ -348,6 +387,7 @@ async function lesson(){
     const record={response:field.value,status:nextStatus,updated_at:new Date().toISOString()};
     const rows=entry?await patch("ggp_academy_workbook_entries",entry.id,record):await add("ggp_academy_workbook_entries",{...record,course_id:c.id,lesson_id:current.id,student_id:ctx.user.id});
     entry=rows?.[0]||entry;dirty=false;
+    if(entry){workbookEntries=workbookEntries.filter(x=>x.lesson_id!==current.id).concat([{...entry,lesson_id:current.id,status:nextStatus}]);paintTracking()}
     status.textContent=nextStatus==="completed"?"✓ Actividad guardada como terminada":"✓ Borrador guardado. Puedes volver después y continuar.";
     note("Tu cuaderno se guardó correctamente.","success");
    }catch(e){status.textContent="No se guardaron los cambios. Inténtalo nuevamente.";note(e.message,"error")}
@@ -357,8 +397,7 @@ async function lesson(){
   complete.addEventListener("click",()=>saveWorkbook("completed"));
   controls.append(save,complete);workbook.append(header,field,status,controls);content.append(workbook);
   try{
-   const rows=await get("ggp_academy_workbook_entries","id,response,status,updated_at",{student_id:"eq."+ctx.user.id,lesson_id:"eq."+current.id,limit:"1"});
-   entry=rows[0]||null;field.value=entry?.response||"";loaded=true;
+   entry=entryFor(current.id)||null;field.value=entry?.response||"";loaded=true;
    status.textContent=entry?"Último guardado: "+shortDate(entry.updated_at)+(entry.status==="completed"?" · Actividad terminada":" · Borrador"):"Tu cuaderno está listo. Aún no has guardado una respuesta.";
    buttonsDisabled(false);
   }catch(e){status.textContent="El cuaderno aún no está disponible. Tus respuestas no se guardarán hasta que se habilite.";note(e.message,"error")}
