@@ -269,19 +269,39 @@ async function workbookReview(){
  async function paintPhotos(){
   photoGallery.replaceChildren();
   if(!photos.length){photoGallery.append(el("p","","Todavía no tienes fotografías en este curso."));return}
-  for(const photo of photos){
-   const item=el("article","photo-item"),image=el("img"),description=el("input"),toggle=el("input"),toggleLabel=el("label","review-toggle"),save=el("button","btn small","Guardar cambios");
+  const sorted=[...photos].sort((a,b)=>(a.chapter_module_id||"").localeCompare(b.chapter_module_id||"")||(a.position||0)-(b.position||0));
+  for(const photo of sorted){
+   const item=el("article","photo-item"),image=el("img"),description=el("input"),toggle=el("input"),toggleLabel=el("label","review-toggle"),placement=el("select"),save=el("button","btn small","Guardar cambios"),reorder=el("div","photo-reorder");
    image.alt=photo.caption||"Fotografía personal de legado";image.loading="lazy";
    try{image.src=photoUrls.get(photo.id)||await signedLegadoPhoto(photo.storage_path)}catch{image.alt="No se pudo cargar la fotografía"}
    description.value=photo.caption;description.maxLength=400;description.placeholder="Leyenda de la imagen";
    toggle.type="checkbox";toggle.checked=photo.include_in_book;toggleLabel.append(toggle,el("span","","Incluir en mi libro"));
+   const defaultOption=el("option","","Álbum de recuerdos (inicio)");defaultOption.value="";placement.append(defaultOption);
+   for(const group of detail.modules){const option=el("option","",group.title);option.value=group.id;placement.append(option)}
+   placement.value=photo.chapter_module_id||"";placement.setAttribute("aria-label","Capítulo para la fotografía");
    save.type="button";save.addEventListener("click",async()=>{
     save.disabled=true;try{
-     const values={caption:description.value.trim(),include_in_book:toggle.checked};
+     const chapterId=placement.value||null;
+     const peers=photos.filter(p=>(p.chapter_module_id||null)===chapterId);
+     const values={caption:description.value.trim(),include_in_book:toggle.checked,chapter_module_id:chapterId,position:chapterId===(photo.chapter_module_id||null)?photo.position||0:peers.length+1};
      await patch("ggp_academy_manuscript_photos",photo.id,values);Object.assign(photo,values);
-     note("Fotografía actualizada.","success");await refreshPhotoUrls();paint();
+     note("Fotografía actualizada.","success");await refreshPhotoUrls();await paintPhotos();paint();
     }catch(error){note(error.message,"error")}finally{save.disabled=false}
-   });item.append(image,description,toggleLabel,save);photoGallery.append(item);
+   });
+   const peers=sorted.filter(p=>(p.chapter_module_id||null)===(photo.chapter_module_id||null));
+   for(const [symbol,delta] of [["↑",-1],["↓",1]]){
+    const move=el("button","btn small",symbol);move.type="button";move.title=delta<0?"Mover fotografía arriba":"Mover fotografía abajo";
+    const index=peers.findIndex(p=>p.id===photo.id);move.disabled=index+delta<0||index+delta>=peers.length;
+    move.addEventListener("click",async()=>{
+     move.disabled=true;
+     try{
+      const order=[...peers];[order[index],order[index+delta]]=[order[index+delta],order[index]];
+      await Promise.all(order.map((p,pos)=>patch("ggp_academy_manuscript_photos",p.id,{position:pos+1})));
+      order.forEach((p,pos)=>{p.position=pos+1});await paintPhotos();paint();note("Orden de fotografías guardado.","success");
+     }catch(error){note("No se pudo cambiar el orden: "+error.message,"error");move.disabled=false}
+    });reorder.append(move);
+   }
+   item.append(image,description,toggleLabel,placement,save,reorder);photoGallery.append(item);
   }
  }
  photoForm.addEventListener("submit",async event=>{
@@ -293,7 +313,7 @@ async function workbookReview(){
   uploadButton.disabled=true;photoMessage.textContent="Subiendo fotografía de manera privada…";
   try{
    await uploadLegadoPhoto(path,file);
-   const created=await add("ggp_academy_manuscript_photos",{course_id:course.id,student_id:ctx.user.id,storage_path:path,caption:captionInput.value.trim(),include_in_book:true});
+   const created=await add("ggp_academy_manuscript_photos",{course_id:course.id,student_id:ctx.user.id,storage_path:path,caption:captionInput.value.trim(),include_in_book:true,position:photos.length+1});
    photos.push(created[0]);fileInput.value="";captionInput.value="";
    await refreshPhotoUrls();await paintPhotos();paint();photoMessage.textContent="✓ Fotografía guardada de forma privada.";
   }catch(error){photoMessage.textContent="No se pudo completar la carga: "+error.message;note(error.message,"error")}
@@ -344,9 +364,10 @@ async function workbookReview(){
    }
    outline.append(section);
   }
-  print.disabled=!selected.length;
+  const selectedPhotos=photos.filter(photo=>photo.include_in_book).sort((a,b)=>(a.position||0)-(b.position||0));
+  print.disabled=!selected.length&&!selectedPhotos.length;
   preview.append(el("h2","",selected.length+" escritos seleccionados"));
-  if(!selected.length){preview.append(empty("Aún no hay escritos para reunir",check.checked?"Guarda respuestas en tus lecciones para verlas aquí.":"Termina una actividad de tu cuaderno o activa la opción para incluir borradores."));return}
+  if(!selected.length&&!selectedPhotos.length){preview.append(empty("Aún no hay escritos para reunir",check.checked?"Guarda respuestas en tus lecciones para verlas aquí.":"Termina una actividad de tu cuaderno o activa la opción para incluir borradores."));return}
   const info=editorialValues(),bookTitle=info.title||course.title;
   printDoc.className="manuscript-print font-"+fontChoice.value;
   const cover=el("section","manuscript-cover cover-"+coverChoice.value);
@@ -356,20 +377,22 @@ async function workbookReview(){
   printDoc.append(cover);
   if(info.dedication){const dedication=el("section","manuscript-frontmatter");dedication.append(el("h2","","Dedicatoria"),el("p","manuscript-response",info.dedication));printDoc.append(dedication)}
   if(info.introduction){const introduction=el("section","manuscript-frontmatter");introduction.append(el("h2","","Introducción"),el("p","manuscript-response",info.introduction));printDoc.append(introduction)}
-  if(photos.some(photo=>photo.include_in_book)){
+  if(selectedPhotos.some(photo=>!photo.chapter_module_id)){
    const album=el("section","manuscript-photo-section");album.append(el("h2","","Álbum de recuerdos"));
-   for(const photo of photos.filter(item=>item.include_in_book)){
+   const albumPreview=el("section","review-module"),albumThumbs=el("div","review-photo-grid");albumPreview.append(el("h3","","Álbum de recuerdos"));
+   for(const photo of selectedPhotos.filter(item=>!item.chapter_module_id)){
     const url=photoUrls.get(photo.id);if(!url)continue;
     const figure=el("figure","manuscript-photo"),image=el("img"),caption=el("figcaption","",photo.caption||"Recuerdo personal");
     image.src=url;image.alt=photo.caption||"Fotografía de legado";figure.append(image,caption);album.append(figure);
+    const thumb=el("figure","review-photo-thumb"),thumbImage=el("img"),thumbCaption=el("figcaption","",photo.caption||"Recuerdo personal");thumbImage.src=url;thumbImage.alt=image.alt;thumb.append(thumbImage,thumbCaption);albumThumbs.append(thumb);
    }
-   printDoc.append(album);
+   albumPreview.append(albumThumbs);preview.append(albumPreview);printDoc.append(album);
   }
   const index=el("section","manuscript-index");index.append(el("h2","","Índice provisional"));
-  for(const chapterGroup of detail.modules){const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(lessons.length){index.append(el("h3","",chapterGroup.title));for(const lesson of lessons)index.append(el("p","",lesson.title))}}
+  for(const chapterGroup of detail.modules){const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(lessons.length||selectedPhotos.some(p=>p.chapter_module_id===chapterGroup.id)){index.append(el("h3","",chapterGroup.title));for(const lesson of lessons)index.append(el("p","",lesson.title))}}
   printDoc.append(index);
   for(const chapterGroup of detail.modules){
-   const lessons=selected.filter(l=>l.module_id===chapterGroup.id);if(!lessons.length)continue;
+   const lessons=selected.filter(l=>l.module_id===chapterGroup.id),chapterPhotos=selectedPhotos.filter(p=>p.chapter_module_id===chapterGroup.id);if(!lessons.length&&!chapterPhotos.length)continue;
    const group=el("section","review-module"),printedGroup=el("section","manuscript-module");
    group.append(el("h3","",chapterGroup.title));printedGroup.append(el("h2","",chapterGroup.title));
    for(const lesson of lessons){
@@ -377,6 +400,17 @@ async function workbookReview(){
     item.append(el("h4","",lesson.title),pill(entry.status==="completed"?"Actividad terminada":"Borrador",entry.status==="completed"?"active":""),el("p","review-response",entry.response),a("Editar en lección →",lessonLink(course.id,lesson.id),"text-link"));
     printed.append(el("h3","",lesson.title),el("p","manuscript-response",entry.response));
     group.append(item);printedGroup.append(printed);
+   }
+   if(chapterPhotos.length){
+    group.append(el("p","review-photo-count",chapterPhotos.length+" fotografía(s) en este capítulo"));
+    const thumbGrid=el("div","review-photo-grid");
+    for(const photo of chapterPhotos){
+     const url=photoUrls.get(photo.id);if(!url)continue;
+     const figure=el("figure","manuscript-photo"),image=el("img"),caption=el("figcaption","",photo.caption||"Recuerdo personal");
+     image.src=url;image.alt=photo.caption||"Fotografía personal";figure.append(image,caption);printedGroup.append(figure);
+     const thumb=el("figure","review-photo-thumb"),thumbImage=el("img"),thumbCaption=el("figcaption","",photo.caption||"Recuerdo personal");thumbImage.src=url;thumbImage.alt=image.alt;thumb.append(thumbImage,thumbCaption);thumbGrid.append(thumb);
+    }
+    group.append(thumbGrid);
    }
    preview.append(group);printDoc.append(printedGroup);
   }
@@ -389,7 +423,7 @@ async function workbookReview(){
     courseDetail(course.id),
     get("ggp_academy_workbook_entries","lesson_id,response,status,updated_at",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1000"}),
     get("ggp_academy_manuscripts","*",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,limit:"1"}),
-    get("ggp_academy_manuscript_photos","id,storage_path,caption,include_in_book",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,order:"created_at.asc",limit:"100"})
+    get("ggp_academy_manuscript_photos","id,storage_path,caption,include_in_book,chapter_module_id,position",{course_id:"eq."+course.id,student_id:"eq."+ctx.user.id,order:"created_at.asc",limit:"100"})
    ]);
    detail=courseDetailResult;entries=entryRows;metadata=manuscriptRows[0]||null;photos=photoRows;photoUrls=new Map();
    await refreshPhotoUrls();await paintPhotos();uploadButton.disabled=false;
