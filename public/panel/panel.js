@@ -32,7 +32,7 @@ const bookingStatus = {
 const sessionKey = "guadalupe-compas-session-v1";
 const state = {
   session: null, user: null, role: null, page: "inicio",
-  contacts: [], conversations: [], appointments: [],
+  contacts: [], conversations: [], appointments: [], surveys: [],
   traffic: [], sources: [], devices: [], cloudflare: null, agent: null,
   selectedConversation: null, messages: [], warnings: [], rights: null,
   monthOffset: 0, search: "",
@@ -128,6 +128,7 @@ async function load() {
     ["contacts", "contacts", workspaceQuery("id,display_name,email,phone,company_name,stage,status,created_at", "order=created_at.desc&limit=200")],
     ["conversations", "conversations", workspaceQuery("id,contact_id,channel,status,unread_count,last_message_preview,last_message_at,subject", "order=last_message_at.desc.nullslast&limit=100")],
     ["appointments", "appointments", workspaceQuery("id,contact_id,title,status,source,start_at,end_at,requested_time_text,created_at", "order=created_at.desc&limit=200")],
+    ["surveys", "guadalupe_survey_responses", workspaceQuery("id,contact_id,areas,support,desired_start,information_interest,submitted_name,submitted_contact,consent,created_at", "order=created_at.desc&limit=200")],
     ["traffic", "workspace_cloudflare_daily_metrics", workspaceQuery("metric_date,visits,pageviews", "order=metric_date.asc&limit=60")],
     ["sources", "workspace_cloudflare_dimension_metrics", workspaceQuery("dimension_value,visits", "dimension=eq.referrer&order=visits.desc&limit=5")],
     ["devices", "workspace_cloudflare_dimension_metrics", workspaceQuery("dimension_value,visits", "dimension=eq.device&order=visits.desc&limit=5")],
@@ -190,6 +191,21 @@ function contactsPage() {
     (rows?'<div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Etapa</th><th>Registro</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">No hay contactos que coincidan con tu búsqueda.</div>'));
 }
 function landingPage() {
+
+  const surveys = state.surveys || [];
+  const surveyRows = surveys.map(s => {
+    const contact = state.contacts.find(c => c.id === s.contact_id);
+    const display = s.submitted_name || contact?.display_name || "Participante anónimo";
+    const detail = s.areas?.join(", ") || "Sin áreas";
+    const supports = s.support?.join(", ") || "Sin preferencia";
+    return '<tr><td><strong>'+html(display)+'</strong><br><small>'+html(s.submitted_contact || "Sin contacto")+'</small></td>'+
+      '<td>'+html(detail)+'</td><td>'+html(supports)+'</td><td>'+html(s.desired_start || "No indicado")+'</td>'+
+      '<td>'+html(s.information_interest || "No indicado")+'<br><small>'+(s.consent ? "Autorizó contacto" : "Sin autorización de contacto")+'</small></td>'+
+      '<td>'+html(niceDate(s.created_at))+'</td></tr>';
+  }).join("");
+  const surveySection = panel("Encuestas de diagnóstico",
+    surveys.length ? '<div class="table-wrap"><table><thead><tr><th>Participante</th><th>Áreas de interés</th><th>Apoyo solicitado</th><th>Momento</th><th>Información</th><th>Fecha</th></tr></thead><tbody>'+surveyRows+'</tbody></table></div>'
+    : '<div class="empty">Todavía no hay respuestas de la encuesta de diagnóstico.</div>');
   // Esta vista utiliza las solicitudes del CRM que ya existen, sin crear una base paralela.
   // La atribución exacta a campañas requiere que el endpoint público registre source explícitamente.
   const matches = state.appointments.filter(a =>
@@ -212,7 +228,7 @@ function landingPage() {
     '<a class="btn outline" href="/coaching-personal/" target="_blank" rel="noopener noreferrer">Ver landing ↗</a>')+
     '<section class="stat-grid">'+stat("Solicitudes relacionadas",matches.length,"Coaching personal")+stat("Por confirmar",pending,"Seguimiento pendiente")+stat("Confirmadas",confirmed,"Sesiones agendadas")+stat("Contactos identificados",new Set(matches.map(a=>a.contact_id).filter(id=>contacts.has(id))).size,"Cruce con CRM")+'</section>'+
     '<div class="notice">Esta vista identifica solicitudes de coaching personal registradas en Reservas. Para distinguir con certeza los contactos captados exclusivamente por la landing, la API pública debe guardar un origen específico. Las solicitudes sin cita aún no se capturan por este formulario.</div>'+
-    panel("Prospectos y solicitudes", rows
+    surveySection + panel("Prospectos y solicitudes", rows
       ? '<div class="table-wrap"><table><thead><tr><th>Prospecto</th><th>Servicio / origen</th><th>Estado</th><th>Recibido</th><th>Acción</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
       : '<div class="empty">Aún no hay solicitudes de coaching personal identificables. Comprueba la publicación de la landing y su conexión con el CRM.</div>');
 }
