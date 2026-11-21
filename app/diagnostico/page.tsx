@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 const areas=["Confianza, autoestima y seguridad personal.","Bienestar emocional y manejo del estrés.","Relaciones personales y comunicación.","Propósito de vida y toma de decisiones.","Liderazgo y desarrollo profesional.","Emprendimiento, negocios y ventas."];
 const apoyos=["Sesiones individuales de coaching.","Talleres presenciales.","Programas grupales de acompañamiento.","Conferencias y webinars.","Cursos y talleres en línea","Materiales y herramientas de desarrollo personal"];
 const tiempos=["Lo antes posible","Durante el próximo mes","En los próximos tres meses","Por ahora solo estoy explorando opciones","Quiero regalármelo en Thanksgiving, Navidad o Fin de Año.","Otro"];
-const api=process.env.NEXT_PUBLIC_GUADALUPE_SURVEY_API_URL;
+const api="https://qwxydjotwhniahaovrff.supabase.co/functions/v1/guadalupe-survey";
 export default function DiagnosticoPage(){
  const [selected,setSelected]=useState<string[]>([]);
  const [support,setSupport]=useState<string[]>([]);
