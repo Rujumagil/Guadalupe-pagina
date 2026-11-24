@@ -1,0 +1,59 @@
+.bf-page{--bf-navy:#071c38;--bf-gold:#ab7b1d;--bf-cream:#fffaf2;color:var(--bf-navy);background:var(--bf-cream);font-family:Inter,Arial,sans-serif}
+.bf-page h1,.bf-page h2,.bf-page h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--bf-navy)}
+.bf-wrap{width:min(calc(100% - 40px),1120px);margin-inline:auto}
+.bf-narrow{max-width:800px}
+.bf-hero{text-align:center;padding:58px 0 62px;background:radial-gradient(circle at 50% 12%,#fff 0%,#fffaf2 62%,#f5ebdb 100%)}
+.bf-ribbon{display:inline-block;padding:13px 34px;background:linear-gradient(100deg,#9d741c,#c9a04b,#8b640f);font-family:Georgia,serif;color:white;letter-spacing:.07em;font-size:clamp(.85rem,1.8vw,1.15rem);font-weight:700}
+.bf-kicker,.bf-section-eyebrow{display:block;color:var(--bf-gold);font-size:.76rem;font-weight:800;letter-spacing:.19em;text-transform:uppercase}
+.bf-kicker{margin:32px 0 10px}
+.bf-hero h1{max-width:1000px;margin:0 auto;font-size:clamp(3.5rem,8vw,7rem);line-height:.94;letter-spacing:-.04em}
+.bf-hero h1 em{font-weight:500}
+.bf-subtitle{margin:20px auto 35px;font-family:Georgia,serif;font-style:italic;font-size:clamp(1.15rem,2.4vw,1.65rem)}
+.bf-offer{max-width:760px;margin:auto;padding:34px clamp(18px,5vw,55px);background:#fff;border:1px solid #e2d4bc;border-radius:20px;box-shadow:0 24px 60px #071c3814}
+.bf-offer-label{margin:0;color:#855d12;font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.bf-price{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(5rem,13vw,9rem);font-weight:700;letter-spacing:-.06em;line-height:1}
+.bf-price span{font-size:.37em;letter-spacing:-.02em}
+.bf-before{margin:0 0 20px;font-size:1rem}
+.bf-before s{color:#627083}
+.bf-savings{display:inline-block;margin-left:10px;color:#84580c;font-weight:800}
+.bf-deposit{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-block:1px solid #decba4;padding:22px 0}
+.bf-deposit div{display:flex;flex-direction:column;gap:1px}
+.bf-deposit small{font-size:.84rem;color:#526174}
+.bf-deposit strong{font-size:clamp(1.6rem,4vw,2.3rem)}
+.bf-note{font-size:.88rem;margin:15px 0 19px}
+.bf-button{display:flex;width:100%;justify-content:center;align-items:center;gap:12px;background:var(--bf-navy);color:#fff!important;border-radius:10px;padding:17px 24px;font-size:clamp(.93rem,2vw,1.13rem);font-weight:800;text-decoration:none;transition:transform .2s,background .2s}
+.bf-button:hover{transform:translateY(-2px);background:#183c6a}
+.bf-smallprint{font-size:.76rem;line-height:1.5;color:#677180;margin:14px 0 0}
+.bf-quick{display:grid;grid-template-columns:repeat(3,1fr);max-width:870px;margin:34px auto 0;gap:24px}
+.bf-quick div{display:flex;flex-direction:column;gap:3px}
+.bf-quick strong{font-size:1rem}
+.bf-quick span{font-size:.84rem;color:#526174}
+.bf-section{padding:clamp(65px,9vw,105px) 0}
+.bf-story{text-align:center;background:#fff}
+.bf-section h2{font-size:clamp(2.7rem,5vw,4.7rem);margin:14px 0 23px;line-height:1.05}
+.bf-story p{font-size:clamp(1rem,1.7vw,1.2rem);line-height:1.9;color:#3e4c5c}
+.bf-includes{text-align:center}
+.bf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:36px;text-align:left}
+.bf-feature{background:white;border:1px solid #eadfc9;border-radius:15px;padding:27px}
+.bf-feature-number{font-size:.82rem;color:var(--bf-gold);font-weight:800}
+.bf-feature h3{font-size:2rem;margin:17px 0 8px}
+.bf-feature p{color:#596577;font-size:.94rem;line-height:1.65;margin-bottom:0}
+.bf-schedule{background:#f3eadb}
+.bf-schedule-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:70px;align-items:center}
+.bf-schedule p{max-width:620px;color:#445166;font-size:1.03rem}
+.bf-date-card{padding:35px 24px;background:#fff;text-align:center;border:1px solid #d8bd88;border-radius:17px}
+.bf-date-card span,.bf-date-card b{display:block;color:#926910;letter-spacing:.14em}
+.bf-date-card strong{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:9rem;line-height:.9}
+.bf-date-card hr{border:0;border-top:1px solid #dfcca8;margin:18px 0}
+.bf-date-card p{margin:7px 0;font-size:.93rem}
+.bf-end{text-align:center;background:var(--bf-navy);color:white}
+.bf-end h2{color:white}
+.bf-end .bf-section-eyebrow{color:#d4ad5b}
+.bf-end-lead{font-size:1.2rem;line-height:1.8;margin-bottom:28px}
+.bf-end .bf-button{background:linear-gradient(100deg,#a77b27,#d5af5b);color:#0a1b33!important}
+.bf-end .bf-button:hover{background:#e6c47b}
+.bf-signature{margin-top:35px;font-family:Georgia,serif;font-style:italic;font-size:1.12rem}
+.bf-certifier{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.6rem}
+.bf-end .bf-smallprint{color:#c3cbd6}
+@media(max-width:720px){.bf-hero{padding-top:30px}.bf-ribbon{padding:12px 14px}.bf-offer{padding:25px 18px}.bf-quick{grid-template-columns:1fr;gap:12px}.bf-grid{grid-template-columns:1fr}.bf-schedule-grid{grid-template-columns:1fr;gap:30px}.bf-savings{display:block;margin:5px 0 0}.bf-hero h1{font-size:clamp(3.4rem,12vw,5.5rem)}}
+@media(max-width:390px){.bf-wrap{width:min(calc(100% - 24px),1120px)}.bf-deposit{gap:5px}.bf-deposit small{font-size:.75rem}.bf-deposit strong{font-size:1.5rem}}
