@@ -25,6 +25,7 @@ const routes = [
   "/podcast",
   "/legado",
   "/webinar",
+  "/black-friday-coaching",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
