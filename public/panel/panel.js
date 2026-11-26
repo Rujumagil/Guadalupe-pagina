@@ -182,6 +182,25 @@ function commercialOverview(){
 }
 
 
+
+/* Reference catalog only: historical prices are not checkout prices. */
+const migrationCatalog = [
+  ["Audiolibro Cuentos para Sanar",150,"Pago único","Biblioteca de audio pendiente"],
+  ["Cuentos para Sanar",150,"Pago único","Libro pendiente"],
+  ["Comunidad IXCHEL",650,"Mensual","Renovación y vencimiento pendientes"],
+  ["Libro La Mujer del Faro",250,"Pago único","Libro pendiente"],
+  ["Taller La Mujer del Faro · Grupo 1",1199,"Pago único","Curso en borrador"],
+  ["Taller La Mujer del Faro · Grupo 2",1499,"Pago único","Curso en borrador"],
+  ["Taller La Mujer del Faro · Grupo 3",1799,"Pago único","Curso en borrador"],
+  ["Relato de Legado",3000,"Pago único","Validar derechos del paquete 1"],
+  ["Mi Libro de Legado",6800,"Pago único","Validar derechos del paquete 2"],
+  ["Webinar La Mujer del Faro",450,"Pago único","Oferta histórica desactivada"]
+];
+function catalogPageSection(){
+  const rows=migrationCatalog.map(([name,price,mode,blocker])=>'<tr><td><strong>'+html(name)+'</strong></td><td>'+html(new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",currencyDisplay:"code"}).format(price))+'</td><td>'+html(mode)+'</td><td><span class="pill">Por validar</span><br><small>'+html(blocker)+'</small></td></tr>').join("");
+  return '<section class="panel catalog-panel"><div class="panel-head"><div><span class="eyebrow">CATÁLOGO COMERCIAL</span><h2>Productos y precios</h2></div><span class="pill">10 referencias históricas</span></div><p class="text-muted">Inventario de ETERNI recuperado el 26 de noviembre de 2026. Los precios son referencias históricas, no ofertas vigentes. Este catálogo es de solo lectura y no genera enlaces de pago.</p><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Precio histórico</th><th>Modalidad</th><th>Disponibilidad</th></tr></thead><tbody>'+rows+'</tbody></table></div></section>';
+}
+
 function paymentsPage(){
   const failed=state.warnings.some(w=>w.startsWith("workspace_payment_connections:"));
   const p=state.paymentConnection;
@@ -193,7 +212,7 @@ function paymentsPage(){
     '<section class="stat-grid">'+stat("Ingresos del mes","—","Pendiente de integración")+stat("Pagos confirmados","—","Pendiente de integración")+stat("Pagos pendientes","—","Pendiente de integración")+stat("Suscripciones activas","—","Pendiente de integración")+'</section>'+
     '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>')+
     panel("Preparación de la migración",'<div class="notice">No se habilitarán cobros nuevos hasta validar la cuenta comercial, el catálogo y el destino de las compras.</div><div class="split-row"><span>Productos y precios</span><strong>Por validar</strong></div><div class="split-row"><span>Confirmación de pagos</span><strong>Por validar</strong></div><div class="split-row"><span>Acceso a Academia Nicté Ha</span><strong>Por validar</strong></div>')+'</div>'+
-    panel("Historial y catálogo",'<div class="empty">La consulta de ventas, ofertas y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni datos de ETERNI.</div>');
+    catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni transacciones de ETERNI.</div>');
 }
 
 function summary() {
