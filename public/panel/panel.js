@@ -233,9 +233,33 @@ function editCommercialDraft(id){
 }
 
 
+async function connectStripe(button){
+  if(!["owner","admin"].includes(state.role))return;
+  button.disabled=true;
+  try{
+    const endpoint="https://app.proyectocompas.app/api/public/guadalupe/stripe/connect";
+    const bearer=await token();
+    const check=await fetch(endpoint,{method:"OPTIONS",cache:"no-store",credentials:"omit",redirect:"error"});
+    if(!check.ok)throw Error("La autorización de Stripe aún no está disponible. Contacta a soporte.");
+    const form=document.createElement("form");form.method="POST";form.action=endpoint;form.hidden=true;
+    const input=document.createElement("input");input.type="hidden";input.name="access_token";input.value=bearer;
+    form.append(input);document.body.append(form);form.submit();form.remove();
+  }catch{button.disabled=false;stateMessage("No fue posible iniciar la autorización de Stripe. Intenta nuevamente o contacta a soporte.","error");}
+}
+function stripeReturn(){
+  const url=new URL(location.href);const result=url.searchParams.get("stripe");
+  if(!result)return false;
+  url.searchParams.delete("stripe");history.replaceState(null,"",url.pathname+url.search+url.hash);
+  nav("pagos");
+  const p=state.paymentConnection;
+  const messages={connected:p?.status==="connected"&&p?.livemode?"Cuenta Stripe vinculada. Revisa los indicadores antes de aceptar pagos.":"Autorización recibida. Revisa el estado de la cuenta.",review:"Tu cuenta requiere una revisión de la vinculación anterior. Contacta a soporte. No crees otra cuenta.",cancelled:"Autorización cancelada. Puedes intentarlo nuevamente.",invalid:"La autorización expiró o no pudo verificarse. Inicia el proceso nuevamente.",unavailable:"No fue posible completar la conexión. Intenta nuevamente o contacta a soporte."};
+  stateMessage(messages[result]||messages.unavailable,result==="connected"&&p?.status==="connected"?"success":result==="cancelled"?"notice":"error");
+  return true;
+}
+
 function stripeConnectionInstructions(){
   if(!["owner","admin"].includes(state.role))return '<p class="small">Solo el propietario o administrador puede autorizar la cuenta Stripe.</p>';
-  return '<div class="stripe-connect-card"><div class="stripe-connect-brand"><span class="stripe-mark" aria-hidden="true">S</span><div><strong>Stripe</strong><small>Autorización segura del titular</small></div></div><p>Tu cuenta Stripe existente recibirá los pagos de tus productos y servicios. Nunca compartas contraseñas ni claves privadas.</p><button type="button" class="btn primary" disabled>Conectar mi cuenta Stripe</button><p class="small">La autorización directa desde este panel está pendiente de configuración. Una vez disponible, podrás iniciar sesión en Stripe y regresar aquí.</p><button class="btn outline" data-action="refresh-dashboard">Actualizar estado</button></div>';
+  return '<div class="stripe-connect-card"><div class="stripe-connect-brand"><span class="stripe-mark" aria-hidden="true">S</span><div><strong>Stripe</strong><small>Autorización segura del titular</small></div></div><p>Tu cuenta Stripe existente recibirá los pagos de tus productos y servicios. Nunca compartas contraseñas ni claves privadas.</p><button type="button" class="btn primary" data-action="connect-stripe">Conectar mi cuenta Stripe</button><p class="small">Autoriza tu cuenta existente en Stripe. Al terminar, regresarás a Finanzas y pagos.</p><button class="btn outline" data-action="refresh-dashboard">Actualizar estado</button></div>';
 }
 
 function paymentsPage(){
@@ -481,7 +505,7 @@ function logout(){
 async function enter(){
   await verifyMember();
   await load();
-  $("#login").hidden=true;$("#portal").hidden=false;nav("inicio");
+  $("#login").hidden=true;$("#portal").hidden=false;if(!stripeReturn())nav("inicio");
 }
 async function start(){
   if(!API_URL || !PUBLISHABLE_KEY || !WORKSPACE_ID){
@@ -518,6 +542,7 @@ $("#view").addEventListener("click",e=>{
   if(action==="find-contact"){state.search=el.dataset.name||"";nav("clientes");}
   if(action==="open-conversation"){nav("mensajes");selectConversation(el.dataset.id);}
   if(action==="refresh-dashboard"){el.disabled=true;load().then(()=>render()).catch(error=>{el.disabled=false;stateMessage(error.message,"error");});}
+  if(action==="connect-stripe")connectStripe(el);
   if(action==="new-draft")editCommercialDraft();
   if(action==="edit-draft")editCommercialDraft(el.dataset.id);
   if(action==="new-contact")newContact();
