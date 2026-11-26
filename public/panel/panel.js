@@ -232,6 +232,12 @@ function editCommercialDraft(id){
   });
 }
 
+
+function stripeConnectionInstructions(){
+  if(!["owner","admin"].includes(state.role))return '<p class="small">Solo el propietario o administrador puede autorizar la cuenta Stripe.</p>';
+  return '<div class="stripe-connect-card"><div class="stripe-connect-brand"><span class="stripe-mark" aria-hidden="true">S</span><div><strong>Stripe Connect</strong><small>Autorización segura del titular</small></div></div><p>Conecta tu cuenta existente desde la administración de pagos de Compás One. No compartas contraseñas ni claves privadas.</p><a class="btn primary" target="_blank" rel="noopener noreferrer" href="'+html(COMPAS_ONE_URL)+'/integrations/payments">Conectar mi cuenta Stripe ↗</a><ol><li>Inicia sesión con tu cuenta autorizada de Compás One.</li><li>Comprueba que el espacio activo sea Guadalupe Gómez Pezuela.</li><li>Selecciona Conectar mi cuenta Stripe y autoriza en Stripe.</li><li>Regresa a este panel y pulsa Actualizar.</li></ol><div class="notice">Si la cuenta sigue vinculada a ETERNI, solicita revisión de la asociación antes de continuar. No desconectes la cuenta anterior ni crees otra.</div></div>';
+}
+
 function paymentsPage(){
   const failed=state.warnings.some(w=>w.startsWith("workspace_payment_connections:"));
   const p=state.paymentConnection;
@@ -241,7 +247,7 @@ function paymentsPage(){
   const details=row("Estado",status)+row("Titular",p?.business_name||"Por verificar")+row("Cobros",p?p.charges_enabled?"Habilitados":"No habilitados":"—")+row("Depósitos",p?p.payouts_enabled?"Habilitados":"No habilitados":"—")+row("Modo",p?p.livemode?"Producción":"Pruebas":"—")+row("Última sincronización",p?.last_synced_at?niceDate(p.last_synced_at):"Sin sincronizar");
   return heading("Finanzas y pagos","Administra la conexión comercial de Guadalupe y consulta su estado.",'<button class="btn outline" data-action="refresh-dashboard">Actualizar</button>')+
     '<section class="stat-grid">'+stat("Ingresos del mes","—","Pendiente de integración")+stat("Pagos confirmados","—","Pendiente de integración")+stat("Pagos pendientes","—","Pendiente de integración")+stat("Suscripciones activas","—","Pendiente de integración")+'</section>'+
-    '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>')+
+    '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>'+stripeConnectionInstructions())+
     panel("Preparación de la migración",'<div class="notice">No se habilitarán cobros nuevos hasta validar la cuenta comercial, el catálogo y el destino de las compras.</div><div class="split-row"><span>Productos y precios</span><strong>Por validar</strong></div><div class="split-row"><span>Confirmación de pagos</span><strong>Por validar</strong></div><div class="split-row"><span>Acceso a Academia Nicté Ha</span><strong>Por validar</strong></div>')+'</div>'+
     draftSection()+catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni transacciones de ETERNI.</div>');
 }
