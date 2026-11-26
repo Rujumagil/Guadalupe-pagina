@@ -102,3 +102,6 @@ body{background:var(--gg-pearl)}
 @media(prefers-reduced-motion:reduce){.follow-card{transition:none}}
 
 @media(max-width:820px){.mobile-nav{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+/* Catalogo comercial de referencia */
+.catalog-panel{margin-bottom:18px}.catalog-panel .panel-head h2{margin-top:5px}.catalog-panel .text-muted{max-width:850px;line-height:1.6}.catalog-panel table{min-width:640px}.catalog-panel td:nth-child(2){white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:650;color:#173f39}.catalog-panel td small{display:inline-block;margin-top:5px;line-height:1.5}.catalog-panel .pill{background:#f3eee1;color:#6c572b}.catalog-panel .panel-head{flex-wrap:wrap}
