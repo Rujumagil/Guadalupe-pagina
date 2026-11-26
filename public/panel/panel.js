@@ -34,7 +34,7 @@ const sessionKey = "guadalupe-compas-session-v1";
 const state = {
   session: null, user: null, role: null, page: "inicio",
   contacts: [], conversations: [], appointments: [], surveys: [],
-  traffic: [], sources: [], devices: [], cloudflare: null, agent: null,
+  traffic: [], sources: [], devices: [], cloudflare: null, agent: null, paymentConnection: null,
   selectedConversation: null, messages: [], warnings: [], rights: null,
   monthOffset: 0, search: "",
 };
@@ -135,14 +135,15 @@ async function load() {
     ["devices", "workspace_cloudflare_dimension_metrics", workspaceQuery("dimension_value,visits", "dimension=eq.device&order=visits.desc&limit=5")],
     ["cloudflare", "workspace_cloudflare_connections", workspaceQuery("status,hostname,last_synced_at", "limit=1")],
     ["agent", "ai_agent_profiles", workspaceQuery("enabled,agent_name,operating_mode", "limit=1")],
+    ["paymentConnection", "workspace_payment_connections", workspaceQuery("status,charges_enabled,payouts_enabled,livemode,business_name,last_synced_at", "provider=eq.stripe&limit=1")],
   ];
   const outcomes = await Promise.allSettled(qs.map(item=>db(item[1], {query:item[2]})));
   outcomes.forEach((outcome, i) => {
     const key = qs[i][0];
     if (outcome.status === "fulfilled") {
-      state[key] = ["cloudflare","agent"].includes(key) ? (outcome.value?.[0] || null) : (outcome.value || []);
+      state[key] = ["cloudflare","agent","paymentConnection"].includes(key) ? (outcome.value?.[0] || null) : (outcome.value || []);
     } else {
-      state[key] = ["cloudflare","agent"].includes(key) ? null : [];
+      state[key] = ["cloudflare","agent","paymentConnection"].includes(key) ? null : [];
       state.warnings.push(qs[i][1] + ": no disponible");
     }
   });
@@ -178,6 +179,21 @@ function commercialOverview(){
   const agentName=state.agent?.agent_name||"Agente de atención";
   return '<section class="panel follow-panel"><div class="panel-head"><div><span class="eyebrow">SEGUIMIENTO COMERCIAL</span><h2>Prioridades de atención</h2></div><button class="btn outline" data-action="refresh-dashboard">Actualizar</button></div><p class="text-muted">Revisa primero los registros pendientes. Los conteos corresponden a los datos cargados.</p><div class="follow-grid">'+queue("Prospectos nuevos",leads.length,"Etapa Nuevo","clientes",unavailable("contacts"))+queue("Conversaciones sin leer",inbox.length,"Revisar bandeja","mensajes",unavailable("conversations"))+queue("Reservas pendientes",reservations.length,"Confirmar horarios","reservas",unavailable("appointments"))+'</div><div class="follow-agent"><div><strong>'+html(agentName)+'</strong><small>'+html(agentStatus)+' · Bandeja general del equipo; no distingue respuestas del agente.</small></div><button class="btn light" data-action="goto" data-target="agentes">Ver agentes</button></div></section>'+
   '<div class="grid-two follow-lists">'+panel("Prospectos por revisar",unavailable("contacts")?'<div class="empty">Datos no disponibles.</div>':leadRows||'<div class="empty">No hay prospectos en etapa Nuevo.</div>','<button class="btn light" data-action="goto" data-target="clientes">Ver CRM</button>')+panel("Conversaciones pendientes",unavailable("conversations")?'<div class="empty">Datos no disponibles.</div>':messageRows||'<div class="empty">No hay conversaciones sin leer.</div>','<button class="btn light" data-action="goto" data-target="mensajes">Ver bandeja</button>')+'</div>';
+}
+
+
+function paymentsPage(){
+  const failed=state.warnings.some(w=>w.startsWith("workspace_payment_connections:"));
+  const p=state.paymentConnection;
+  const ready=p?.status==="connected"&&p.charges_enabled&&p.livemode;
+  const status=failed?"No disponible":!p?"Sin conexión":ready?"Conexión registrada en producción":"Requiere revisión";
+  const row=(label,value)=>'<div class="split-row"><span>'+html(label)+'</span><strong>'+html(value)+'</strong></div>';
+  const details=row("Estado",status)+row("Titular",p?.business_name||"Por verificar")+row("Cobros",p?p.charges_enabled?"Habilitados":"No habilitados":"—")+row("Depósitos",p?p.payouts_enabled?"Habilitados":"No habilitados":"—")+row("Modo",p?p.livemode?"Producción":"Pruebas":"—")+row("Última sincronización",p?.last_synced_at?niceDate(p.last_synced_at):"Sin sincronizar");
+  return heading("Finanzas y pagos","Administra la conexión comercial de Guadalupe y consulta su estado.",'<button class="btn outline" data-action="refresh-dashboard">Actualizar</button>')+
+    '<section class="stat-grid">'+stat("Ingresos del mes","—","Pendiente de integración")+stat("Pagos confirmados","—","Pendiente de integración")+stat("Pagos pendientes","—","Pendiente de integración")+stat("Suscripciones activas","—","Pendiente de integración")+'</section>'+
+    '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>')+
+    panel("Preparación de la migración",'<div class="notice">No se habilitarán cobros nuevos hasta validar la cuenta comercial, el catálogo y el destino de las compras.</div><div class="split-row"><span>Productos y precios</span><strong>Por validar</strong></div><div class="split-row"><span>Confirmación de pagos</span><strong>Por validar</strong></div><div class="split-row"><span>Acceso a Academia Nicté Ha</span><strong>Por validar</strong></div>')+'</div>'+
+    panel("Historial y catálogo",'<div class="empty">La consulta de ventas, ofertas y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni datos de ETERNI.</div>');
 }
 
 function summary() {
@@ -300,7 +316,7 @@ function agentsPage(){
     '<p class="small" style="margin-top:20px">La configuración de agentes, mensajes salientes e integraciones se realiza en la plataforma central para mantener permisos, límites y trazabilidad.</p>';
 }
 function render(){
-  const pages={inicio:summary,clientes:contactsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage};
+  const pages={inicio:summary,clientes:contactsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage,pagos:paymentsPage};
   if(state.page==="meta"){
     $("#view").replaceChildren(metaCampaignsPage({heading,panel,workspaceId:WORKSPACE_ID,db,appointments:state.appointments,contacts:state.contacts}));
   } else {
