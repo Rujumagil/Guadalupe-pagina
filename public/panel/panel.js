@@ -164,6 +164,22 @@ function stat(title,value,note) {
 function panel(title,content,extra="") {
   return '<section class="panel"><div class="panel-head"><h2>'+html(title)+'</h2>'+extra+'</div>'+content+'</section>';
 }
+
+function commercialOverview(){
+  const unavailable=table=>state.warnings.some(w=>w.startsWith(table+":"));
+  const leads=state.contacts.filter(c=>c.stage==="lead").sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  const inbox=state.conversations.filter(c=>Number(c.unread_count)>0).sort((a,b)=>new Date(a.last_message_at||0)-new Date(b.last_message_at||0));
+  const reservations=state.appointments.filter(a=>a.status==="requested");
+  const names=new Map(state.contacts.map(c=>[c.id,c.display_name]));
+  const queue=(title,count,description,target,missing)=>'<button type="button" class="follow-card" data-action="goto" data-target="'+target+'"><span>'+html(title)+'</span><strong>'+ (missing?"—":fmt(count))+'</strong><small>'+html(missing?"Datos no disponibles":description)+'</small><span class="follow-link">Revisar →</span></button>';
+  const leadRows=leads.slice(0,5).map(c=>'<div class="follow-row"><div><strong>'+html(c.display_name||"Contacto")+'</strong><small>Registrado: '+html(niceDate(c.created_at))+'</small></div><button class="btn light" data-action="find-contact" data-name="'+html(c.display_name||"")+'">Ver CRM</button></div>').join("");
+  const messageRows=inbox.slice(0,5).map(c=>'<div class="follow-row"><div><strong>'+html(names.get(c.contact_id)||c.subject||"Conversación")+'</strong><small>'+html(c.channel||"Canal no indicado")+' · '+html(c.unread_count)+' sin leer</small><small>'+html((c.last_message_preview||"Sin vista previa").slice(0,100))+'</small></div><button class="btn light" data-action="open-conversation" data-id="'+html(c.id)+'">Abrir</button></div>').join("");
+  const agentStatus=unavailable("ai_agent_profiles")?"Estado no disponible":state.agent?(state.agent.enabled?"Activo":"Desactivado"):"Sin perfil disponible";
+  const agentName=state.agent?.agent_name||"Agente de atención";
+  return '<section class="panel follow-panel"><div class="panel-head"><div><span class="eyebrow">SEGUIMIENTO COMERCIAL</span><h2>Prioridades de atención</h2></div><button class="btn outline" data-action="refresh-dashboard">Actualizar</button></div><p class="text-muted">Revisa primero los registros pendientes. Los conteos corresponden a los datos cargados.</p><div class="follow-grid">'+queue("Prospectos nuevos",leads.length,"Etapa Nuevo","clientes",unavailable("contacts"))+queue("Conversaciones sin leer",inbox.length,"Revisar bandeja","mensajes",unavailable("conversations"))+queue("Reservas pendientes",reservations.length,"Confirmar horarios","reservas",unavailable("appointments"))+'</div><div class="follow-agent"><div><strong>'+html(agentName)+'</strong><small>'+html(agentStatus)+' · Bandeja general del equipo; no distingue respuestas del agente.</small></div><button class="btn light" data-action="goto" data-target="agentes">Ver agentes</button></div></section>'+
+  '<div class="grid-two follow-lists">'+panel("Prospectos por revisar",unavailable("contacts")?'<div class="empty">Datos no disponibles.</div>':leadRows||'<div class="empty">No hay prospectos en etapa Nuevo.</div>','<button class="btn light" data-action="goto" data-target="clientes">Ver CRM</button>')+panel("Conversaciones pendientes",unavailable("conversations")?'<div class="empty">Datos no disponibles.</div>':messageRows||'<div class="empty">No hay conversaciones sin leer.</div>','<button class="btn light" data-action="goto" data-target="mensajes">Ver bandeja</button>')+'</div>';
+}
+
 function summary() {
   const newLeads=state.contacts.filter(c=> new Date(c.created_at).getTime() > Date.now()-30*86400000).length;
   const unread=state.conversations.reduce((s,c)=>s+Number(c.unread_count||0),0);
@@ -178,7 +194,7 @@ function summary() {
   const bookings=next.length ? '<div class="table-wrap"><table><thead><tr><th>Sesión</th><th>Fecha</th></tr></thead><tbody>'+next.map(a=>'<tr><td>'+html(a.title)+'</td><td>'+html(niceDate(a.start_at))+'</td></tr>').join("")+'</tbody></table></div>' :
     '<div class="empty">Todavía no hay sesiones confirmadas.</div>';
   return heading("Mi negocio, bajo control","El espacio privado donde administras tu relación con los clientes.")+warning+
-    '<section class="stat-grid">'+stat("Contactos",state.contacts.length,"CRM de Guadalupe")+stat("Prospectos recientes",newLeads,"Últimos 30 días")+stat("Mensajes pendientes",unread,"Por revisar")+stat("Reservas por confirmar",pending,"Solicitudes")+'</section>'+
+    '<section class="stat-grid">'+stat("Contactos",state.contacts.length,"CRM de Guadalupe")+stat("Prospectos recientes",newLeads,"Últimos 30 días")+stat("Mensajes pendientes",unread,"Por revisar")+stat("Reservas por confirmar",pending,"Solicitudes")+'</section>'+commercialOverview()+
     '<div class="grid-two">'+panel("Próximas sesiones",bookings,'<button class="btn light" data-action="goto" data-target="reservas">Ver reservas</button>')+
     panel("Acciones rápidas",'<div class="action-grid"><button class="action" data-action="new-contact"><strong>+ Cliente</strong><small>Registrar contacto</small></button><button class="action" data-action="new-booking"><strong>+ Reserva</strong><small>Solicitar sesión</small></button><button class="action" data-action="goto" data-target="mensajes"><strong>Mensajes</strong><small>Revisar conversaciones</small></button></div>')+'</div>'+
     panel("Tráfico web",trafficReady?'<div class="stat-grid">'+stat("Visitas",visits,"Últimos 30 días")+stat("Páginas vistas",state.traffic.reduce((s,a)=>s+Number(a.pageviews||0),0),"Cloudflare")+'</div><button class="btn outline" data-action="goto" data-target="trafico">Ver evolución del tráfico →</button>':
@@ -426,7 +442,10 @@ $("#view").addEventListener("click",e=>{
   const el=e.target.closest("[data-action]");
   if(!el)return;
   const action=el.dataset.action;
-  if(action==="goto")nav(el.dataset.target);
+  if(action==="goto"){if(el.dataset.target==="clientes")state.search="";nav(el.dataset.target);}
+  if(action==="find-contact"){state.search=el.dataset.name||"";nav("clientes");}
+  if(action==="open-conversation"){nav("mensajes");selectConversation(el.dataset.id);}
+  if(action==="refresh-dashboard"){el.disabled=true;load().then(()=>render()).catch(error=>{el.disabled=false;stateMessage(error.message,"error");});}
   if(action==="new-contact")newContact();
   if(action==="new-booking")newBooking();
   if(action==="confirm-booking")confirmBooking(el.dataset.booking);
