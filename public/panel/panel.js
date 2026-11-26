@@ -367,7 +367,7 @@ function trafficPage(){
 }
 function agentsPage(){
   const configured=!!state.agent;
-  return heading("Mis agentes","Atención comercial, organizada desde el ecosistema Compás Fly.")+
+  return heading("Mis agentes","Atención comercial y seguimiento de tus clientes.")+
     panel("Agente de atención",'<div class="notice">'+(configured?(state.agent.enabled?"Agente habilitado.":"Perfil de agente preparado, pero pendiente de habilitar."):"No hay un perfil disponible aún.")+'</div><p class="text-muted">El agente puede atender preguntas comerciales, registrar la intención de contratación y escalar solicitudes. No debe recopilar información confidencial del proceso de coaching.</p><p class="small">La configuración técnica del agente se gestiona mediante soporte.</p>')+
     '<p class="small" style="margin-top:20px">La configuración de agentes, mensajes salientes e integraciones se realiza en la plataforma central para mantener permisos, límites y trazabilidad.</p>';
 }
