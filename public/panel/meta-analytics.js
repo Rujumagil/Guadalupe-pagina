@@ -1,66 +1,82 @@
-// Indicadores de Meta: exclusivamente datos del workspace autenticado, nunca cifras simuladas.
-// La sincronización de Graph API se realiza en servidor; no guardar tokens de Meta aquí.
-const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const number = value => value == null ? "—" : new Intl.NumberFormat("es-MX",{maximumFractionDigits:2}).format(value);
-const money = value => value == null ? "—" : new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(value);
-const percent = value => value == null ? "—" : number(value)+"%";
-const card = (label,value,detail) => '<div class="stat"><span>'+escapeHtml(label)+'</span><strong>'+escapeHtml(value)+'</strong><small>'+escapeHtml(detail)+'</small></div>';
-const sum = (rows,key) => rows.reduce((total,row)=>total+Number(row[key]||0),0);
-const divide = (a,b,multiplier=1) => b>0 ? a*multiplier/b : null;
-export function metaCampaignsPage({heading,panel,workspaceId,db,appointments,contacts}) {
-  const container=document.createElement("div");
-  container.innerHTML=heading("Meta y campañas","Facebook, Instagram y resultados comerciales de las campañas de Guadalupe.")+
-    '<div id="metaStatus" class="notice">Consultando la conexión con Meta…</div>'+
-    '<section id="metaMetrics" class="stat-grid"></section>'+
-    '<div id="metaCampaignTables"></div>';
-  const status=container.querySelector("#metaStatus");
-  const metrics=container.querySelector("#metaMetrics");
-  const tables=container.querySelector("#metaCampaignTables");
-  const params="workspace_id=eq."+encodeURIComponent(workspaceId);
-  const load=async()=>{
-    // Las tablas deben crearse en Compás One con RLS por workspace y sincronización del servidor.
-    const [accountsResult,campaignsResult] = await Promise.allSettled([
-      db("workspace_meta_ad_accounts",{query:"select=account_name,account_id,status,last_synced_at,currency&"+params+"&limit=20"}),
-      db("workspace_meta_campaign_daily_metrics",{query:"select=campaign_id,campaign_name,metric_date,spend,impressions,reach,clicks,link_clicks,leads,messaging_conversations,landing_page_views,purchases,revenue&"+params+"&order=metric_date.desc&limit=3000"})
-    ]);
-    if(accountsResult.status==="rejected"||campaignsResult.status==="rejected"){
-      status.textContent="Integración pendiente: falta conectar Meta Ads con Compás One y habilitar la sincronización segura de datos de este espacio. No se muestran métricas estimadas.";
-      metrics.innerHTML=card("Inversión","—","Sin conexión")+card("Alcance","—","Sin conexión")+card("Conversaciones","—","Sin conexión")+card("Costo por prospecto","—","Sin conexión");
-      tables.innerHTML=panel("Activación de Meta",'<p>Conecta los activos autorizados de Facebook, Instagram y la cuenta publicitaria de Guadalupe. El acceso debe hacerse desde el servidor mediante Meta Login, con permisos aprobados, tokens seguros y RLS.</p><p class="small">Permisos recomendados, según las funciones autorizadas: ads_read, pages_show_list, pages_read_engagement e instagram_basic; mensajería requiere permisos y revisión adicionales.</p>');
-      return;
-    }
-    const accounts=accountsResult.value||[];
-    const rows=(campaignsResult.value||[]).filter(row=>/^\d{4}-\d{2}-\d{2}$/.test(row.metric_date||""));
-    if(!accounts.length){
-      status.textContent="Aún no hay cuentas publicitarias vinculadas al espacio de Guadalupe. Conecta los activos desde la configuración de integraciones de Compás One.";
-    }else{
-      const last=accounts.map(a=>a.last_synced_at).filter(Boolean).sort().at(-1);
-      status.textContent="Cuentas autorizadas: "+accounts.length+(last?" · Última sincronización: "+new Date(last).toLocaleString("es-MX"):" · Sin primera sincronización");
-    }
-    const recent=rows.filter(r=>new Date(r.metric_date+"T12:00:00Z").getTime()>=Date.now()-30*86400000);
-    if(!recent.length){
-      metrics.innerHTML=card("Inversión","—","Sin datos de 30 días")+card("Alcance","—","Sin datos")+card("Conversaciones","—","Sin datos")+card("Costo por prospecto","—","Sin datos");
-      tables.innerHTML=panel("Campañas",'<div class="empty">No hay métricas sincronizadas para los últimos 30 días.</div>');
-      return;
-    }
-    const investment=sum(recent,"spend"), impressions=sum(recent,"impressions"), clicks=sum(recent,"clicks"), leads=sum(recent,"leads"), conversations=sum(recent,"messaging_conversations");
-    // Alcance de audiencias no se suma entre días/campañas (usuarios duplicados).
-    metrics.innerHTML=card("Inversión",money(investment),"Últimos 30 días")+
-      card("Impresiones",number(impressions),"No equivale a personas únicas")+
-      card("Clics",number(clicks),"CTR: "+percent(divide(clicks,impressions,100)))+
-      card("Conversaciones",number(conversations),"Costo: "+money(divide(investment,conversations)))+
-      card("Prospectos de Meta",number(leads),"CPL: "+money(divide(investment,leads)))+
-      card("Vistas de landing",number(sum(recent,"landing_page_views")),"Reportadas por Meta");
-    const map=new Map();
-    for(const r of recent){
-      const id=String(r.campaign_id||"");if(!id)continue;
-      if(!map.has(id))map.set(id,{name:r.campaign_name||id,spend:0,impressions:0,clicks:0,leads:0,messaging_conversations:0});
-      const v=map.get(id);for(const key of ["spend","impressions","clicks","leads","messaging_conversations"])v[key]+=Number(r[key]||0);
-    }
-    const trs=[...map.values()].sort((a,b)=>b.spend-a.spend).map(r=>'<tr><td><strong>'+escapeHtml(r.name)+'</strong></td><td>'+money(r.spend)+'</td><td>'+number(r.impressions)+'</td><td>'+number(r.clicks)+'</td><td>'+number(r.messaging_conversations)+'</td><td>'+number(r.leads)+'</td><td>'+money(divide(r.spend,r.leads))+'</td></tr>').join("");
-    tables.innerHTML=panel("Resultados por campaña · últimos 30 días",trs?'<div class="table-wrap"><table><thead><tr><th>Campaña</th><th>Inversión</th><th>Impresiones</th><th>Clics</th><th>Conversaciones</th><th>Leads</th><th>CPL</th></tr></thead><tbody>'+trs+'</tbody></table></div>':'<div class="empty">Sin campañas en el período.</div>')+
-      panel("Conversión y atribución",'<p class="small">Los prospectos y conversaciones anteriores proceden de Meta Ads. Los contactos y reservas del CRM deben guardar identificador de campaña o parámetros UTM para atribuir correctamente ventas e inscripciones. No se atribuyen automáticamente las '+number(contacts.length)+' fichas de contactos ni las '+number(appointments.length)+' reservas existentes.</p><p class="small">El alcance único debe consultarse por período directamente en Meta Insights; sumar el alcance diario daría un valor engañoso. El ROI/ROAS solo se mostrará cuando existan ingresos atribuibles y conciliados.</p>');
-  };
-  load().catch(()=>{status.textContent="No fue posible consultar Meta en este momento. Intenta actualizar el panel.";});
-  return container;
+// Read-only analytics from the existing Compás One workspace. No Meta credentials in browser.
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=v=>v==null?"—":new Intl.NumberFormat("es-MX",{maximumFractionDigits:2}).format(v);
+const money=(v,c)=>v==null?"—":new Intl.NumberFormat("es-MX",{style:"currency",currency:c}).format(v);
+const sum=(rows,k)=>rows.reduce((a,r)=>a+Number(r[k]||0),0);
+const ratio=(a,b)=>b>0?a/b:null;
+const card=(l,v,n="")=>'<div class="stat"><span>'+esc(l)+'</span><strong>'+esc(v)+'</strong><small>'+esc(n)+'</small></div>';
+const grid=s=>'<section class="stat-grid">'+s+'</section>';
+const notice=s=>'<div class="notice">'+esc(s)+'</div>';
+const date=v=>v?new Date(v).toLocaleString("es-MX",{timeZone:"America/Mexico_City"}):"Sin sincronizar";
+const zero=new Set(["BIF","CLP","DJF","GNF","ISK","JPY","KMF","KRW","PYG","RWF","UGX","VND","VUV","XAF","XOF","XPF"]);
+const major=(n,c)=>n/(zero.has(c)?1:100);
+export function metaCampaignsPage({heading,panel,workspaceId,db}){
+ const root=document.createElement("div");
+ root.innerHTML=heading("Meta y campañas","Publicidad pagada y crecimiento orgánico de Facebook e Instagram.")+
+ '<div class="notice">Consultando indicadores de Compás One…</div><div data-ads></div><div data-organic></div>';
+ const status=root.querySelector(".notice"),ads=root.querySelector("[data-ads]"),organic=root.querySelector("[data-organic]");
+ const scope="&workspace_id=eq."+encodeURIComponent(workspaceId);
+ const get=(t,cols,extra="")=>db(t,{query:"select="+encodeURIComponent(cols)+scope+extra});
+ const since=new Date(Date.now()-29*86400000).toISOString().slice(0,10);
+ const until=new Date().toISOString().slice(0,10);
+ const link=(path,label)=>'<a class="btn outline" target="_blank" rel="noopener noreferrer" href="https://app.proyectocompas.app/integrations/'+path+'">'+label+'</a>';
+ const fetchPages=async(t,cols,extra,order)=>{
+  let result=[];
+  for(let offset=0;offset<10000;offset+=500){
+   const page=await get(t,cols,extra+"&order="+order+"&limit=500&offset="+offset);
+   result.push(...page);if(page.length<500)return result;
+  }
+  throw new Error("Demasiados registros; se requiere agregación en servidor.");
+ };
+ async function paid(){
+  const [connections,campaigns,rows]=await Promise.all([
+   get("meta_ad_connections","id,ad_account_id,account_name,currency,status,last_synced_at"),
+   fetchPages("meta_ad_campaigns","id,connection_id,external_campaign_id,name,effective_status","","id.asc"),
+   fetchPages("meta_ad_insights_daily","id,connection_id,campaign_id,external_entity_id,insight_date,currency,spend_minor,impressions,clicks,link_clicks,leads,purchases,purchase_value_minor,raw_actions","&insight_level=eq.campaign&insight_date=gte."+since+"&insight_date=lte."+until,"id.asc")
+  ]);
+  const connected=connections.filter(c=>c.status==="connected");
+  const active=new Set(connected.map(c=>c.id));
+  const recent=rows.filter(r=>active.has(r.connection_id));
+  const intro=connected.length?connected.map(c=>esc(c.account_name||c.ad_account_id)+" · "+esc(date(c.last_synced_at))).join("<br>"):"No hay una cuenta publicitaria conectada.";
+  let body='<p>'+intro+'</p>'+link("meta-ads","Gestionar Meta Ads");
+  if(!recent.length){ads.innerHTML=panel("Publicidad pagada",body+notice("Sin indicadores sincronizados en el período."));return;}
+  const names=new Map(campaigns.map(c=>[c.id,c]));
+  const action=(r,key)=>{const a=r.raw_actions?.actions;return Array.isArray(a)?Number(a.find(x=>x.action_type===key)?.value||0):null;};
+  const actionSum=(rs,key)=>rs.every(r=>Array.isArray(r.raw_actions?.actions))?rs.reduce((s,r)=>s+action(r,key),0):null;
+  for(const currency of [...new Set(recent.map(r=>r.currency))]){
+   const rs=recent.filter(r=>r.currency===currency),spend=major(sum(rs,"spend_minor"),currency),leads=sum(rs,"leads"),clicks=sum(rs,"clicks"),impressions=sum(rs,"impressions");
+   const chats=actionSum(rs,"onsite_conversion.messaging_conversation_started_7d"),views=actionSum(rs,"landing_page_view");
+   body+='<h3>'+esc(currency)+' · '+esc(since)+' a '+esc(until)+'</h3>'+grid(
+    card("Inversión",money(spend,currency))+card("Impresiones",num(impressions))+card("Clics",num(clicks),"CTR: "+(impressions?num(clicks/impressions*100)+"%":"—"))+
+    card("Prospectos Meta",num(leads),"CPL: "+money(ratio(spend,leads),currency))+card("Conversaciones iniciadas",num(chats),"Costo: "+money(ratio(spend,chats),currency))+
+    card("Vistas de landing",num(views))+card("Compras reportadas por Meta",num(sum(rs,"purchases")))+card("Valor de compras Meta",money(major(sum(rs,"purchase_value_minor"),currency),currency),"No equivale a ingresos conciliados"));
+   const groups=new Map();
+   for(const r of rs){const k=r.connection_id+":"+r.external_entity_id;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
+   const trs=[...groups.values()].sort((a,b)=>sum(b,"spend_minor")-sum(a,"spend_minor")).map(g=>{
+    const c=names.get(g[0].campaign_id),s=major(sum(g,"spend_minor"),currency),l=sum(g,"leads"),m=actionSum(g,"onsite_conversion.messaging_conversation_started_7d");
+    return '<tr><td>'+esc(c?.name||g[0].external_entity_id)+'<br><small>'+esc(c?.effective_status||"")+'</small></td><td>'+esc(money(s,currency))+'</td><td>'+num(sum(g,"clicks"))+'</td><td>'+num(m)+'</td><td>'+num(l)+'</td><td>'+esc(money(ratio(s,l),currency))+'</td></tr>';
+   }).join("");
+   body+='<div class="table-wrap"><table><thead><tr><th>Campaña</th><th>Inversión</th><th>Clics</th><th>Conversaciones</th><th>Leads</th><th>CPL</th></tr></thead><tbody>'+trs+'</tbody></table></div>';
+  }
+  ads.innerHTML=panel("Publicidad pagada",body+'<p class="small">El alcance único no se suma entre campañas o días. La atribución de ventas del CRM requiere registrar el origen de cada contacto.</p>');
+ }
+ async function social(){
+  const [cs,ss]=await Promise.all([
+   get("meta_organic_connections","id,page_name,page_id,instagram_username,instagram_user_id,status,last_synced_at"),
+   get("meta_organic_insights_summary","connection_id,period_start,period_end,facebook_followers,facebook_media_views,facebook_unique_media_viewers,facebook_post_engagements,facebook_profile_views,facebook_new_follows,instagram_followers,instagram_media_count,instagram_views,instagram_reach,instagram_accounts_engaged,instagram_total_interactions,instagram_likes,instagram_comments,instagram_saves,instagram_shares")
+  ]);
+  const c=cs.find(x=>x.status==="connected"),s=c?ss.find(x=>x.connection_id===c.id):null;
+  const intro='<p>'+esc(c?c.page_name||c.page_id:"Página no conectada")+' · '+esc(date(c?.last_synced_at))+'</p>'+link("meta-organic","Gestionar Facebook e Instagram");
+  const cards=(fields,enabled)=>grid(fields.map(([l,k,n])=>card(l,num(enabled?s?.[k]:null),n||"")).join(""));
+  organic.innerHTML=panel("Facebook orgánico",intro+(s?'<p class="small">Período: '+esc(s.period_start)+' a '+esc(s.period_end)+'</p>':notice("Sin métricas sincronizadas."))+cards([
+   ["Seguidores","facebook_followers"],["Vistas","facebook_media_views"],["Alcance","facebook_unique_media_viewers","Ventana de 28 días"],["Interacciones","facebook_post_engagements"],["Visitas al perfil","facebook_profile_views"],["Nuevos seguidores","facebook_new_follows"]],!!s))+
+   panel("Instagram orgánico",'<p>'+esc(c?.instagram_username?"@"+c.instagram_username:"Cuenta profesional no detectada")+'</p>'+cards([
+   ["Seguidores","instagram_followers"],["Publicaciones","instagram_media_count"],["Vistas","instagram_views"],["Alcance","instagram_reach"],["Cuentas que interactuaron","instagram_accounts_engaged"],["Interacciones","instagram_total_interactions"],["Me gusta","instagram_likes"],["Comentarios","instagram_comments"],["Guardados","instagram_saves"],["Compartidos","instagram_shares"]],!!s&&!!c?.instagram_user_id));
+ }
+ Promise.allSettled([paid(),social()]).then(([a,b])=>{
+  if(a.status==="rejected")ads.innerHTML=panel("Publicidad pagada",notice("No fue posible consultar los datos de Meta Ads. Revisa permisos y conexión.")+link("meta-ads","Gestionar Meta Ads"));
+  if(b.status==="rejected")organic.innerHTML=panel("Redes sociales",notice("No fue posible consultar los indicadores orgánicos.")+link("meta-organic","Gestionar redes"));
+  status.textContent=a.status==="fulfilled"&&b.status==="fulfilled"?"Consulta completada · datos del espacio de Guadalupe":"Consulta parcial · revisa las conexiones y permisos";
+ });
+ return root;
 }
