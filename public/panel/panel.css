@@ -100,3 +100,5 @@ body{background:var(--gg-pearl)}
 @media(max-width:1100px){.follow-lists{grid-template-columns:1fr}}
 @media(max-width:520px){.follow-grid{grid-template-columns:1fr;gap:8px}.follow-card{grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;padding:13px}.follow-card>strong{grid-column:2;grid-row:1/3;font-size:26px}.follow-card>small{grid-column:1}.follow-card .follow-link{grid-column:1/-1;margin:0}.follow-agent{align-items:flex-start;flex-wrap:wrap}.follow-panel .panel-head{flex-wrap:wrap}.follow-row .btn{padding:9px 11px}}
 @media(prefers-reduced-motion:reduce){.follow-card{transition:none}}
+
+@media(max-width:820px){.mobile-nav{grid-template-columns:repeat(6,minmax(0,1fr))}}
