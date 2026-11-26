@@ -1,3 +1,4 @@
+import { metaCampaignsPage } from "./meta-analytics.js";
 import { API_URL, PUBLISHABLE_KEY, WORKSPACE_ID, COMPAS_ONE_URL } from "./config.js";
 
 /**
@@ -284,7 +285,11 @@ function agentsPage(){
 }
 function render(){
   const pages={inicio:summary,clientes:contactsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage};
-  $("#view").innerHTML=(pages[state.page]||summary)();
+  if(state.page==="meta"){
+    $("#view").replaceChildren(metaCampaignsPage({heading,panel,workspaceId:WORKSPACE_ID,db,appointments:state.appointments,contacts:state.contacts}));
+  } else {
+    $("#view").innerHTML=(pages[state.page]||summary)();
+  }
   $("#syncState").textContent=state.warnings.length?"Conexión parcial":"Conectado";
 }
 function dialog(title,fields,onSubmit){
