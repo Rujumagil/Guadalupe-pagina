@@ -126,8 +126,9 @@ function needsActivation() {
 async function load() {
   state.warnings = [];
   const qs = [
-    ["contacts", "contacts", workspaceQuery("id,display_name,email,phone,company_name,stage,status,created_at", "order=created_at.desc&limit=200")],
+    ["contacts", "contacts", workspaceQuery("id,display_name,email,phone,company_name,stage,status,created_at,ai_lead_score,ai_lead_temperature,ai_service_interest,ai_last_analyzed_at,ai_next_action,owner_user_id", "order=created_at.desc&limit=200")],
     ["conversations", "conversations", workspaceQuery("id,contact_id,channel,status,unread_count,last_message_preview,last_message_at,subject", "order=last_message_at.desc.nullslast&limit=100")],
+    ["andyAlerts", "notifications", workspaceQuery("id,title,body,event_type,entity_id,created_at,read_at", "event_type=in.(human_attention_required,hot_lead_detected,purchase_intent_detected)&order=created_at.desc&limit=30")],
     ["appointments", "appointments", workspaceQuery("id,contact_id,title,status,source,start_at,end_at,requested_time_text,created_at", "order=created_at.desc&limit=200")],
     ["surveys", "guadalupe_survey_responses", workspaceQuery("id,contact_id,areas,support,desired_start,information_interest,submitted_name,submitted_contact,consent,created_at", "order=created_at.desc&limit=200")],
     ["traffic", "workspace_cloudflare_daily_metrics", workspaceQuery("metric_date,visits,pageviews", "order=metric_date.asc&limit=60")],
@@ -395,8 +396,60 @@ function agentsPage(){
     panel("Agente de atención",'<div class="notice">'+(configured?(state.agent.enabled?"Agente habilitado.":"Perfil de agente preparado, pero pendiente de habilitar."):"No hay un perfil disponible aún.")+'</div><p class="text-muted">El agente puede atender preguntas comerciales, registrar la intención de contratación y escalar solicitudes. No debe recopilar información confidencial del proceso de coaching.</p><p class="small">La configuración técnica del agente se gestiona mediante soporte.</p>')+
     '<p class="small" style="margin-top:20px">La configuración de agentes, mensajes salientes e integraciones se realiza en la plataforma central para mantener permisos, límites y trazabilidad.</p>';
 }
+function andyProspectsPage(){
+  const messenger=new Map();
+  for(const v of state.conversations.filter(v=>v.channel==="messenger")){
+    if(!messenger.has(v.contact_id))messenger.set(v.contact_id,v);
+  }
+  const rows=state.contacts.filter(c=>messenger.has(c.id)&&c.ai_last_analyzed_at&&c.ai_lead_score!=null);
+  const ready=rows.filter(c=>c.stage==="qualified");
+  const hot=rows.filter(c=>c.ai_lead_temperature==="hot");
+  const unavailable=state.warnings.some(w=>w.startsWith("contacts:")||w.startsWith("conversations:"));
+  const cards=rows.map(c=>{
+    const v=messenger.get(c.id), score=Math.max(0,Math.min(100,Number(c.ai_lead_score)||0));
+    return '<article class="panel andy-card"><div class="andy-card-top"><div><span class="eyebrow">MESSENGER · ANDY</span><h2>'+html(c.display_name||"Prospecto")+'</h2><p>'+html(c.ai_service_interest||"Servicio por identificar")+'</p></div><span class="pill">'+html(c.ai_lead_temperature==="hot"?"Interés alto":c.ai_lead_temperature==="warm"?"Interés medio":"Interés inicial")+'</span></div>'+
+    '<div class="andy-score"><strong>'+score+'/100</strong><progress max="100" value="'+score+'"></progress></div>'+
+    '<p class="small">Teléfono: '+html(c.phone||"Pendiente")+' · '+html(c.owner_user_id?"Responsable asignado":"Sin responsable")+'</p>'+
+    '<label>Etapa comercial<select data-stage="'+html(c.id)+'">'+stages.map(([k,t])=>'<option value="'+k+'"'+(c.stage===k?' selected':'')+'>'+t+'</option>').join("")+'</select></label>'+
+    '<p class="small">Último análisis: '+html(niceDate(c.ai_last_analyzed_at))+'</p>'+
+    '<div class="andy-actions"><button class="btn outline" data-action="open-conversation" data-id="'+html(v.id)+'">Ver conversación</button>'+
+    (c.phone?'<button class="btn primary" data-action="andy-whatsapp" data-id="'+html(c.id)+'">Revisar autorización y WhatsApp</button>':'')+'</div></article>';
+  }).join("");
+  const alerts=(state.andyAlerts||[]).map(n=>'<div class="follow-row"><div><strong>'+html(n.title)+'</strong><small>'+html(n.body)+'</small><small>'+html(niceDate(n.created_at))+(n.read_at?'':' · Sin leer')+'</small></div></div>').join("");
+  return heading("Prospectos de Andy","Seguimiento comercial de las conversaciones de Messenger analizadas por Andy.",'<button class="btn outline" data-action="refresh-dashboard">Actualizar</button>')+
+    (unavailable?'<div class="notice error">No fue posible consultar los datos completos. Actualiza o revisa tus permisos.</div>':'')+
+    '<section class="stat-grid">'+stat("Analizados",unavailable?null:rows.length,"Registros cargados")+stat("Interés alto",unavailable?null:hot.length,"Calificación de Andy")+stat("Calificados",unavailable?null:ready.length,"Etapa comercial")+stat("Con teléfono",unavailable?null:rows.filter(c=>c.phone).length,"No equivale a autorización")+'</section>'+
+    '<div class="andy-grid">'+(cards||'<div class="empty">No hay prospectos analizados disponibles.</div>')+'</div>'+
+    panel("Alertas comerciales",state.warnings.some(w=>w.startsWith("notifications:"))?'<div class="notice error">No se pudieron consultar las alertas.</div>':alerts||'<div class="empty">No hay alertas comerciales disponibles.</div>')+
+    '<p class="small">Vista de los registros cargados; el estado comercial no confirma pagos ni inscripciones.</p>';
+}
+async function andyWhatsApp(id){
+  const contact=state.contacts.find(c=>c.id===id);
+  const conversation=state.conversations.find(v=>v.contact_id===id&&v.channel==="messenger");
+  if(!contact?.phone||!conversation)return;
+  const sessionUser=state.user?.id;
+  try{
+    const messages=await db("conversation_messages",{query:workspaceQuery("id,body,direction,sent_at","conversation_id=eq."+urlParam(conversation.id)+"&order=sent_at.desc&limit=30")});
+    if(state.user?.id!==sessionUser||!sessionUser)return;
+    const fields=[field("Confirma el número internacional autorizado (incluye código de país)","phone","tel",true)];
+    fields[0].querySelector("input").value=contact.phone;
+    const evidence=document.createElement("div");evidence.className="message-thread";
+    for(const m of messages.slice().reverse()){const item=document.createElement("div");item.className="bubble"+(m.direction==="outgoing"?" outgoing":"");item.textContent=(m.direction==="outgoing"?"Equipo / Andy: ":"Prospecto: ")+(m.body||"");evidence.append(item);}
+    const check=document.createElement("label");const input=document.createElement("input");input.type="checkbox";input.name="consent";input.required=true;check.append(input,document.createTextNode("Verifiqué que el prospecto autorizó expresamente el contacto por WhatsApp y no lo revocó."));
+    dialog("Verificar autorización de WhatsApp",[evidence,...fields,check],async data=>{
+      if(state.user?.id!==sessionUser||data.get("consent")!=="on")throw Error("Confirma la autorización.");
+      const raw=String(data.get("phone")).trim();
+      if(!/^\+?[1-9][0-9 ()-]{9,22}$/.test(raw))throw Error("Introduce un número internacional válido.");
+      const digits=raw.replace(/\D/g,"");if(digits.length<10||digits.length>15)throw Error("Revisa el código de país y el teléfono.");
+      const url="https://wa.me/"+digits;
+      const link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Abrir WhatsApp";link.className="btn primary";
+      const notice=document.createElement("div");notice.className="notice success";notice.append("Autorización revisada por el operador. ",link);
+      document.body.append(notice);notice.style.cssText="position:fixed;bottom:90px;right:20px;z-index:40";setTimeout(()=>notice.remove(),30000);
+    });
+  }catch(error){stateMessage(error.message,"error");}
+}
 function render(){
-  const pages={inicio:summary,clientes:contactsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage,pagos:paymentsPage};
+  const pages={inicio:summary,clientes:contactsPage,andy:andyProspectsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage,pagos:paymentsPage};
   if(state.page==="meta"){
     $("#view").replaceChildren(metaCampaignsPage({heading,panel,workspaceId:WORKSPACE_ID,db,appointments:state.appointments,contacts:state.contacts}));
   } else {
@@ -499,7 +552,7 @@ function logout(){
   // Eliminamos credenciales locales incluso cuando el servidor no responde.
   state.session=null;state.user=null;persist();
   $("#portal").hidden=true;$("#login").hidden=false;
-  state.contacts=[];state.messages=[];state.appointments=[];state.commercialDrafts=[];state.role=null;
+  state.contacts=[];state.andyAlerts=[];state.conversations=[];state.selectedConversation=null;state.messages=[];state.appointments=[];state.commercialDrafts=[];state.role=null;
   $("#loginForm").reset();
 }
 async function enter(){
@@ -540,6 +593,7 @@ $("#view").addEventListener("click",e=>{
   const action=el.dataset.action;
   if(action==="goto"){if(el.dataset.target==="clientes")state.search="";nav(el.dataset.target);}
   if(action==="find-contact"){state.search=el.dataset.name||"";nav("clientes");}
+  if(action==="andy-whatsapp")andyWhatsApp(el.dataset.id);
   if(action==="open-conversation"){nav("mensajes");selectConversation(el.dataset.id);}
   if(action==="refresh-dashboard"){el.disabled=true;load().then(()=>render()).catch(error=>{el.disabled=false;stateMessage(error.message,"error");});}
   if(action==="connect-stripe")connectStripe(el);
@@ -563,7 +617,7 @@ $("#view").addEventListener("change",async e=>{
   if(!stages.some(s=>s[0]===stage))return;
   e.target.disabled=true;
   try{await db("contacts",{method:"PATCH",query:"id=eq."+urlParam(id)+"&workspace_id=eq."+WORKSPACE_ID,
-    prefer:"return=minimal",body:{stage,status:stage==="customer"?"customer":stage==="lost"?"inactive":stage==="lead"?"lead":"prospect"}});
+    prefer:"return=representation",body:{stage,status:stage==="customer"?"customer":stage==="lost"?"inactive":stage==="lead"?"lead":"prospect"}}).then(rows=>{if(!rows?.length)throw Error("No se guardó la etapa. Revisa tus permisos.");});
     await load();render();stateMessage("Etapa actualizada.","success");}
   catch(error){stateMessage(error.message,"error");e.target.disabled=false;}
 });
