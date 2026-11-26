@@ -60,7 +60,7 @@
     <main class="workspace">
       <header class="topbar">
         <div><small>ESPACIO DE TRABAJO</small><strong>Guadalupe Gómez Pezuela</strong></div>
-        <div class="top-actions"><span class="tag" id="syncState">Sincronizando</span><span class="avatar">G</span></div>
+        <div class="top-actions"><div class="bell-wrap"><button type="button" id="notificationBell" class="bell-button" aria-label="Notificaciones comerciales" aria-expanded="false" aria-controls="notificationPopover"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span id="notificationCount" class="bell-count" hidden></span></button><section id="notificationPopover" class="bell-popover" aria-label="Alertas comerciales" hidden><div class="bell-header"><div><strong>Notificaciones</strong><small>Últimas 30 alertas comerciales</small></div><button type="button" id="notificationRefresh" class="btn light">Actualizar</button></div><div id="notificationList" class="bell-list"></div><button type="button" id="notificationGo" class="btn primary full">Ir a Prospectos de Andy</button><p class="small">Actualización cada 15 segundos con el panel abierto.</p></section></div><span id="notificationLive" class="sr-only" role="status" aria-live="polite"></span><span class="tag" id="syncState">Sincronizando</span><span class="avatar">G</span></div>
       </header>
       <div class="page" id="view" aria-live="polite"></div>
     </main>

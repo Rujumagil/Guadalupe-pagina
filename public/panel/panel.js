@@ -420,7 +420,7 @@ function andyProspectsPage(){
     (unavailable?'<div class="notice error">No fue posible consultar los datos completos. Actualiza o revisa tus permisos.</div>':'')+
     '<section class="stat-grid">'+stat("Analizados",unavailable?null:rows.length,"Registros cargados")+stat("Interés alto",unavailable?null:hot.length,"Calificación de Andy")+stat("Calificados",unavailable?null:ready.length,"Etapa comercial")+stat("Con teléfono",unavailable?null:rows.filter(c=>c.phone).length,"No equivale a autorización")+'</section>'+
     '<div class="andy-grid">'+(cards||'<div class="empty">No hay prospectos analizados disponibles.</div>')+'</div>'+
-    panel("Alertas comerciales",state.warnings.some(w=>w.startsWith("notifications:"))?'<div class="notice error">No se pudieron consultar las alertas.</div>':alerts||'<div class="empty">No hay alertas comerciales disponibles.</div>')+
+    panel("Alertas comerciales",'<div id="andyLiveAlerts">'+andyAlertRows()+'</div>')+
     '<p class="small">Vista de los registros cargados; el estado comercial no confirma pagos ni inscripciones.</p>';
 }
 async function andyWhatsApp(id){
@@ -448,6 +448,57 @@ async function andyWhatsApp(id){
     });
   }catch(error){stateMessage(error.message,"error");}
 }
+let alertTimer=null, alertEpoch=0, alertBusy=false, alertFailure=false;
+let seenAlerts=new Set();
+function renderBell(){
+  const button=$("#notificationBell"), count=$("#notificationCount"), list=$("#notificationList");
+  if(!button||!count||!list)return;
+  const rows=state.andyAlerts||[], unread=rows.filter(n=>!n.read_at).length;
+  count.hidden=!unread||alertFailure;count.textContent=unread>29?"29+":String(unread);
+  button.setAttribute("aria-label",alertFailure?"Notificaciones: conexión no disponible":"Notificaciones comerciales: "+unread+" sin leer en las últimas "+rows.length);
+  list.innerHTML=alertFailure?'<p class="notice error">No fue posible actualizar las alertas. Intenta nuevamente.</p>':rows.length?rows.map(n=>'<article class="bell-item"><strong>'+html(n.title)+'</strong><p>'+html(n.body)+'</p><small>'+html(niceDate(n.created_at))+(n.read_at?'':' · Sin leer')+'</small></article>').join(""):'<p class="empty">No hay alertas comerciales.</p>';
+}
+async function refreshBell(){
+  if(alertBusy||!state.user?.id||document.hidden)return;
+  const epoch=alertEpoch,user=state.user.id;alertBusy=true;
+  try{
+    const rows=await db("notifications",{query:workspaceQuery("id,title,body,event_type,entity_id,created_at,read_at","user_id=eq."+urlParam(user)+"&event_type=in.(human_attention_required,hot_lead_detected,purchase_intent_detected)&order=created_at.desc&limit=30")});
+    if(epoch!==alertEpoch||state.user?.id!==user)return;
+    const fresh=(rows||[]).filter(n=>!seenAlerts.has(n.id)&&!n.read_at);
+    state.andyAlerts=rows||[];alertFailure=false;
+    seenAlerts=new Set(state.andyAlerts.map(n=>n.id));
+    if(fresh.length)$("#notificationLive").textContent="Nuevas alertas comerciales: "+fresh.length+". Abre la campanita para revisarlas.";
+    renderBell();
+    const target=$("#andyLiveAlerts");
+    if(target)target.innerHTML=andyAlertRows();
+  }catch(e){if(epoch===alertEpoch){alertFailure=true;renderBell();const target=$("#andyLiveAlerts");if(target)target.innerHTML=andyAlertRows();}}
+  finally{if(epoch===alertEpoch)alertBusy=false;}
+}
+function andyAlertRows(){
+  if(alertFailure)return '<div class="notice error">No se pudieron actualizar las alertas.</div>';
+  return (state.andyAlerts||[]).map(n=>'<div class="follow-row"><div><strong>'+html(n.title)+'</strong><small>'+html(n.body)+'</small><small>'+html(niceDate(n.created_at))+(n.read_at?'':' · Sin leer')+'</small></div></div>').join("")||'<div class="empty">No hay alertas comerciales disponibles.</div>';
+}
+function startBell(){
+  stopBell();seenAlerts=new Set((state.andyAlerts||[]).map(n=>n.id));alertFailure=state.warnings.some(w=>w.startsWith("notifications:"));renderBell();
+  refreshBell();alertTimer=setInterval(refreshBell,15000);
+}
+function stopBell(){
+  alertEpoch++;alertBusy=false;clearInterval(alertTimer);alertTimer=null;seenAlerts.clear();alertFailure=false;
+  const pop=$("#notificationPopover");if(pop)pop.hidden=true;
+  $("#notificationBell")?.setAttribute("aria-expanded","false");
+  if($("#notificationList"))$("#notificationList").replaceChildren();
+  if($("#notificationCount"))$("#notificationCount").hidden=true;
+  if($("#notificationLive"))$("#notificationLive").textContent="";
+}
+$("#notificationBell")?.addEventListener("click",()=>{
+  const pop=$("#notificationPopover");if(!pop)return;pop.hidden=!pop.hidden;
+  $("#notificationBell").setAttribute("aria-expanded",String(!pop.hidden));
+  if(!pop.hidden)refreshBell();
+});
+$("#notificationRefresh")?.addEventListener("click",refreshBell);
+$("#notificationGo")?.addEventListener("click",()=>{ $("#notificationPopover").hidden=true;$("#notificationBell").setAttribute("aria-expanded","false");nav("andy");});
+document.addEventListener("keydown",e=>{const pop=$("#notificationPopover");if(e.key==="Escape"&&pop&&!pop.hidden){pop.hidden=true;$("#notificationBell").setAttribute("aria-expanded","false");$("#notificationBell").focus();}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshBell();});
 function render(){
   const pages={inicio:summary,clientes:contactsPage,andy:andyProspectsPage,landing:landingPage,mensajes:messagesPage,reservas:bookingsPage,calendario:calendarPage,trafico:trafficPage,agentes:agentsPage,pagos:paymentsPage};
   if(state.page==="meta"){
@@ -455,7 +506,7 @@ function render(){
   } else {
     $("#view").innerHTML=(pages[state.page]||summary)();
   }
-  $("#syncState").textContent=state.warnings.length?"Conexión parcial":"Conectado";
+  $("#syncState").textContent=state.warnings.length?"Conexión parcial":"Conectado";renderBell();
 }
 function dialog(title,fields,onSubmit){
   const backdrop=document.createElement("div");
@@ -550,7 +601,7 @@ async function selectConversation(id){
 }
 function logout(){
   // Eliminamos credenciales locales incluso cuando el servidor no responde.
-  state.session=null;state.user=null;persist();
+  stopBell();state.session=null;state.user=null;persist();
   $("#portal").hidden=true;$("#login").hidden=false;
   state.contacts=[];state.andyAlerts=[];state.conversations=[];state.selectedConversation=null;state.messages=[];state.appointments=[];state.commercialDrafts=[];state.role=null;
   $("#loginForm").reset();
@@ -558,7 +609,7 @@ function logout(){
 async function enter(){
   await verifyMember();
   await load();
-  $("#login").hidden=true;$("#portal").hidden=false;if(!stripeReturn())nav("inicio");
+  $("#login").hidden=true;$("#portal").hidden=false;if(!stripeReturn())nav("inicio");startBell();
 }
 async function start(){
   if(!API_URL || !PUBLISHABLE_KEY || !WORKSPACE_ID){
