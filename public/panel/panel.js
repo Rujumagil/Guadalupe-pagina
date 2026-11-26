@@ -36,7 +36,7 @@ const state = {
   contacts: [], conversations: [], appointments: [], surveys: [],
   traffic: [], sources: [], devices: [], cloudflare: null, agent: null, paymentConnection: null,
   selectedConversation: null, messages: [], warnings: [], rights: null,
-  monthOffset: 0, search: "",
+  monthOffset: 0, search: "", commercialDrafts: [], draftsError: false,
 };
 
 function stateMessage(message, type="notice") {
@@ -147,6 +147,7 @@ async function load() {
       state.warnings.push(qs[i][1] + ": no disponible");
     }
   });
+  await loadCommercialDrafts();
 }
 function nav(page) {
   state.page = page;
@@ -201,6 +202,36 @@ function catalogPageSection(){
   return '<section class="panel catalog-panel"><div class="panel-head"><div><span class="eyebrow">CATÁLOGO COMERCIAL</span><h2>Productos y precios</h2></div><span class="pill">10 referencias históricas</span></div><p class="text-muted">Inventario de ETERNI recuperado el 26 de noviembre de 2026. Los precios son referencias históricas, no ofertas vigentes. Este catálogo es de solo lectura y no genera enlaces de pago.</p><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Precio histórico</th><th>Modalidad</th><th>Disponibilidad</th></tr></thead><tbody>'+rows+'</tbody></table></div></section>';
 }
 
+
+const canManageDrafts=()=>["owner","admin"].includes(state.role);
+const moneyDraft=(n,currency)=>new Intl.NumberFormat("es-MX",{style:"currency",currency,currencyDisplay:"code"}).format(Number(n)/100);
+async function loadCommercialDrafts(){
+  state.commercialDrafts=[];state.draftsError=false;
+  if(!canManageDrafts())return;
+  try{state.commercialDrafts=await db("ggp_commercial_drafts",{query:workspaceQuery("id,name,currency,regular_minor,total_minor,deposit_minor,mode,starts_on,ends_on,delivery,status","order=created_at.desc&limit=200")});}
+  catch{state.draftsError=true;}
+}
+function draftSection(){
+  if(!canManageDrafts())return "";
+  const rows=state.commercialDrafts.map(d=>'<tr><td><strong>'+html(d.name)+'</strong><br><small>'+html(d.starts_on||"Sin inicio")+' · '+html(d.ends_on||"Sin vencimiento")+'</small></td><td>'+html(moneyDraft(d.regular_minor,d.currency))+'</td><td>'+html(moneyDraft(d.total_minor,d.currency))+'</td><td>'+html(d.mode==="deposit"?moneyDraft(d.deposit_minor,d.currency):d.mode==="monthly"?"Mensual":"Completo")+'</td><td>'+html(moneyDraft(d.total_minor-d.deposit_minor,d.currency))+'</td><td>'+html(d.status==="archived"?"Archivado":"Borrador")+'</td><td><button class="btn light" data-action="edit-draft" data-id="'+html(d.id)+'">Editar</button></td></tr>').join("");
+  return '<section class="panel catalog-panel"><div class="panel-head"><h2>Mis ofertas comerciales</h2><button class="btn primary" data-action="new-draft">+ Nueva oferta</button></div><p class="text-muted">Borradores privados: no publican precios ni crean cobros en Stripe. El saldo mostrado es el importe restante después del anticipo; en pago completo o mensual representa el total.</p>'+(state.draftsError?'<div class="notice error">No fue posible consultar las ofertas.</div>':rows?'<div class="table-wrap"><table><thead><tr><th>Producto</th><th>Habitual</th><th>Total</th><th>Modalidad / anticipo</th><th>Saldo / total</th><th>Estado</th><th>Acción</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">Aún no hay ofertas preparadas.</div>')+'</section>';
+}
+function editCommercialDraft(id){
+  if(!canManageDrafts())return;
+  const d=id?state.commercialDrafts.find(x=>x.id===id):null;
+  if(id&&!d)return;
+  const make=(label,name,type,value,options)=>{const f=field(label,name,type,false,options);const el=f.querySelector("input,select,textarea");el.value=value??"";if(type==="number"){el.min="0";el.step="0.01";}return f;};
+  const fields=[make("Producto o servicio","name","text",d?.name),make("Moneda","currency","select",d?.currency||"MXN",[["MXN","MXN"],["USD","USD"]]),make("Precio habitual","regular","number",d?d.regular_minor/100:""),make("Precio final / mensual","total","number",d?d.total_minor/100:""),make("Modalidad","mode","select",d?.mode||"full",[["full","Pago completo"],["deposit","Anticipo"],["monthly","Mensual"]]),make("Anticipo (0 si no aplica)","deposit","number",d?d.deposit_minor/100:0),make("Inicio de promoción","starts","date",d?.starts_on),make("Fin de promoción","ends","date",d?.ends_on),make("Entrega o acceso previsto","delivery","textarea",d?.delivery),make("Estado","status","select",d?.status||"draft",[["draft","Borrador"],["archived","Archivado"]])];
+  dialog(d?"Editar oferta":"Nueva oferta",fields,async data=>{
+    const cents=k=>{const v=String(data.get(k)||"").trim();if(!/^\d+(\.\d{1,2})?$/.test(v))throw Error("Introduce importes válidos con hasta dos decimales.");return Math.round(Number(v)*100);};
+    const body={name:String(data.get("name")||"").trim(),currency:String(data.get("currency")),regular_minor:cents("regular"),total_minor:cents("total"),deposit_minor:cents("deposit"),mode:String(data.get("mode")),starts_on:data.get("starts")||null,ends_on:data.get("ends")||null,delivery:String(data.get("delivery")||"").trim(),status:String(data.get("status"))};
+    if(body.name.length<2||body.total_minor<=0||body.total_minor>body.regular_minor||body.deposit_minor>=body.total_minor||(body.mode==="deposit"?body.deposit_minor<=0:body.deposit_minor!==0))throw Error("Revisa el nombre, precio final y anticipo.");
+    if(body.starts_on&&body.ends_on&&body.starts_on>body.ends_on)throw Error("La fecha final debe ser posterior o igual a la inicial.");
+    const saved=await db("ggp_commercial_drafts",{method:d?"PATCH":"POST",query:d?"id=eq."+urlParam(d.id)+"&workspace_id=eq."+WORKSPACE_ID:"select=id",prefer:"return=representation",body:d?body:{...body,workspace_id:WORKSPACE_ID}});
+    if(!saved?.length)throw Error("No se guardó la oferta. Revisa tus permisos.");
+  });
+}
+
 function paymentsPage(){
   const failed=state.warnings.some(w=>w.startsWith("workspace_payment_connections:"));
   const p=state.paymentConnection;
@@ -212,7 +243,7 @@ function paymentsPage(){
     '<section class="stat-grid">'+stat("Ingresos del mes","—","Pendiente de integración")+stat("Pagos confirmados","—","Pendiente de integración")+stat("Pagos pendientes","—","Pendiente de integración")+stat("Suscripciones activas","—","Pendiente de integración")+'</section>'+
     '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>')+
     panel("Preparación de la migración",'<div class="notice">No se habilitarán cobros nuevos hasta validar la cuenta comercial, el catálogo y el destino de las compras.</div><div class="split-row"><span>Productos y precios</span><strong>Por validar</strong></div><div class="split-row"><span>Confirmación de pagos</span><strong>Por validar</strong></div><div class="split-row"><span>Acceso a Academia Nicté Ha</span><strong>Por validar</strong></div>')+'</div>'+
-    catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni transacciones de ETERNI.</div>');
+    draftSection()+catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni transacciones de ETERNI.</div>');
 }
 
 function summary() {
@@ -438,7 +469,7 @@ function logout(){
   // Eliminamos credenciales locales incluso cuando el servidor no responde.
   state.session=null;state.user=null;persist();
   $("#portal").hidden=true;$("#login").hidden=false;
-  state.contacts=[];state.messages=[];state.appointments=[];
+  state.contacts=[];state.messages=[];state.appointments=[];state.commercialDrafts=[];state.role=null;
   $("#loginForm").reset();
 }
 async function enter(){
@@ -481,6 +512,8 @@ $("#view").addEventListener("click",e=>{
   if(action==="find-contact"){state.search=el.dataset.name||"";nav("clientes");}
   if(action==="open-conversation"){nav("mensajes");selectConversation(el.dataset.id);}
   if(action==="refresh-dashboard"){el.disabled=true;load().then(()=>render()).catch(error=>{el.disabled=false;stateMessage(error.message,"error");});}
+  if(action==="new-draft")editCommercialDraft();
+  if(action==="edit-draft")editCommercialDraft(el.dataset.id);
   if(action==="new-contact")newContact();
   if(action==="new-booking")newBooking();
   if(action==="confirm-booking")confirmBooking(el.dataset.booking);
