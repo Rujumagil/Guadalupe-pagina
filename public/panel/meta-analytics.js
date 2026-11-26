@@ -13,7 +13,7 @@ const major=(n,c)=>n/(zero.has(c)?1:100);
 export function metaCampaignsPage({heading,panel,workspaceId,db}){
  const root=document.createElement("div");
  root.innerHTML=heading("Meta y campañas","Publicidad pagada y crecimiento orgánico de Facebook e Instagram.")+
- '<div class="notice">Consultando indicadores de Compás One…</div><div data-ads></div><div data-organic></div>';
+ '<div class="notice">Consultando indicadores de Compás One…</div><div data-assigned></div><div data-ads></div><div data-organic></div>';
  const status=root.querySelector(".notice"),ads=root.querySelector("[data-ads]"),organic=root.querySelector("[data-organic]");
  const scope="&workspace_id=eq."+encodeURIComponent(workspaceId);
  const get=(t,cols,extra="")=>db(t,{query:"select="+encodeURIComponent(cols)+scope+extra});
@@ -28,6 +28,23 @@ export function metaCampaignsPage({heading,panel,workspaceId,db}){
   }
   throw new Error("Demasiados registros; se requiere agregación en servidor.");
  };
+ async function assigned(){
+  const target=root.querySelector("[data-assigned]");
+  const rows=await fetchPages("evolution_meta_assigned_metrics","external_campaign_id,campaign_name,period_start,period_end,currency,spend,impressions,clicks,synced_at","","external_campaign_id.asc");
+  if(!rows.length){target.innerHTML=panel("Campañas gestionadas por Compás Evolution",notice("Todavía no hay estadísticas sincronizadas de campañas asignadas a Guadalupe. La asignación y sincronización se gestionan desde Compás Evolution."));return;}
+  const groups=new Map();
+  for(const r of rows){const key=JSON.stringify([r.currency,r.period_start,r.period_end]);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);}
+  let body='<p class="small">Solo campañas asignadas a este espacio. Las cifras de la cuenta central no se incluyen. Períodos y monedas distintos no se suman.</p>';
+  for(const rs of groups.values()){
+   const {currency,period_start,period_end}=rs[0];
+   const total=k=>rs.every(r=>r[k]!=null)?sum(rs,k):null;
+   const spend=total("spend"),impressions=total("impressions"),clicks=total("clicks");
+   const displayMoney=v=>currency&&/^[A-Z]{3}$/.test(currency)?money(v,currency):num(v);
+   body+='<h3>'+esc(period_start)+' a '+esc(period_end)+' · '+esc(currency||"Moneda no disponible")+'</h3>'+grid(card("Inversión",displayMoney(spend))+card("Impresiones",num(impressions))+card("Clics",num(clicks))+card("CTR",num(clicks!=null&&impressions>0?100*clicks/impressions:null)+(clicks!=null&&impressions>0?"%":"")))+
+   '<div class="table-wrap"><table><thead><tr><th>Campaña</th><th>Inversión</th><th>Impresiones</th><th>Clics</th><th>Última sincronización</th></tr></thead><tbody>'+rs.map(r=>'<tr><td>'+esc(r.campaign_name)+'</td><td>'+esc(displayMoney(r.spend))+'</td><td>'+num(r.impressions)+'</td><td>'+num(r.clicks)+'</td><td>'+esc(date(r.synced_at))+'</td></tr>').join("")+'</tbody></table></div>';
+  }
+  target.innerHTML=panel("Campañas gestionadas por Compás Evolution",body+'<p class="small">Los datos son la última lectura guardada, no una consulta en vivo. Conversaciones, prospectos y ventas atribuidas aún no están disponibles en esta fuente.</p>');
+ }
  async function paid(){
   const [connections,campaigns,rows]=await Promise.all([
    get("meta_ad_connections","id,ad_account_id,account_name,currency,status,last_synced_at"),
@@ -73,10 +90,11 @@ export function metaCampaignsPage({heading,panel,workspaceId,db}){
    panel("Instagram orgánico",'<p>'+esc(c?.instagram_username?"@"+c.instagram_username:"Cuenta profesional no detectada")+'</p>'+cards([
    ["Seguidores","instagram_followers"],["Publicaciones","instagram_media_count"],["Vistas","instagram_views"],["Alcance","instagram_reach"],["Cuentas que interactuaron","instagram_accounts_engaged"],["Interacciones","instagram_total_interactions"],["Me gusta","instagram_likes"],["Comentarios","instagram_comments"],["Guardados","instagram_saves"],["Compartidos","instagram_shares"]],!!s&&!!c?.instagram_user_id));
  }
- Promise.allSettled([paid(),social()]).then(([a,b])=>{
+ Promise.allSettled([paid(),social(),assigned()]).then(([a,b,d])=>{
+  if(d.status==="rejected")root.querySelector("[data-assigned]").innerHTML=panel("Campañas gestionadas por Compás Evolution",notice("No fue posible consultar las campañas asignadas. Revisa los permisos con el administrador."));
   if(a.status==="rejected")ads.innerHTML=panel("Publicidad pagada",notice("No fue posible consultar los datos de Meta Ads. Revisa permisos y conexión.")+link("meta-ads","Gestionar Meta Ads"));
   if(b.status==="rejected")organic.innerHTML=panel("Redes sociales",notice("No fue posible consultar los indicadores orgánicos.")+link("meta-organic","Gestionar redes"));
-  status.textContent=a.status==="fulfilled"&&b.status==="fulfilled"?"Consulta completada · datos del espacio de Guadalupe":"Consulta parcial · revisa las conexiones y permisos";
+  status.textContent=a.status==="fulfilled"&&b.status==="fulfilled"&&d.status==="fulfilled"?"Consulta completada · datos del espacio de Guadalupe":"Consulta parcial · revisa las conexiones y permisos";
  });
  return root;
 }
