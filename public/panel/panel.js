@@ -1,5 +1,5 @@
 import { metaCampaignsPage } from "./meta-analytics.js";
-import { API_URL, PUBLISHABLE_KEY, WORKSPACE_ID, COMPAS_ONE_URL } from "./config.js";
+import { API_URL, PUBLISHABLE_KEY, WORKSPACE_ID } from "./config.js";
 
 /**
  * Portal independiente de Guadalupe. Autenticación Supabase Auth y datos
@@ -199,7 +199,7 @@ const migrationCatalog = [
 ];
 function catalogPageSection(){
   const rows=migrationCatalog.map(([name,price,mode,blocker])=>'<tr><td><strong>'+html(name)+'</strong></td><td>'+html(new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",currencyDisplay:"code"}).format(price))+'</td><td>'+html(mode)+'</td><td><span class="pill">Por validar</span><br><small>'+html(blocker)+'</small></td></tr>').join("");
-  return '<section class="panel catalog-panel"><div class="panel-head"><div><span class="eyebrow">CATÁLOGO COMERCIAL</span><h2>Productos y precios</h2></div><span class="pill">10 referencias históricas</span></div><p class="text-muted">Inventario de ETERNI recuperado el 26 de noviembre de 2026. Los precios son referencias históricas, no ofertas vigentes. Este catálogo es de solo lectura y no genera enlaces de pago.</p><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Precio histórico</th><th>Modalidad</th><th>Disponibilidad</th></tr></thead><tbody>'+rows+'</tbody></table></div></section>';
+  return '<section class="panel catalog-panel"><div class="panel-head"><div><span class="eyebrow">CATÁLOGO COMERCIAL</span><h2>Productos y precios</h2></div><span class="pill">10 referencias históricas</span></div><p class="text-muted">Inventario comercial de referencia recuperado el 26 de noviembre de 2026. Los precios son referencias históricas, no ofertas vigentes. Este catálogo es de solo lectura y no genera enlaces de pago.</p><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Precio histórico</th><th>Modalidad</th><th>Disponibilidad</th></tr></thead><tbody>'+rows+'</tbody></table></div></section>';
 }
 
 
@@ -235,7 +235,7 @@ function editCommercialDraft(id){
 
 function stripeConnectionInstructions(){
   if(!["owner","admin"].includes(state.role))return '<p class="small">Solo el propietario o administrador puede autorizar la cuenta Stripe.</p>';
-  return '<div class="stripe-connect-card"><div class="stripe-connect-brand"><span class="stripe-mark" aria-hidden="true">S</span><div><strong>Stripe Connect</strong><small>Autorización segura del titular</small></div></div><p>Conecta tu cuenta existente desde la administración de pagos de Compás One. No compartas contraseñas ni claves privadas.</p><a class="btn primary" target="_blank" rel="noopener noreferrer" href="'+html(COMPAS_ONE_URL)+'/integrations/payments">Conectar mi cuenta Stripe ↗</a><ol><li>Inicia sesión con tu cuenta autorizada de Compás One.</li><li>Comprueba que el espacio activo sea Guadalupe Gómez Pezuela.</li><li>Selecciona Conectar mi cuenta Stripe y autoriza en Stripe.</li><li>Regresa a este panel y pulsa Actualizar.</li></ol><div class="notice">Si la cuenta sigue vinculada a ETERNI, solicita revisión de la asociación antes de continuar. No desconectes la cuenta anterior ni crees otra.</div></div>';
+  return '<div class="stripe-connect-card"><div class="stripe-connect-brand"><span class="stripe-mark" aria-hidden="true">S</span><div><strong>Stripe</strong><small>Autorización segura del titular</small></div></div><p>Tu cuenta Stripe existente recibirá los pagos de tus productos y servicios. Nunca compartas contraseñas ni claves privadas.</p><button type="button" class="btn primary" disabled>Conectar mi cuenta Stripe</button><p class="small">La autorización directa desde este panel está pendiente de configuración. Una vez disponible, podrás iniciar sesión en Stripe y regresar aquí.</p><button class="btn outline" data-action="refresh-dashboard">Actualizar estado</button></div>';
 }
 
 function paymentsPage(){
@@ -247,9 +247,9 @@ function paymentsPage(){
   const details=row("Estado",status)+row("Titular",p?.business_name||"Por verificar")+row("Cobros",p?p.charges_enabled?"Habilitados":"No habilitados":"—")+row("Depósitos",p?p.payouts_enabled?"Habilitados":"No habilitados":"—")+row("Modo",p?p.livemode?"Producción":"Pruebas":"—")+row("Última sincronización",p?.last_synced_at?niceDate(p.last_synced_at):"Sin sincronizar");
   return heading("Finanzas y pagos","Administra la conexión comercial de Guadalupe y consulta su estado.",'<button class="btn outline" data-action="refresh-dashboard">Actualizar</button>')+
     '<section class="stat-grid">'+stat("Ingresos del mes","—","Pendiente de integración")+stat("Pagos confirmados","—","Pendiente de integración")+stat("Pagos pendientes","—","Pendiente de integración")+stat("Suscripciones activas","—","Pendiente de integración")+'</section>'+
-    '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado almacenado en Compás One. La autorización y la sincronización con Stripe se gestionan en el servidor.</p>'+stripeConnectionInstructions())+
+    '<div class="grid-two">'+panel("Conexión Stripe",details+'<p class="small">Estado de la última sincronización. La autorización se realiza directamente con Stripe.</p>'+stripeConnectionInstructions())+
     panel("Preparación de la migración",'<div class="notice">No se habilitarán cobros nuevos hasta validar la cuenta comercial, el catálogo y el destino de las compras.</div><div class="split-row"><span>Productos y precios</span><strong>Por validar</strong></div><div class="split-row"><span>Confirmación de pagos</span><strong>Por validar</strong></div><div class="split-row"><span>Acceso a Academia Nicté Ha</span><strong>Por validar</strong></div>')+'</div>'+
-    draftSection()+catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones requiere una integración de servidor autorizada para este workspace. No se muestran importes estimados ni transacciones de ETERNI.</div>');
+    draftSection()+catalogPageSection()+panel("Historial de ventas",'<div class="empty">La consulta de transacciones y suscripciones está pendiente de configuración. No se muestran importes estimados.</div>');
 }
 
 function summary() {
@@ -259,7 +259,7 @@ function summary() {
   const trafficReady=state.cloudflare?.status==="connected" && state.traffic.length>0;
   const visits=trafficReady ? state.traffic.filter(a=>new Date(a.metric_date).getTime()>Date.now()-30*86400000).reduce((s,a)=>s+Number(a.visits||0),0):null;
   let warning = "";
-  if(needsActivation()) warning='<div class="notice">El espacio ya existe, pero su plan y permisos operativos aún requieren activación desde Compás One. Algunas tablas pueden mostrarse vacías.</div>';
+  if(needsActivation()) warning='<div class="notice">Algunas funciones están pendientes de habilitación. Contacta a soporte si necesitas asistencia.</div>';
   if(state.warnings.length) warning+='<div class="notice">Algunas áreas no respondieron: '+html(state.warnings.join(", "))+'. Revisa los permisos del workspace.</div>';
   const next = state.appointments.filter(a=>a.status==="confirmed"&&a.start_at&&new Date(a.start_at)>new Date())
     .sort((a,b)=>new Date(a.start_at)-new Date(b.start_at)).slice(0,5);
@@ -270,7 +270,7 @@ function summary() {
     '<div class="grid-two">'+panel("Próximas sesiones",bookings,'<button class="btn light" data-action="goto" data-target="reservas">Ver reservas</button>')+
     panel("Acciones rápidas",'<div class="action-grid"><button class="action" data-action="new-contact"><strong>+ Cliente</strong><small>Registrar contacto</small></button><button class="action" data-action="new-booking"><strong>+ Reserva</strong><small>Solicitar sesión</small></button><button class="action" data-action="goto" data-target="mensajes"><strong>Mensajes</strong><small>Revisar conversaciones</small></button></div>')+'</div>'+
     panel("Tráfico web",trafficReady?'<div class="stat-grid">'+stat("Visitas",visits,"Últimos 30 días")+stat("Páginas vistas",state.traffic.reduce((s,a)=>s+Number(a.pageviews||0),0),"Cloudflare")+'</div><button class="btn outline" data-action="goto" data-target="trafico">Ver evolución del tráfico →</button>':
-     '<div class="empty">Métricas pendientes. Conecta el sitio de Guadalupe a Cloudflare desde Compás One para comenzar a ver datos reales.</div>');
+     '<div class="empty">Métricas pendientes de configuración. Los datos aparecerán cuando se habilite la medición del sitio.</div>');
 }
 function contactsPage() {
   const visible=state.contacts.filter(c=>[c.display_name,c.email,c.phone,c.company_name].join(" ").toLowerCase().includes(state.search.toLowerCase()));
@@ -324,9 +324,9 @@ function landingPage() {
 function messagesPage() {
   const left=state.conversations.map(c=>'<button type="button" class="message-item'+(state.selectedConversation===c.id?' selected':'')+'" data-conversation="'+html(c.id)+'"><strong>'+html(c.subject||"Conversación "+c.channel)+'</strong><small>'+html((c.last_message_preview||"Sin vista previa").slice(0,85))+'</small><small>'+html(niceDate(c.last_message_at))+' · '+html(c.unread_count||0)+' sin leer</small></button>').join("");
   const right=state.selectedConversation
-    ? '<div class="message-thread">'+(state.messages.length?state.messages.map(m=>'<div class="bubble'+(m.direction==="outgoing"?' outgoing':'')+'">'+html(m.body||"Mensaje multimedia")+'<small>'+html(niceDate(m.sent_at||m.created_at))+'</small></div>').join(""):'<div class="empty">No se encontraron mensajes.</div>')+'</div><div class="row-tools"><span class="small">Las respuestas por canales externos se envían de forma segura desde Compás One.</span><a class="btn outline" target="_blank" rel="noopener noreferrer" href="'+COMPAS_ONE_URL+'/chat/'+urlParam(state.selectedConversation)+'">Responder desde Compás One ↗</a></div>'
+    ? '<div class="message-thread">'+(state.messages.length?state.messages.map(m=>'<div class="bubble'+(m.direction==="outgoing"?' outgoing':'')+'">'+html(m.body||"Mensaje multimedia")+'<small>'+html(niceDate(m.sent_at||m.created_at))+'</small></div>').join(""):'<div class="empty">No se encontraron mensajes.</div>')+'</div><div class="row-tools"><span class="small">El envío manual desde esta bandeja está pendiente de habilitación.</span></div>'
     : '<div class="empty">Selecciona una conversación para ver su historial.</div>';
-  return heading("Mis mensajes","Consulta las conversaciones de Guadalupe sin mezclar las de ETERNI.")+
+  return heading("Mis mensajes","Consulta las conversaciones de tus clientes y prospectos.")+
     panel("Bandeja de entrada",'<div class="message-layout"><div class="message-list">'+(left||'<div class="empty">No hay conversaciones disponibles.</div>')+'</div><div>'+right+'</div></div>');
 }
 function bookingsPage(){
@@ -359,8 +359,8 @@ function trafficPage(){
   const views=latest.reduce((s,x)=>s+Number(x.pageviews||0),0);
   const bars=latest.map(row=>'<div class="bar-col" title="'+html(row.metric_date+': '+row.visits+' visitas')+'"><div class="bar" style="height:'+Math.max(1,Math.min(100,Number(row.visits||0)*100/max))+'%"></div></div>').join('');
   const breakdown=(rows)=>rows.length?rows.map(r=>'<div class="split-row"><span>'+html(r.dimension_value)+'</span><strong>'+fmt(Number(r.visits||0))+'</strong></div>').join(''):'<p class="text-muted">Sin datos.</p>';
-  return heading("Tráfico web","Visitas y comportamiento del sitio, conectados por Compás One.")+
-    (!connected?'<div class="notice">Cloudflare Web Analytics todavía no está vinculado al espacio exclusivo de Guadalupe. Es necesario conectarlo desde Compás One.</div>':'')+
+  return heading("Tráfico web","Visitas y comportamiento de tu sitio web.")+
+    (!connected?'<div class="notice">La medición del tráfico web está pendiente de configuración.</div>':'')+
     '<section class="stat-grid">'+stat("Visitas",connected&&latest.length?visits:null,"30 días")+stat("Páginas vistas",connected&&latest.length?views:null,"30 días")+stat("Fuentes disponibles",state.sources.length,"Referencias de Cloudflare")+stat("Última actualización",state.cloudflare?.last_synced_at?niceDate(state.cloudflare.last_synced_at):"—","Sincronización")+'</section>'+
     panel("Visitas por día",latest.length?'<div class="bars">'+bars+'</div>':'<div class="empty">El gráfico se habilitará al contar con visitas sincronizadas.</div>')+
     '<div class="grid-two" style="margin-top:20px">'+panel("Fuentes de visitas",breakdown(state.sources))+panel("Dispositivos",breakdown(state.devices))+'</div>';
@@ -368,7 +368,7 @@ function trafficPage(){
 function agentsPage(){
   const configured=!!state.agent;
   return heading("Mis agentes","Atención comercial, organizada desde el ecosistema Compás Fly.")+
-    panel("Compás Fly Front",'<div class="notice">'+(configured?(state.agent.enabled?"Agente habilitado.":"Perfil de agente preparado, pero pendiente de habilitar."):"No hay un perfil disponible aún.")+'</div><p class="text-muted">El agente puede atender preguntas comerciales, registrar la intención de contratación y escalar solicitudes. No debe recopilar información confidencial del proceso de coaching.</p><a class="btn primary" href="'+COMPAS_ONE_URL+'/ai" target="_blank" rel="noopener noreferrer">Gestionar agente en Compás One ↗</a>')+
+    panel("Agente de atención",'<div class="notice">'+(configured?(state.agent.enabled?"Agente habilitado.":"Perfil de agente preparado, pero pendiente de habilitar."):"No hay un perfil disponible aún.")+'</div><p class="text-muted">El agente puede atender preguntas comerciales, registrar la intención de contratación y escalar solicitudes. No debe recopilar información confidencial del proceso de coaching.</p><p class="small">La configuración técnica del agente se gestiona mediante soporte.</p>')+
     '<p class="small" style="margin-top:20px">La configuración de agentes, mensajes salientes e integraciones se realiza en la plataforma central para mantener permisos, límites y trazabilidad.</p>';
 }
 function render(){
@@ -486,7 +486,7 @@ async function enter(){
 async function start(){
   if(!API_URL || !PUBLISHABLE_KEY || !WORKSPACE_ID){
     $("#loginError").hidden=false;
-    $("#loginError").textContent="La conexión con Compás One no está configurada. Contacta al administrador.";
+    $("#loginError").textContent="El acceso al panel está pendiente de configuración. Contacta a soporte.";
     $("#loginForm button[type=submit]").disabled=true;return;
   }
   restore();
