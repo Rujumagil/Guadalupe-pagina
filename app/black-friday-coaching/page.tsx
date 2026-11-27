@@ -1,15 +1,14 @@
 import { pageMetadata } from "@/config/seo";
-import { buildWhatsAppUrl } from "@/config/site";
 import { TrackedLink } from "@/components/TrackedLink";
 import "./black-friday.css";
 
 export const metadata = pageMetadata({
   title: "Black Friday | Certificación en Coaching 2027",
-  description: "Del 26 al 28 de noviembre de 2026, aparta tu lugar en la Certificación en Coaching con $99 USD. Precio especial: $489 USD. Inicio 4 de enero de 2027.",
+  description: "Del 26 al 28 de noviembre de 2026, inscríbete en la Certificación en Coaching por $489 USD. Inicio 4 de enero de 2027.",
   path: "/black-friday-coaching",
 });
 
-const whatsapp = buildWhatsAppUrl("Hola Guadalupe, COACHING. Me interesa la Certificación en Coaching Black Friday y quiero conocer los pasos para apartar mi lugar con $99 USD.");
+const paymentUrl = "https://buy.stripe.com/aFa7sLft1bnY8y104D5os00";
 
 const inclusions = [
   { heading: "Clases en vivo", text: "Cinco semanas de formación por Zoom para aprender y practicar." },
@@ -32,12 +31,7 @@ export default function BlackFridayCoachingPage() {
             <p className="bf-offer-label">Precio especial Black Friday</p>
             <div className="bf-price">$489 <span>USD</span></div>
             <p className="bf-before">Precio habitual <s>$750 USD</s> <span className="bf-savings">Ahorras $261 USD</span></p>
-            <div className="bf-deposit">
-              <div><small>Aparta tu lugar con</small><strong>$99 USD</strong></div>
-              <div><small>Saldo después del apartado</small><strong>$390 USD</strong></div>
-            </div>
-            <p className="bf-note">Tu apartado de $99 USD se abona al precio total de $489 USD.</p>
-            <TrackedLink className="bf-button" href={whatsapp} target="_blank" rel="noopener noreferrer" eventName="Lead">Apartar mi lugar por WhatsApp <span aria-hidden="true">↗</span></TrackedLink>
+            <TrackedLink className="bf-button" href={paymentUrl} target="_blank" rel="noopener noreferrer" eventName="Lead">Pagar $489 USD en Stripe <span aria-hidden="true">↗</span></TrackedLink>
             <p className="bf-smallprint">Promoción válida del 26 al 28 de noviembre de 2026.</p>
           </div>
           <div className="bf-quick">
@@ -93,11 +87,10 @@ export default function BlackFridayCoachingPage() {
         <div className="bf-wrap bf-narrow">
           <span className="bf-section-eyebrow">DEL 26 AL 28 DE NOVIEMBRE</span>
           <h2>Da el primer paso hacia tu certificación.</h2>
-          <p className="bf-end-lead">Aprovecha el precio especial de <strong>$489 USD</strong> y aparta tu lugar con solo <strong>$99 USD</strong>. El apartado se descuenta del total: tu saldo pendiente será de <strong>$390 USD</strong>.</p>
-          <TrackedLink className="bf-button" href={whatsapp} target="_blank" rel="noopener noreferrer" eventName="Lead">Escribir «COACHING» por WhatsApp <span aria-hidden="true">↗</span></TrackedLink>
+          <p className="bf-end-lead">Aprovecha el precio especial de <strong>$489 USD</strong> y reserva tu lugar pagando en Stripe.</p>
+          <TrackedLink className="bf-button" href={paymentUrl} target="_blank" rel="noopener noreferrer" eventName="Lead">Pagar $489 USD en Stripe <span aria-hidden="true">↗</span></TrackedLink>
           <p className="bf-signature">Un abrazo,<br /><strong>Guadalupe Gómez Pezuela</strong></p>
           <p className="bf-certifier">Certifica: Gómez Pezuela y Asociados</p>
-          <p className="bf-smallprint">Al escribir por WhatsApp recibirás los pasos para apartar tu lugar. Este botón no realiza ni confirma un cobro.</p>
         </div>
       </section>
     </main>
